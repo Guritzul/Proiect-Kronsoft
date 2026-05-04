@@ -1,0 +1,86 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+Frontend/frontend_kronsoft/.dart_tool/
+Frontend/frontend_kronsoft/.flutter-plugins
+Frontend/frontend_kronsoft/.flutter-plugins-dependencies
+Frontend/frontend_kronsoft/.packages
+Frontend/frontend_kronsoft/.pub-cache/
+Frontend/frontend_kronsoft/.pub/
+Frontend/frontend_kronsoft/build/
+Frontend/frontend_kronsoft/doc/api/
+Frontend/frontend_kronsoft/ios/Flutter/.last_build_id
+
+# Android related
+Frontend/frontend_kronsoft/android/**/generated/
+Frontend/frontend_kronsoft/android/*/build/
+Frontend/frontend_kronsoft/android/*/*.iml
+Frontend/frontend_kronsoft/android/*.iml
+Frontend/frontend_kronsoft/android/local.properties
+Frontend/frontend_kronsoft/android/key.properties
+Frontend/frontend_kronsoft/android/id_rsa
+Frontend/frontend_kronsoft/android/bundle
+Frontend/frontend_kronsoft/android/app/src/main/res/raw/google_services.json
+Frontend/frontend_kronsoft/android/app/google-services.json
+
+# iOS/macOS related
+Frontend/frontend_kronsoft/ios/**/*.mode1v3
+Frontend/frontend_kronsoft/ios/**/*.mode2v3
+Frontend/frontend_kronsoft/ios/**/*.moved-aside
+Frontend/frontend_kronsoft/ios/**/*.pbxuser
+Frontend/frontend_kronsoft/ios/**/*.perspectivev3
+Frontend/frontend_kronsoft/ios/**/*~.nib
+Frontend/frontend_kronsoft/ios/**/xcuserdata/
+Frontend/frontend_kronsoft/ios/**/DerivedData/
+Frontend/frontend_kronsoft/ios/Flutter/flutter_export_environment.sh
+Frontend/frontend_kronsoft/ios/Flutter/Generated.xcconfig
+Frontend/frontend_kronsoft/ios/Flutter/flutter_plugins_dependencies.productbundle
+Frontend/frontend_kronsoft/ios/Flutter/ephemeral/
+Frontend/frontend_kronsoft/ios/ServiceDefinitions.json
+Frontend/frontend_kronsoft/ios/Runner/GeneratedPluginRegistrant.h
+Frontend/frontend_kronsoft/ios/Runner/GeneratedPluginRegistrant.m
+Frontend/frontend_kronsoft/ios/Runner/Info-Debug.plist
+Frontend/frontend_kronsoft/ios/Runner/Info-Release.plist
+Frontend/frontend_kronsoft/ios/Runner/Info-Profile.plist
+Frontend/frontend_kronsoft/ios/Runner/project.xcworkspace/
+Frontend/frontend_kronsoft/ios/Pods/
+Frontend/frontend_kronsoft/ios/.symlinks/
+Frontend/frontend_kronsoft/ios/Config.xcconfig
+
+# Symbolication related
+Frontend/frontend_kronsoft/app.*.symbols
+
+# Obfuscation related
+Frontend/frontend_kronsoft/app.*.map.json
+
+Frontend/frontend_kronsoft/ios
+Frontend/frontend_kronsoft/android
+Frontend/frontend_kronsoft/linux
+Frontend/frontend_kronsoft/macos
+Frontend/frontend_kronsoft/web
+Frontend/frontend_kronsoft/windows
+Frontend/frontend_kronsoft/.idea
+Frontend/frontend_kronsoft/.vscode
