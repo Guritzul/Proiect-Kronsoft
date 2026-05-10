@@ -88,7 +88,7 @@ Frontend/frontend_kronsoft/.vscode
 # Backend related
 Backend/node_modules/
 
-lib/firebase_options.dart
+Frontend/frontend_kronsoft/lib/firebase_options.dart
 google-services.json
 
 serviceAccountKey.json
