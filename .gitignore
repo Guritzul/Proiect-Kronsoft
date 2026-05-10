@@ -84,3 +84,6 @@ Frontend/frontend_kronsoft/web
 Frontend/frontend_kronsoft/windows
 Frontend/frontend_kronsoft/.idea
 Frontend/frontend_kronsoft/.vscode
+
+# Backend related
+Backend/node_modules/
