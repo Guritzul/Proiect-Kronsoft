@@ -1,23 +1,24 @@
-const express = require('express');
+const express = require("express");
 const mongoose = require("mongoose");
-const admin = require('firebase-admin');
-const serviceAccount = require('./serviceAccountKey.json');
+const admin = require("firebase-admin");
+const serviceAccount = require("./serviceAccountKey.json");
 const app = express();
 const port = 3000;
 
 // Initializeaza Firebase Admin
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert(serviceAccount),
 });
 
 const pillRoutes = require("./routes/pills");
 const notificationRoutes = require("./routes/notifications");
 const allergensRoutes = require("./routes/allergens");
+const exerciseRoutes = require("./routes/exercises"); //alex
 
 // Middlewares
 app.use(express.json());
 
-// Fake auth 
+// Fake auth
 app.use((req, res, next) => {
   req.userId = "test-user-id";
   next();
@@ -29,9 +30,10 @@ mongoose
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error(err));
 
-app.use('/api/pills', pillRoutes);
-app.use('/api/notifications', notificationRoutes);
-app.use('/api/allergens', allergensRoutes)
+app.use("/api/pills", pillRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/allergens", allergensRoutes);
+app.use("/api/exercises", exerciseRoutes); //alex
 
 app.get("/", (req, res) => {
   res.send("API is running...");
