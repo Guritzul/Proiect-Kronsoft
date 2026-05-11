@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'api_service.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api/auth';
+  // Uses the same backend config as ApiService
+  String get baseUrl => '${BackendConfig.baseUrl}/auth';
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -43,7 +46,7 @@ class AuthService {
       _syncWithBackend();
       return userCredential;
     } catch (e) {
-      print('Google Sign-In error: $e');
+      debugPrint('Google Sign-In error: $e');
       return null;
     }
   }
@@ -67,7 +70,7 @@ class AuthService {
           )
           .timeout(const Duration(seconds: 5));
     } catch (e) {
-      print('Sync backend failed: $e');
+      debugPrint('Sync backend failed: $e');
     }
   }
 

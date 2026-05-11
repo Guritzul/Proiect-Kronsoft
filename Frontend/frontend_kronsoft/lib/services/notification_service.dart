@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 
 class NotificationService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
@@ -11,14 +12,14 @@ class NotificationService {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('Notification permissions granted');
+      debugPrint('Notification permissions granted');
     }
 
     String? token = await _messaging.getToken();
-    print('FCM Token: $token');
+    debugPrint('FCM Token: $token');
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Notification received: ${message.notification?.title}');
+      debugPrint('Notification received: ${message.notification?.title}');
     });
   }
 

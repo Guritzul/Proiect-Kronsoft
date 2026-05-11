@@ -3,6 +3,9 @@ import '../theme/app_theme.dart';
 import '../services/auth_service.dart';
 import '../services/api_service.dart';
 import 'login_screen.dart';
+import 'settings/account_settings_screen.dart';
+import 'settings/privacy_settings_screen.dart';
+import 'settings/notification_settings_screen.dart';
 
 /// Profile screen – user info, allergen settings, and logout.
 class ProfileScreen extends StatefulWidget {
@@ -149,17 +152,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _MenuTile(
             icon: Icons.settings_outlined,
             label: 'Account Settings',
-            onTap: () {},
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountSettingsScreen())),
           ),
           _MenuTile(
             icon: Icons.privacy_tip_outlined,
             label: 'Privacy',
-            onTap: () {},
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacySettingsScreen())),
           ),
           _MenuTile(
             icon: Icons.notifications_outlined,
             label: 'Notifications',
-            onTap: () {},
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationSettingsScreen())),
           ),
           const SizedBox(height: 28),
 

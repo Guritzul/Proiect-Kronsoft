@@ -2,11 +2,19 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
+/// Backend connection config — change these when switching between emulator / real device.
+class BackendConfig {
+  static const bool _isEmulator = false; // true pentru emulator, false pentru telefon
+  static const String baseUrl = _isEmulator
+      ? 'http://10.0.2.2:3000/api'
+      : 'http://192.168.100.18:3000/api';
+}
+
 /// Centralized HTTP client for all backend API calls.
 /// Automatically attaches Firebase auth token to every request.
 class ApiService {
   // For Android emulator use 10.0.2.2, for physical device use your IP
-  static const String baseUrl = 'http://192.168.100.18:3000/api';
+  static String get baseUrl => BackendConfig.baseUrl;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // ── Helpers ──────────────────────────────────────────────────────────────
