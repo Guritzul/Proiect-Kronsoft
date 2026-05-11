@@ -4,7 +4,6 @@ import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'main_shell.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
