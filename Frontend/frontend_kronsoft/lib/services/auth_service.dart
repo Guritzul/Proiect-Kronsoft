@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+import 'api_service.dart';
 
 class AuthService {
-  static const String baseUrl = 'http://10.0.2.2:3000/api/auth';
+  // Uses the same backend config as ApiService
+  String get baseUrl => '${BackendConfig.baseUrl}/auth';
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<UserCredential> register(String email, String password) async {
