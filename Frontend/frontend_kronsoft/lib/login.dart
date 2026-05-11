@@ -7,7 +7,6 @@ import 'services/notification_service.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  print('Notificare in background: ${message.notification?.title}');
 }
 
 void main() async {
