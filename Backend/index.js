@@ -1,9 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json");
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Initializeaza Firebase Admin
 admin.initializeApp({
@@ -26,11 +27,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// Connect to MongoDB
+// Connect to MongoDB Atlas
 mongoose
-  .connect("mongodb://root:example@localhost:27017/projectk?authSource=admin")
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error(err));
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 app.use("/api/pills", pillRoutes);
 app.use("/api/notifications", notificationRoutes);
