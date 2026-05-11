@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import '../theme/app_theme.dart';
 import 'main_shell.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -20,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen>
   bool _isLoading = false;
   bool _isLogin = true;
   bool _obscurePassword = true;
+  bool _rememberMe = false;
 
   late AnimationController _animCtrl;
   late Animation<double> _fadeIn;
@@ -38,6 +40,7 @@ class _LoginScreenState extends State<LoginScreen>
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _animCtrl, curve: Curves.easeOutCubic));
     _animCtrl.forward();
+    _loadRememberMe();
   }
 
   @override
@@ -49,11 +52,32 @@ class _LoginScreenState extends State<LoginScreen>
     super.dispose();
   }
 
+  Future<void> _loadRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _rememberMe = prefs.getBool('rememberMe') ?? false;
+      if (_rememberMe) {
+        _emailController.text = prefs.getString('savedEmail') ?? '';
+      }
+    });
+  }
+
+  Future<void> _saveRememberMe() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (_rememberMe) {
+      await prefs.setBool('rememberMe', true);
+      await prefs.setString('savedEmail', _emailController.text.trim());
+    } else {
+      await prefs.setBool('rememberMe', false);
+      await prefs.remove('savedEmail');
+    }
+  }
+
   void _submit() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Completează toate câmpurile!'),
+          content: Text('Please fill in all fields!'),
           backgroundColor: AppColors.dangerColor,
         ),
       );
@@ -73,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen>
           _passwordController.text.trim(),
         );
       }
+      await _saveRememberMe();
       if (mounted) {
         Navigator.pushReplacement(
           context,
@@ -116,14 +141,16 @@ class _LoginScreenState extends State<LoginScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo / Icon
                   Container(
                     width: 94,
                     height: 94,
                     decoration: BoxDecoration(
                       color: AppColors.cardColor,
                       shape: BoxShape.circle,
-                      border: Border.all(color: AppColors.accentColor, width: 2),
+                      border: Border.all(
+                        color: AppColors.accentColor,
+                        width: 2,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: AppColors.accentColor.withValues(alpha: 0.25),
@@ -150,12 +177,13 @@ class _LoginScreenState extends State<LoginScreen>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    _isLogin ? 'Bun venit înapoi!' : 'Creează un cont nou',
-                    style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                    _isLogin ? 'Welcome back!' : 'Create a new account',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 36),
-
-                  // Card
                   GlassCard(
                     padding: const EdgeInsets.all(24),
                     child: Column(
@@ -163,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen>
                         if (!_isLogin) ...[
                           _buildTextField(
                             controller: _nameController,
-                            label: 'Nume',
+                            label: 'Name',
                             icon: Icons.person_outline,
                           ),
                           const SizedBox(height: 16),
@@ -177,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen>
                         const SizedBox(height: 16),
                         _buildTextField(
                           controller: _passwordController,
-                          label: 'Parolă',
+                          label: 'Password',
                           icon: Icons.lock_outline,
                           obscureText: _obscurePassword,
                           suffixIcon: IconButton(
@@ -187,13 +215,37 @@ class _LoginScreenState extends State<LoginScreen>
                                   : Icons.visibility_off_outlined,
                               color: AppColors.accentColor,
                             ),
-                            onPressed: () =>
-                                setState(() => _obscurePassword = !_obscurePassword),
+                            onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Checkbox(
+                              value: _rememberMe,
+                              onChanged: (value) =>
+                                  setState(() => _rememberMe = value ?? false),
+                              activeColor: AppColors.accentColor,
+                              side: BorderSide(
+                                color: AppColors.accentColor.withValues(
+                                  alpha: 0.5,
+                                ),
+                              ),
+                            ),
+                            const Text(
+                              'Remember Me',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
                         AccentButton(
-                          label: _isLogin ? 'Login' : 'Înregistrare',
+                          label: _isLogin ? 'Login' : 'Register',
                           isLoading: _isLoading,
                           onPressed: _submit,
                         ),
@@ -205,13 +257,18 @@ class _LoginScreenState extends State<LoginScreen>
                     onPressed: () => setState(() => _isLogin = !_isLogin),
                     child: RichText(
                       text: TextSpan(
-                        style: const TextStyle(fontSize: 14, color: AppColors.textSecondary),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: AppColors.textSecondary,
+                        ),
                         children: [
                           TextSpan(
-                            text: _isLogin ? 'Nu ai cont? ' : 'Ai deja cont? ',
+                            text: _isLogin
+                                ? "Don't have an account? "
+                                : 'Already have an account? ',
                           ),
                           TextSpan(
-                            text: _isLogin ? 'Înregistrează-te' : 'Conectează-te',
+                            text: _isLogin ? 'Sign Up' : 'Sign In',
                             style: const TextStyle(
                               color: AppColors.accentColor,
                               fontWeight: FontWeight.bold,
@@ -250,7 +307,9 @@ class _LoginScreenState extends State<LoginScreen>
         suffixIcon: suffixIcon,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.accentColor.withValues(alpha: 0.3)),
+          borderSide: BorderSide(
+            color: AppColors.accentColor.withValues(alpha: 0.3),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
