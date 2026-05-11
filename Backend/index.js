@@ -5,6 +5,7 @@ const port = 3000;
 
 // 
 const pillRoutes = require("./routes/pills");
+const allergensRoutes = require("./routes/allergens");
 
 // Middlewares
 app.use(express.json());
@@ -25,6 +26,7 @@ mongoose
 
 
 app.use('/api/pills', pillRoutes);
+app.use('/api/allergens', allergensRoutes);
 
 // Route test
 app.get("/", (req, res) => {

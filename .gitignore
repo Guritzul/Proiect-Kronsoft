@@ -87,3 +87,4 @@ Frontend/frontend_kronsoft/.vscode
 
 # Backend related
 Backend/node_modules/
+Backend/.env
