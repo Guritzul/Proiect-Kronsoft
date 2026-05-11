@@ -1,9 +1,10 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json");
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Initializeaza Firebase Admin
 admin.initializeApp({
@@ -13,8 +14,10 @@ admin.initializeApp({
 const pillRoutes = require("./routes/pills");
 const notificationRoutes = require("./routes/notifications");
 const allergensRoutes = require("./routes/allergens");
-const exerciseRoutes = require("./routes/exercises"); //alex
+const exerciseRoutes = require("./routes/exercises"); 
+const dashboardRoutes = require('./routes/dashboard');
 
+app.use('/api/dashboard', dashboardRoutes);
 // Middlewares
 app.use(express.json());
 

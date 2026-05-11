@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
 import 'screens/login_screen.dart';
+import 'theme/app_theme.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -25,10 +26,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Health App',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF4dd0e1)),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.darkTheme,
       home: const LoginScreen(),
     );
   }
