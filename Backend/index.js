@@ -12,6 +12,7 @@ admin.initializeApp({
 
 const pillRoutes = require("./routes/pills");
 const notificationRoutes = require("./routes/notifications");
+const allergensRoutes = require("./routes/allergens");
 
 // Middlewares
 app.use(express.json());
@@ -30,6 +31,7 @@ mongoose
 
 app.use('/api/pills', pillRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/allergens', allergensRoutes)
 
 app.get("/", (req, res) => {
   res.send("API is running...");
