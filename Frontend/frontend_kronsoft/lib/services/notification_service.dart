@@ -4,7 +4,6 @@ class NotificationService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
   Future<void> initialize() async {
-    // Cere permisiuni
     NotificationSettings settings = await _messaging.requestPermission(
       alert: true,
       badge: true,
@@ -12,12 +11,14 @@ class NotificationService {
     );
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      // Permisiuni notificari acordate
+      print('Notification permissions granted');
     }
 
-    // Handler cand app e in foreground
+    String? token = await _messaging.getToken();
+    print('FCM Token: $token');
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      // Notificare primita
+      print('Notification received: ${message.notification?.title}');
     });
   }
 

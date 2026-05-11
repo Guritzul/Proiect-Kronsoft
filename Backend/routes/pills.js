@@ -23,6 +23,7 @@ const getPills = async (req, res) => {
     const pills = await Pill.find({ userId: req.userId });
     res.status(200).json(pills);
   } catch (error) {
+    console.error("❌ getPills error:", error); // ← adaugă asta
     res.status(500).json({ message: "Failed to fetch pills" });
   }
 };

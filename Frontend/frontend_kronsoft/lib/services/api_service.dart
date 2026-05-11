@@ -21,8 +21,8 @@ class BackendConfig {
 /// Centralized HTTP client for all backend API calls.
 /// Automatically attaches Firebase auth token to every request.
 class ApiService {
-  static String get baseUrl => BackendConfig.baseUrl;
-
+  // For Android emulator use 10.0.2.2, for physical device use your IP
+  static const String baseUrl = 'http://192.168.100.18:3000/api';
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   // ── Helpers ──────────────────────────────────────────────────────────────
@@ -106,7 +106,10 @@ class ApiService {
     return await _post('/pills', pill);
   }
 
-  Future<Map<String, dynamic>> updatePill(String id, Map<String, dynamic> pill) async {
+  Future<Map<String, dynamic>> updatePill(
+    String id,
+    Map<String, dynamic> pill,
+  ) async {
     return await _put('/pills/$id', pill);
   }
 
@@ -129,7 +132,9 @@ class ApiService {
 
   // ── Allergens ────────────────────────────────────────────────────────────
 
-  Future<Map<String, dynamic>> saveAllergenProfile(List<String> allergens) async {
+  Future<Map<String, dynamic>> saveAllergenProfile(
+    List<String> allergens,
+  ) async {
     return await _post('/allergens/profile', {'allergens': allergens});
   }
 
