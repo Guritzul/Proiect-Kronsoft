@@ -1,21 +1,19 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
-
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const User = require('../models/user-allergens');
 const Scan = require('../models/scan');
 
+//Initialized Gemini API client
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 router.post('/profile', async (req, res) => {
-
-
     const userId = req.userId; 
     const { name, allergens } = req.body;
 
     try {
-
-
-        // Folosim userId pentru a gasi si updata profilul corect, nu doar numele
         const user = await User.findOneAndUpdate(
             { userId: userId }, 
             { userId: userId, name: name, allergens: allergens },
@@ -27,79 +25,59 @@ router.post('/profile', async (req, res) => {
     }
 });
 
-
 router.post('/scan', async (req, res) => {
     try {
-        const labelText = req.body.text.toLowerCase();
+        const labelText = req.body.text;
         
-
-
-        // Folosim id-ul utilizatorului logat in loc de "Luca"
         const currentUser = await User.findOne({ userId: req.userId });
         if (!currentUser) {
             return res.status(404).json({ message: "Please set your profile and allergens first!" });
         }
 
-        let dangerAllergens = [];
-        let warningAllergens = [];
-
-
-        currentUser.allergens.forEach(allergen => {
-            const lowerAllergen = allergen.toLowerCase();
+//Prompt for AI
+        const prompt = `
+            You are an expert nutritionist and allergist. 
+            The user is highly allergic to the following ingredients: ${currentUser.allergens.join(", ")}.
             
-
+            Analyze the following text extracted from a food label via OCR (it might contain typos):
+            "${labelText}"
             
-            const warningRegex = new RegExp(`\\b(traces of|may contain)\\s+${lowerAllergen}\\b`, 'i');
-            const dangerRegex = new RegExp(`\\b${lowerAllergen}\\b`, 'i');
-
-
-            if (warningRegex.test(labelText)) {
-                warningAllergens.push(allergen);
-            } 
-
-
-            else if (dangerRegex.test(labelText)) {
-                dangerAllergens.push(allergen);
+            Check if the label contains any of the user's allergens, including synonyms, derivatives (example: casein for milk, whey, etc.), or variations in different languages (mainly Romanian / English).
+            
+            You must reply ONLY with a valid JSON object, absolutely no markdown formatting, no code blocks, and no extra text. Use this exact structure:
+            {
+                "status": "DANGER" (if the allergen or a derivative is clearly in the ingredients), "WARNING" (if it says "may contain" or "traces of"), or "SAFE" (if no risk is found),
+                "allergensFound": ["array", "of", "found", "allergens"],
+                "message": "A short, user-friendly message explaining the verdict."
             }
-        });
+        `;
 
 
-        let result;
-        if (dangerAllergens.length > 0) {
-            result = {
-                status: "DANGER",
-                message: `Found: ${dangerAllergens.join(", ")}. DO NOT EAT! 🛑`
-            };
-        } else if (warningAllergens.length > 0) {
-            result = {
-                status: "WARNING",
-                message: `Warning! May contain traces of: ${warningAllergens.join(", ")}. Eat at your own risk. ⚠️`
-            };
-        } else {
-            result = {
-                status: "SAFE",
-                message: "Looks OK, you can eat it safely. ✅"
-            };
-        }
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const result = await model.generateContent(prompt);
+        let responseText = result.response.text();
+        
 
+        responseText = responseText.replace(/```json/gi, '').replace(/```/gi, '').trim();
+        
 
+        const aiDecision = JSON.parse(responseText);
 
         const newScan = new Scan({
             userId: req.userId,
             labelText: labelText,
-            allergensFound: [...dangerAllergens, ...warningAllergens],
-            status: result.status
+            allergensFound: aiDecision.allergensFound,
+            status: aiDecision.status
         });
         await newScan.save();
 
-        res.status(200).json(result);
+        res.status(200).json(aiDecision);
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Error processing the label." });
+        console.error("AI Scan Error:", error);
+        res.status(500).json({ message: "Error processing the label with AI." });
     }
 });
-
 
 router.get('/history', async (req, res) => {
     try {
