@@ -3,8 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 import 'services/notification_service.dart';
-import 'screens/login_screen.dart';
 import 'theme/app_theme.dart';
+import 'screens/splash_screen.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
       title: 'Health App',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.darkTheme,
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }
