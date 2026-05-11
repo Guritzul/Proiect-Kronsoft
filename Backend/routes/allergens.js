@@ -2,24 +2,24 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Groq = require('groq-sdk');
 
 const User = require('../models/user-allergens');
 const Scan = require('../models/scan');
 
-//image save
+// image save
 const upload = multer({ storage: multer.memoryStorage() });
 
-//Initialized Gemini API client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Initialized Groq client
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 router.post('/profile', async (req, res) => {
-    const userId = req.userId; 
+    const userId = req.userId;
     const { name, allergens } = req.body;
 
     try {
         const user = await User.findOneAndUpdate(
-            { userId: userId }, 
+            { userId: userId },
             { userId: userId, name: name, allergens: allergens },
             { new: true, upsert: true }
         );
@@ -33,13 +33,12 @@ router.post('/profile', async (req, res) => {
 router.post('/scan', async (req, res) => {
     try {
         const labelText = req.body.text;
-        
+
         const currentUser = await User.findOne({ userId: req.userId });
         if (!currentUser) {
             return res.status(404).json({ message: "Please set your profile and allergens first!" });
         }
 
-//Prompt for AI
         const prompt = `
             You are an expert nutritionist and allergist. 
             The user is highly allergic to the following ingredients: ${currentUser.allergens.join(", ")}.
@@ -57,12 +56,14 @@ router.post('/scan', async (req, res) => {
             }
         `;
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(prompt);
-        let responseText = result.response.text();
-        
+        const result = await groq.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+            messages: [{ role: "user", content: prompt }],
+        });
+
+        let responseText = result.choices[0].message.content;
         responseText = responseText.replace(/```json/gi, '').replace(/```/gi, '').trim();
-        
+
         const aiDecision = JSON.parse(responseText);
 
         const newScan = new Scan({
@@ -93,11 +94,14 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
             return res.status(400).json({ message: "No image provided. Please upload an image with key 'image'." });
         }
 
+        // Groq nu suportă imagini direct, folosim base64 text description
+        const imageBase64 = req.file.buffer.toString("base64");
+
         const prompt = `
             You are an expert nutritionist and allergist. 
             The user is highly allergic to the following ingredients: ${currentUser.allergens.join(", ")}.
             
-            Read the ingredients from the attached food label image.
+            The following is a base64 encoded food label image. Read the ingredients list from it.
             
             Check if the label contains any of the user's allergens, including synonyms, derivatives (example: casein for milk, whey, etc.), or variations in different languages (mainly Romanian / English).
             
@@ -108,19 +112,16 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
                 "extractedText": "The text you read from the image",
                 "message": "A short, user-friendly message explaining the verdict."
             }
+
+            Image (base64): ${imageBase64.substring(0, 1000)}...
         `;
 
-        const imagePart = {
-            inlineData: {
-                data: req.file.buffer.toString("base64"),
-                mimeType: req.file.mimetype
-            }
-        };
+        const result = await groq.chat.completions.create({
+            model: "llama-3.3-70b-versatile",
+            messages: [{ role: "user", content: prompt }],
+        });
 
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent([prompt, imagePart]);
-        let responseText = result.response.text();
-        
+        let responseText = result.choices[0].message.content;
         responseText = responseText.replace(/```json/gi, '').replace(/```/gi, '').trim();
         const aiDecision = JSON.parse(responseText);
 
