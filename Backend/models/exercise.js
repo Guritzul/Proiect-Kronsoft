@@ -1,49 +1,62 @@
 const mongoose = require("mongoose");
 
-// Definim schema exercițiului - structura unui document din colecția MongoDB
-// Schema validează datele înainte să fie salvate în baza de date
 const exerciseSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Numele exercițiului este obligatoriu"],
+      required: [true, "Exercise name is required"],
       trim: true,
     },
 
     description: {
       type: String,
-      required: [true, "Descrierea exercițiului este obligatorie"],
+      required: [true, "Exercise description is required"],
       trim: true,
     },
 
     bodyPart: {
       type: String,
-      required: [true, "Partea corpului este obligatorie"],
+      required: [true, "Body part is required"],
       trim: true,
+      enum: {
+        values: [
+          "forearm",
+          "biceps",
+          "triceps",
+          "back",
+          "legs",
+          "shoulders",
+          "chest",
+          "core",
+          "neck",
+          "cardio",
+        ],
+        message: "Invalid body part",
+      },
     },
 
     difficulty: {
       type: String,
       enum: {
-        values: ["usor", "mediu", "avansat"],
-        message: "Dificultatea trebuie să fie: usor, mediu sau avansat",
+        values: ["easy", "medium", "hard"],
+        message: "Difficulty must be: easy, medium or hard",
       },
-      required: [true, "Dificultatea este obligatorie"],
+      required: [true, "Difficulty is required"],
     },
 
     durationMinutes: {
       type: Number,
-      min: [1, "Durata minimă este de 1 minut"],
+      min: [1, "Minimum duration is 1 minute"],
     },
 
     repetitions: {
       type: Number,
-      min: [1, "Numărul minim de repetări este 1"],
+      min: [1, "Minimum number of repetitions is 1"],
     },
 
     sets: {
       type: Number,
-      min: [1, "Numărul minim de seturi este 1"],
+      min: [1, "Minimum number of sets is 1"],
     },
 
     mediaUrl: {
@@ -56,7 +69,7 @@ const exerciseSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // Flag pentru soft delete
+    // Soft delete flag - marks exercise as inactive instead of deleting from DB
     isActive: {
       type: Boolean,
       default: true,
