@@ -5,6 +5,7 @@ const port = 3000;
 
 // 
 const pillRoutes = require("./routes/pills");
+const allergensRoutes = require("./routes/allergens");
 
 // Middlewares
 app.use(express.json());
@@ -18,13 +19,14 @@ app.use((req, res, next) => {
 // Connect to MongoDB
 mongoose
   .connect(
-    "mongodb://root:example@localhost:27017/projectk?authSource=admin",
+    "mongodb://root:example@localhost:27017/projectk?authSource=admin"
   )
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error(err));
 
 
 app.use('/api/pills', pillRoutes);
+app.use('/api/allergens', allergensRoutes);
 
 // Route test
 app.get("/", (req, res) => {
