@@ -1,0 +1,50 @@
+import 'dart:convert';
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+
+class AuthService {
+  static const String baseUrl = 'http://10.0.2.2:3000/api/auth';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  Future<UserCredential> register(String email, String password) async {
+    final credential = await _auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    await _syncWithBackend();
+    return credential;
+  }
+
+  Future<UserCredential> login(String email, String password) async {
+    final credential = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    await _syncWithBackend();
+    return credential;
+  }
+
+  Future<void> logout() async {
+    await _auth.signOut();
+  }
+
+  Future<void> _syncWithBackend() async {
+  try {
+    final token = await _auth.currentUser?.getIdToken();
+    if (token == null) return;
+    await http.post(
+      Uri.parse('$baseUrl/sync'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    ).timeout(const Duration(seconds: 5));
+  } catch (e) {
+    // Ignora eroarea de sync, loginul Firebase a reusit
+    print('Sync backend failed: $e');
+  }
+}
+
+  User? get currentUser => _auth.currentUser;
+}
