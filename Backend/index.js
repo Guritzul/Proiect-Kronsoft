@@ -21,10 +21,19 @@ app.use('/api/dashboard', dashboardRoutes);
 // Middlewares
 app.use(express.json());
 
-// Fake auth
-app.use((req, res, next) => {
-  req.userId = "test-user-id";
-  next();
+app.use(async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const token = authHeader.split('Bearer ')[1];
+    const decoded = await admin.auth().verifyIdToken(token);
+    req.userId = decoded.uid; // ← ID-ul real al userului din Firebase
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
 });
 
 // Connect to MongoDB Atlas
