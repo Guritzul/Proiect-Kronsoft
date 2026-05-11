@@ -13,8 +13,10 @@ admin.initializeApp({
 const pillRoutes = require("./routes/pills");
 const notificationRoutes = require("./routes/notifications");
 const allergensRoutes = require("./routes/allergens");
-const exerciseRoutes = require("./routes/exercises"); //alex
+const exerciseRoutes = require("./routes/exercises"); 
+const dashboardRoutes = require('./routes/dashboard');
 
+app.use('/api/dashboard', dashboardRoutes);
 // Middlewares
 app.use(express.json());
 
