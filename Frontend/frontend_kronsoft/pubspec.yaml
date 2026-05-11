@@ -14,6 +14,8 @@ dependencies:
   firebase_messaging: ^15.0.0
   http: ^1.2.0
   shared_preferences: ^2.2.0
+  google_sign_in: ^6.2.0
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
