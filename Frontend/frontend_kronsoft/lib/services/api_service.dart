@@ -2,12 +2,9 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
-/// Backend connection config — change these when switching between emulator / real device.
+/// Backend connection config. Folosim IP-ul local pentru a functiona atat pe emulator cat si pe telefon.
 class BackendConfig {
-  static const bool _isEmulator = false; // true pentru emulator, false pentru telefon
-  static const String baseUrl = _isEmulator
-      ? 'http://10.0.2.2:3000/api'
-      : 'http://192.168.100.18:3000/api';
+  static const String baseUrl = 'http://192.168.137.1:3000/api';
 }
 
 /// Centralized HTTP client for all backend API calls.

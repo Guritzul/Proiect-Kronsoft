@@ -8,6 +8,7 @@ const pillSchema = new mongoose.Schema({
   takenDates: [Date],
   missedDates: [Date],
   doctorAdvice: String,
+  dosage: String,
   userId: String,
 });
 
@@ -42,13 +43,14 @@ const getPillById = async (req, res) => {
 };
 
 const createPill = async (req, res) => {
-  const { name, schedule, frequency, doctorAdvice } = req.body;
+  const { name, schedule, frequency, doctorAdvice, dosage } = req.body;
   try {
     const newPill = new Pill({
       name,
       schedule,
       frequency,
       doctorAdvice,
+      dosage,
       userId: req.userId,
     });
     await newPill.save();
@@ -60,11 +62,11 @@ const createPill = async (req, res) => {
 
 const updatePill = async (req, res) => {
   const { id } = req.params;
-  const { name, schedule, frequency, doctorAdvice } = req.body;
+  const { name, schedule, frequency, doctorAdvice, dosage } = req.body;
   try {
     const updatedPill = await Pill.findOneAndUpdate(
       { _id: id, userId: req.userId },
-      { name, schedule, frequency, doctorAdvice },
+      { name, schedule, frequency, doctorAdvice, dosage },
       { new: true },
     );
     if (!updatedPill) {
