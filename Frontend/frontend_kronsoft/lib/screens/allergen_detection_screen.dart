@@ -1,0 +1,327 @@
+import 'package:flutter/material.dart';
+import '../theme/app_theme.dart';
+import '../services/api_service.dart';
+
+/// Allergen Detection Screen – scan food labels and check for allergens.
+class AllergenDetectionScreen extends StatefulWidget {
+  const AllergenDetectionScreen({super.key});
+
+  @override
+  State<AllergenDetectionScreen> createState() => _AllergenDetectionScreenState();
+}
+
+class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
+    with SingleTickerProviderStateMixin {
+  final _api = ApiService();
+  final _labelController = TextEditingController();
+  Map<String, dynamic>? _scanResult;
+  List<dynamic> _history = [];
+  bool _scanning = false;
+  bool _loadingHistory = true;
+  late AnimationController _resultAnimCtrl;
+  late Animation<double> _resultScale;
+
+  @override
+  void initState() {
+    super.initState();
+    _resultAnimCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 500),
+    );
+    _resultScale = CurvedAnimation(parent: _resultAnimCtrl, curve: Curves.elasticOut);
+    _loadHistory();
+  }
+
+  Future<void> _loadHistory() async {
+    try {
+      final data = await _api.getScanHistory();
+      if (mounted) setState(() { _history = data; _loadingHistory = false; });
+    } catch (_) {
+      if (mounted) setState(() => _loadingHistory = false);
+    }
+  }
+
+  Future<void> _scan() async {
+    if (_labelController.text.trim().isEmpty) return;
+    setState(() { _scanning = true; _scanResult = null; });
+    _resultAnimCtrl.reset();
+    try {
+      final result = await _api.scanLabel(_labelController.text.trim());
+      if (mounted) {
+        setState(() { _scanResult = result; _scanning = false; });
+        _resultAnimCtrl.forward();
+        _loadHistory(); // refresh history
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _scanning = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Scan failed: $e'), backgroundColor: AppColors.dangerColor),
+        );
+      }
+    }
+  }
+
+  Color _resultColor(String? status) {
+    switch (status?.toUpperCase()) {
+      case 'SAFE':
+        return AppColors.successColor;
+      case 'WARNING':
+        return AppColors.warningColor;
+      case 'DANGER':
+        return AppColors.dangerColor;
+      default:
+        return AppColors.textSecondary;
+    }
+  }
+
+  IconData _resultIcon(String? status) {
+    switch (status?.toUpperCase()) {
+      case 'SAFE':
+        return Icons.check_circle;
+      case 'WARNING':
+        return Icons.warning_rounded;
+      case 'DANGER':
+        return Icons.dangerous_rounded;
+      default:
+        return Icons.info_outline;
+    }
+  }
+
+  @override
+  void dispose() {
+    _resultAnimCtrl.dispose();
+    _labelController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bgColor,
+      appBar: AppBar(title: const Text('Allergen Detection')),
+      body: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+        children: [
+          // ── How it works ──
+          GlassCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.lightbulb_outline, color: AppColors.accentColor.withValues(alpha: 0.8), size: 20),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'How it works',
+                      style: TextStyle(color: AppColors.accentColor, fontSize: 15, fontWeight: FontWeight.w700),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                _StepRow(number: '1', text: 'Read the ingredient list on the food label'),
+                const SizedBox(height: 8),
+                _StepRow(number: '2', text: 'Type or paste the ingredients below'),
+                const SizedBox(height: 8),
+                _StepRow(number: '3', text: 'Tap "Scan" to check for your allergens'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // ── Input ──
+          TextField(
+            controller: _labelController,
+            maxLines: 4,
+            style: const TextStyle(color: AppColors.textPrimary),
+            decoration: InputDecoration(
+              hintText: 'Paste or type ingredient list here…',
+              hintStyle: const TextStyle(color: AppColors.textHint),
+              filled: true,
+              fillColor: AppColors.surfaceColor,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(color: AppColors.accentColor.withValues(alpha: 0.25)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: AppColors.accentColor, width: 2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          AccentButton(
+            label: 'Scan for Allergens',
+            icon: Icons.search_rounded,
+            isLoading: _scanning,
+            onPressed: _scan,
+          ),
+          const SizedBox(height: 24),
+
+          // ── Result Card ──
+          if (_scanResult != null)
+            ScaleTransition(
+              scale: _resultScale,
+              child: _buildResultCard(),
+            ),
+
+          // ── History ──
+          const SizedBox(height: 28),
+          const SectionHeader(title: 'Scan History'),
+          if (_loadingHistory)
+            const Center(child: CircularProgressIndicator(color: AppColors.accentColor))
+          else if (_history.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Column(
+                  children: [
+                    Icon(Icons.history, color: AppColors.textSecondary.withValues(alpha: 0.5), size: 48),
+                    const SizedBox(height: 8),
+                    const Text('No scans yet', style: TextStyle(color: AppColors.textSecondary)),
+                  ],
+                ),
+              ),
+            )
+          else
+            ...List.generate(_history.length.clamp(0, 10), (i) {
+              final item = _history[i];
+              final status = item['result'] ?? item['status'] ?? 'SAFE';
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: GlassCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  borderColor: _resultColor(status).withValues(alpha: 0.25),
+                  child: Row(
+                    children: [
+                      Icon(_resultIcon(status), color: _resultColor(status), size: 22),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          item['text'] ?? item['labelText'] ?? '—',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: _resultColor(status).withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          status.toString().toUpperCase(),
+                          style: TextStyle(
+                            color: _resultColor(status),
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResultCard() {
+    final status = _scanResult!['result'] ?? _scanResult!['status'] ?? 'SAFE';
+    final color = _resultColor(status);
+    final allergens = _scanResult!['detectedAllergens'] ?? _scanResult!['allergens'] ?? [];
+
+    return GlassCard(
+      borderColor: color.withValues(alpha: 0.5),
+      child: Column(
+        children: [
+          Icon(_resultIcon(status), color: color, size: 52),
+          const SizedBox(height: 12),
+          Text(
+            status.toString().toUpperCase(),
+            style: TextStyle(
+              color: color,
+              fontSize: 24,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 2,
+            ),
+          ),
+          if (allergens is List && allergens.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            const Text('Detected allergens:', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: allergens.map<Widget>((a) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: color.withValues(alpha: 0.35)),
+                  ),
+                  child: Text(
+                    a.toString(),
+                    style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 13),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+          if (status.toString().toUpperCase() == 'SAFE') ...[
+            const SizedBox(height: 10),
+            const Text(
+              'No allergens detected – safe to consume!',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _StepRow extends StatelessWidget {
+  final String number;
+  final String text;
+  const _StepRow({required this.number, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            color: AppColors.accentColor.withValues(alpha: 0.15),
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(
+              number,
+              style: const TextStyle(
+                color: AppColors.accentColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
+          ),
+        ),
+      ],
+    );
+  }
+}

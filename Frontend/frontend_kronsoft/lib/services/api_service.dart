@@ -1,0 +1,166 @@
+import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart' as http;
+
+/// Centralized HTTP client for all backend API calls.
+/// Automatically attaches Firebase auth token to every request.
+class ApiService {
+  // For Android emulator use 10.0.2.2, for physical device use your IP
+  static const String baseUrl = 'http://10.0.2.2:3000/api';
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  // ── Helpers ──────────────────────────────────────────────────────────────
+
+  Future<Map<String, String>> _headers() async {
+    final token = await _auth.currentUser?.getIdToken();
+    return {
+      'Content-Type': 'application/json',
+      if (token != null) 'Authorization': 'Bearer $token',
+    };
+  }
+
+  Future<dynamic> _get(String path) async {
+    final res = await http
+        .get(Uri.parse('$baseUrl$path'), headers: await _headers())
+        .timeout(const Duration(seconds: 10));
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      return jsonDecode(res.body);
+    }
+    throw ApiException(res.statusCode, res.body);
+  }
+
+  Future<dynamic> _post(String path, [Map<String, dynamic>? body]) async {
+    final res = await http
+        .post(
+          Uri.parse('$baseUrl$path'),
+          headers: await _headers(),
+          body: body != null ? jsonEncode(body) : null,
+        )
+        .timeout(const Duration(seconds: 10));
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      return res.body.isNotEmpty ? jsonDecode(res.body) : null;
+    }
+    throw ApiException(res.statusCode, res.body);
+  }
+
+  Future<dynamic> _put(String path, Map<String, dynamic> body) async {
+    final res = await http
+        .put(
+          Uri.parse('$baseUrl$path'),
+          headers: await _headers(),
+          body: jsonEncode(body),
+        )
+        .timeout(const Duration(seconds: 10));
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      return res.body.isNotEmpty ? jsonDecode(res.body) : null;
+    }
+    throw ApiException(res.statusCode, res.body);
+  }
+
+  Future<dynamic> _delete(String path) async {
+    final res = await http
+        .delete(Uri.parse('$baseUrl$path'), headers: await _headers())
+        .timeout(const Duration(seconds: 10));
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      return res.body.isNotEmpty ? jsonDecode(res.body) : null;
+    }
+    throw ApiException(res.statusCode, res.body);
+  }
+
+  // ── Dashboard ────────────────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> getDashboard() async {
+    return await _get('/dashboard');
+  }
+
+  // ── Auth / Profile ───────────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> getProfile() async {
+    return await _get('/auth/profile');
+  }
+
+  // ── Pills ────────────────────────────────────────────────────────────────
+
+  Future<List<dynamic>> getPills() async {
+    final data = await _get('/pills');
+    return data is List ? data : (data['pills'] ?? []);
+  }
+
+  Future<Map<String, dynamic>> createPill(Map<String, dynamic> pill) async {
+    return await _post('/pills', pill);
+  }
+
+  Future<Map<String, dynamic>> updatePill(String id, Map<String, dynamic> pill) async {
+    return await _put('/pills/$id', pill);
+  }
+
+  Future<void> deletePill(String id) async {
+    await _delete('/pills/$id');
+  }
+
+  Future<void> markPillTaken(String id) async {
+    await _post('/pills/$id/taken');
+  }
+
+  Future<void> markPillMissed(String id) async {
+    await _post('/pills/$id/missed');
+  }
+
+  Future<List<dynamic>> getPillHistory(String id) async {
+    final data = await _get('/pills/$id/history');
+    return data is List ? data : (data['history'] ?? []);
+  }
+
+  // ── Allergens ────────────────────────────────────────────────────────────
+
+  Future<Map<String, dynamic>> saveAllergenProfile(List<String> allergens) async {
+    return await _post('/allergens/profile', {'allergens': allergens});
+  }
+
+  Future<Map<String, dynamic>> scanLabel(String labelText) async {
+    return await _post('/allergens/scan', {'text': labelText});
+  }
+
+  Future<List<dynamic>> getScanHistory() async {
+    final data = await _get('/allergens/history');
+    return data is List ? data : (data['history'] ?? []);
+  }
+
+  // ── Exercises ────────────────────────────────────────────────────────────
+
+  Future<List<dynamic>> getExercises({
+    String? bodyPart,
+    String? difficulty,
+    String? category,
+  }) async {
+    final params = <String, String>{};
+    if (bodyPart != null) params['bodyPart'] = bodyPart;
+    if (difficulty != null) params['difficulty'] = difficulty;
+    if (category != null) params['category'] = category;
+    final query = params.isNotEmpty
+        ? '?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}'
+        : '';
+    final data = await _get('/exercises$query');
+    return data is List ? data : (data['exercises'] ?? []);
+  }
+
+  Future<Map<String, dynamic>> getExerciseById(String id) async {
+    return await _get('/exercises/$id');
+  }
+
+  // ── Notifications ────────────────────────────────────────────────────────
+
+  Future<void> sendNotification(Map<String, dynamic> payload) async {
+    await _post('/notifications/send', payload);
+  }
+}
+
+/// Simple API error wrapper.
+class ApiException implements Exception {
+  final int statusCode;
+  final String body;
+  ApiException(this.statusCode, this.body);
+
+  @override
+  String toString() => 'ApiException($statusCode): $body';
+}
