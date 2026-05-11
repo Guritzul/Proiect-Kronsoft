@@ -24,11 +24,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// Connect to MongoDB
+// Connect to MongoDB Atlas
 mongoose
-  .connect("mongodb://root:example@localhost:27017/projectk?authSource=admin")
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error(err));
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 app.use("/api/pills", pillRoutes);
 app.use("/api/notifications", notificationRoutes);
