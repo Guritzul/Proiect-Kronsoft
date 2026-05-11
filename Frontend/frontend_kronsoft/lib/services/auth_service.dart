@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
@@ -42,7 +41,6 @@ class AuthService {
     ).timeout(const Duration(seconds: 5));
   } catch (e) {
     // Ignora eroarea de sync, loginul Firebase a reusit
-    print('Sync backend failed: $e');
   }
 }
 
