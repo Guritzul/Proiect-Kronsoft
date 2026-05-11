@@ -274,7 +274,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                     ),
                     if (dosage.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      Text(dosage, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                      Text('Dozaj: $dosage', style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
                     ],
                     if (schedule != null) ...[
                       const SizedBox(height: 4),
