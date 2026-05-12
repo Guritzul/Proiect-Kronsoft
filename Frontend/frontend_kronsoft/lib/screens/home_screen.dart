@@ -137,7 +137,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                                 const Text('Last Scan', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                                 const SizedBox(height: 2),
                                 Text(
-                                  _dashboard!['lastScan']['result'] ?? 'SAFE',
+                                  _dashboard!['lastScan']['status'] ?? 'SAFE',
                                   style: const TextStyle(
                                     color: AppColors.textPrimary,
                                     fontSize: 16,
