@@ -193,7 +193,7 @@ class ApiService {
         ? '?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}'
         : '';
     final data = await _get('/exercises$query');
-    return data is List ? data : (data['exercises'] ?? []);
+    return data is List ? data : (data['data'] ?? []);
   }
 
   Future<Map<String, dynamic>> getExerciseById(String id) async {

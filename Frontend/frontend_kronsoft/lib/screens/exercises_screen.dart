@@ -20,7 +20,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   String? _selectedDifficulty;
 
   final List<String> _bodyParts = [
-    'All', 'Arms', 'Legs', 'Back', 'Chest', 'Shoulders', 'Core', 'Full Body',
+    'All', 'Forearm', 'Biceps', 'Triceps', 'Back', 'Legs', 'Shoulders', 'Chest', 'Core', 'Neck', 'Cardio',
   ];
   final List<String> _difficulties = ['All', 'Easy', 'Medium', 'Hard'];
 
@@ -34,7 +34,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
     setState(() => _loading = true);
     try {
       final data = await _api.getExercises(
-        bodyPart: _selectedBodyPart,
+        bodyPart: _selectedBodyPart?.toLowerCase(),
         difficulty: _selectedDifficulty,
       );
       if (mounted) setState(() { _exercises = data; _loading = false; });
@@ -208,7 +208,9 @@ class _ExerciseCard extends StatelessWidget {
 
   IconData get _bodyPartIcon {
     switch ((exercise['bodyPart'] ?? '').toString().toLowerCase()) {
-      case 'arms':
+      case 'forearm':
+      case 'biceps':
+      case 'triceps':
         return Icons.front_hand;
       case 'legs':
         return Icons.directions_walk;
@@ -220,6 +222,10 @@ class _ExerciseCard extends StatelessWidget {
         return Icons.accessibility_new;
       case 'core':
         return Icons.circle;
+      case 'neck':
+        return Icons.face;
+      case 'cardio':
+        return Icons.favorite_border;
       default:
         return Icons.fitness_center;
     }
