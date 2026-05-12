@@ -19,6 +19,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await NotificationService().initialize();
   await LocalNotificationService.initialize();
+  await LocalNotificationService.scheduleDailyExerciseNotification();
 
   LocalNotificationService.onNotificationTapped.stream.listen((payload) {
     _showNotificationDialog(payload);
@@ -30,6 +31,54 @@ void main() async {
 void _showNotificationDialog(String payload) {
   final context = navigatorKey.currentContext;
   if (context == null) return;
+
+  if (payload == 'exercise_reminder') {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF2a2a2a),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text(
+          'Daily Exercises',
+          style: TextStyle(
+            color: Color(0xFF4dd0e1),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Don\'t forget to do your exercises today!',
+              style: TextStyle(color: Color(0xFFe0e0e0), fontSize: 15),
+            ),
+            SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(Icons.fitness_center, color: Color(0xFF4dd0e1), size: 18),
+                SizedBox(width: 8),
+                Text(
+                  'Stay Healthy',
+                  style: TextStyle(
+                    color: Color(0xFF4dd0e1),
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK', style: TextStyle(color: Color(0xFF4dd0e1))),
+          ),
+        ],
+      ),
+    );
+    return;
+  }
 
   final parts = payload.split('|');
   if (parts.length < 5) return;
