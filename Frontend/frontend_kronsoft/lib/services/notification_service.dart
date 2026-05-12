@@ -15,8 +15,10 @@ class NotificationService {
       debugPrint('Notification permissions granted');
     }
 
-    String? token = await _messaging.getToken();
-    debugPrint('FCM Token: $token');
+    // Nu asteptam dupa token pentru ca poate dura mult sau poate ingheta daca nu e internet
+    _messaging.getToken().then((token) {
+      debugPrint('FCM Token: $token');
+    }).catchError((e) => debugPrint('Error getting token: $e'));
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('Notification received: ${message.notification?.title}');
