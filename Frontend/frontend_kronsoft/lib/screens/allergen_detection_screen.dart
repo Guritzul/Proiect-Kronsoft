@@ -147,6 +147,143 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
     }
   }
 
+  void _showScanDetails(Map<String, dynamic> item) {
+    final status = item['status'] ?? 'SAFE';
+    final color = _resultColor(status);
+    final allergens = item['allergensFound'] as List<dynamic>? ?? [];
+    final message = item['message'] as String?;
+    final labelText = item['labelText'] as String? ?? 'No text extracted';
+    final dateStr = item['date'];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: AppColors.surfaceColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            border: Border(top: BorderSide(color: color.withValues(alpha: 0.5), width: 2)),
+          ),
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: AppColors.textSecondary.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Icon(_resultIcon(status), color: color, size: 36),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _statusLabel(status),
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                  if (dateStr != null)
+                    Text(
+                      _formatDate(dateStr),
+                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              if (message != null && message.isNotEmpty) ...[
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: color.withValues(alpha: 0.2)),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info_outline, color: color, size: 22),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          message,
+                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, height: 1.5, fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+              if (allergens.isNotEmpty) ...[
+                const Text('Allergens Found', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: allergens.map((a) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: color.withValues(alpha: 0.3)),
+                      ),
+                      child: Text(
+                        a.toString(),
+                        style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 13),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 24),
+              ],
+              const Text('Scanned Text', style: TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.bgColor,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.accentColor.withValues(alpha: 0.1)),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Text(
+                      labelText,
+                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.6),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              AccentButton(
+                label: 'Close Details',
+                icon: Icons.close_rounded,
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     _historySub.cancel();
@@ -279,88 +416,119 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
               final status = item['status'] ?? 'SAFE';
               final dateStr = item['date'];
               final allergensFound = item['allergensFound'] as List<dynamic>? ?? [];
+              final rawText = item['labelText'] ?? '';
+              final shortText = rawText.replaceAll('\n', ' ').trim();
+              
               return Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: GlassCard(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                  borderColor: _resultColor(status).withValues(alpha: 0.25),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(_resultIcon(status), color: _resultColor(status), size: 22),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              item['labelText'] ?? '—',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(color: AppColors.textPrimary, fontSize: 14),
-                            ),
-                          ),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: _resultColor(status).withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              _statusLabel(status),
-                              style: TextStyle(
-                                color: _resultColor(status),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (dateStr != null) ...[
-                        const SizedBox(height: 6),
+                padding: const EdgeInsets.only(bottom: 12),
+                child: GestureDetector(
+                  onTap: () => _showScanDetails(item),
+                  child: GlassCard(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    borderColor: _resultColor(status).withValues(alpha: 0.3),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Row(
                           children: [
-                            const SizedBox(width: 34),
-                            Icon(Icons.access_time, size: 13, color: AppColors.textSecondary.withValues(alpha: 0.6)),
-                            const SizedBox(width: 4),
-                            Text(
-                              _formatDate(dateStr),
-                              style: TextStyle(
-                                color: AppColors.textSecondary.withValues(alpha: 0.7),
-                                fontSize: 11,
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: _resultColor(status).withValues(alpha: 0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(_resultIcon(status), color: _resultColor(status), size: 24),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    shortText.isEmpty ? 'Image Scan' : shortText,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w700),
+                                  ),
+                                  if (dateStr != null) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _formatDate(dateStr),
+                                      style: TextStyle(
+                                        color: AppColors.textSecondary.withValues(alpha: 0.8),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: _resultColor(status).withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                _statusLabel(status),
+                                style: TextStyle(
+                                  color: _resultColor(status),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ],
-                      if (allergensFound.isNotEmpty) ...[
-                        const SizedBox(height: 6),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 34),
-                          child: Wrap(
-                            spacing: 6,
-                            runSpacing: 4,
-                            children: allergensFound.map<Widget>((a) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: _resultColor(status).withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  a.toString(),
-                                  style: TextStyle(
-                                    color: _resultColor(status),
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
+                        if (allergensFound.isNotEmpty) ...[
+                          const SizedBox(height: 14),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 54),
+                            child: Wrap(
+                              spacing: 8,
+                              runSpacing: 6,
+                              children: allergensFound.map<Widget>((a) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: _resultColor(status).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: _resultColor(status).withValues(alpha: 0.2)),
                                   ),
+                                  child: Text(
+                                    a.toString(),
+                                    style: TextStyle(
+                                      color: _resultColor(status),
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 54),
+                          child: Row(
+                            children: [
+                              Text(
+                                'Tap to view full details',
+                                style: TextStyle(
+                                  color: AppColors.accentColor.withValues(alpha: 0.9),
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              );
-                            }).toList(),
+                              ),
+                              const SizedBox(width: 4),
+                              Icon(Icons.arrow_forward_ios_rounded, size: 10, color: AppColors.accentColor.withValues(alpha: 0.9)),
+                            ],
                           ),
                         ),
                       ],
-                    ],
+                    ),
                   ),
                 ),
               );

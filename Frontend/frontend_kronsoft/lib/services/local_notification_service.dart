@@ -178,4 +178,17 @@ class LocalNotificationService {
       ),
     );
   }
+
+  static Future<void> scheduleDailyExerciseNotification() async {
+    const int exerciseNotificationId = 10000;
+    
+    await _scheduleNotification(
+      id: exerciseNotificationId,
+      title: 'Daily Exercises',
+      body: 'Don\'t forget to do your exercises today!',
+      hour: 11,
+      minute: 00,
+      payload: 'exercise_reminder',
+    );
+  }
 }

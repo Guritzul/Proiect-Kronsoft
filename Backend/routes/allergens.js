@@ -132,14 +132,27 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
             return res.status(400).json({ message: "No image provided. Please upload an image with key 'image'." });
         }
 
-        // Groq nu suportă imagini direct, folosim base64 text description
-        const imageBase64 = req.file.buffer.toString("base64");
+        // Groq a retras modelele vision, deci extragem textul cu Tesseract.js
+        const Tesseract = require('tesseract.js');
+        let extractedText = "";
+        try {
+            const ocrResult = await Tesseract.recognize(req.file.buffer, 'eng+ron');
+            extractedText = ocrResult.data.text.trim();
+        } catch (ocrError) {
+            console.error("OCR Error:", ocrError);
+            return res.status(500).json({ message: "Could not read text from the image." });
+        }
+
+        if (!extractedText || extractedText.length < 5) {
+            return res.status(400).json({ message: "Nu am putut gasi suficient text vizibil in imagine. Incearca o poza mai clara." });
+        }
 
         const prompt = `
             You are an expert nutritionist and allergist. 
             The user is highly allergic to the following ingredients: ${currentUser.allergens.join(", ")}.
             
-            The following is a base64 encoded food label image. Read the ingredients list from it.
+            Analyze the following text extracted from a food label via OCR (it might contain typos):
+            "${extractedText}"
             
             Check if the label contains any of the user's allergens, including synonyms, derivatives (example: casein for milk, whey, etc.), or variations in different languages (mainly Romanian / English).
             
@@ -150,8 +163,6 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
                 "extractedText": "The text you read from the image",
                 "message": "A short, user-friendly message explaining the verdict."
             }
-
-            Image (base64): ${imageBase64.substring(0, 1000)}...
         `;
 
         const result = await getGroq().chat.completions.create({
@@ -162,6 +173,9 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
         let responseText = result.choices[0].message.content;
         responseText = responseText.replace(/```json/gi, '').replace(/```/gi, '').trim();
         const aiDecision = JSON.parse(responseText);
+        
+        // Asigură-te că folosim textul extras real dacă AI-ul nu îl pune
+        aiDecision.extractedText = extractedText;
 
         const newScan = new Scan({
             userId: req.userId,
