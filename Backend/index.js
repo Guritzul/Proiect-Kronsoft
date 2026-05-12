@@ -17,7 +17,6 @@ const allergensRoutes = require("./routes/allergens");
 const exerciseRoutes = require("./routes/exercises"); 
 const dashboardRoutes = require('./routes/dashboard');
 
-app.use('/api/dashboard', dashboardRoutes);
 // Middlewares
 app.use(express.json());
 
@@ -42,10 +41,12 @@ mongoose
   .then(() => console.log("✅ Connected to MongoDB Atlas"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
+// Routes (all after auth middleware)
 app.use("/api/pills", pillRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/allergens", allergensRoutes);
 app.use("/api/exercises", exerciseRoutes); //alex
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

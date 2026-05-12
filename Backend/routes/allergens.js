@@ -4,21 +4,44 @@ const router = express.Router();
 const multer = require('multer');
 const Groq = require('groq-sdk');
 
-const User = require('../models/user-allergens');
+const UserAllergen = require('../models/user-allergens');
 const Scan = require('../models/scan');
 
 // image save
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Initialized Groq client
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+// Lazy Groq client – server starts even without GROQ_API_KEY
+let _groq = null;
+function getGroq() {
+    if (!_groq) {
+        if (!process.env.GROQ_API_KEY) {
+            throw new Error('GROQ_API_KEY is not set in .env');
+        }
+        _groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    }
+    return _groq;
+}
 
+// ── GET /allergens/profile – returnează profilul de alergeni al user-ului curent ──
+router.get('/profile', async (req, res) => {
+    try {
+        const user = await UserAllergen.findOne({ userId: req.userId });
+        if (!user) {
+            return res.status(200).json({ userId: req.userId, name: '', allergens: [] });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching allergen profile." });
+    }
+});
+
+// ── POST /allergens/profile – salvează/actualizează profilul de alergeni ──
 router.post('/profile', async (req, res) => {
     const userId = req.userId;
     const { name, allergens } = req.body;
 
     try {
-        const user = await User.findOneAndUpdate(
+        const user = await UserAllergen.findOneAndUpdate(
             { userId: userId },
             { userId: userId, name: name, allergens: allergens },
             { new: true, upsert: true }
@@ -29,12 +52,26 @@ router.post('/profile', async (req, res) => {
     }
 });
 
+// ── DELETE /allergens/profile – șterge toate alergenele user-ului ──
+router.delete('/profile', async (req, res) => {
+    try {
+        await UserAllergen.findOneAndUpdate(
+            { userId: req.userId },
+            { allergens: [] },
+            { new: true }
+        );
+        res.status(200).json({ message: "Allergen profile cleared." });
+    } catch (error) {
+        res.status(500).json({ message: "Error clearing allergen profile." });
+    }
+});
+
 
 router.post('/scan', async (req, res) => {
     try {
         const labelText = req.body.text;
 
-        const currentUser = await User.findOne({ userId: req.userId });
+        const currentUser = await UserAllergen.findOne({ userId: req.userId });
         if (!currentUser) {
             return res.status(404).json({ message: "Please set your profile and allergens first!" });
         }
@@ -56,7 +93,7 @@ router.post('/scan', async (req, res) => {
             }
         `;
 
-        const result = await groq.chat.completions.create({
+        const result = await getGroq().chat.completions.create({
             model: "llama-3.3-70b-versatile",
             messages: [{ role: "user", content: prompt }],
         });
@@ -70,7 +107,8 @@ router.post('/scan', async (req, res) => {
             userId: req.userId,
             labelText: labelText,
             allergensFound: aiDecision.allergensFound,
-            status: aiDecision.status
+            status: aiDecision.status,
+            message: aiDecision.message
         });
         await newScan.save();
 
@@ -85,7 +123,7 @@ router.post('/scan', async (req, res) => {
 
 router.post('/scan-image', upload.single('image'), async (req, res) => {
     try {
-        const currentUser = await User.findOne({ userId: req.userId });
+        const currentUser = await UserAllergen.findOne({ userId: req.userId });
         if (!currentUser) {
             return res.status(404).json({ message: "Please set your profile and allergens first!" });
         }
@@ -116,7 +154,7 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
             Image (base64): ${imageBase64.substring(0, 1000)}...
         `;
 
-        const result = await groq.chat.completions.create({
+        const result = await getGroq().chat.completions.create({
             model: "llama-3.3-70b-versatile",
             messages: [{ role: "user", content: prompt }],
         });
@@ -129,7 +167,8 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
             userId: req.userId,
             labelText: aiDecision.extractedText || "Image Scan",
             allergensFound: aiDecision.allergensFound,
-            status: aiDecision.status
+            status: aiDecision.status,
+            message: aiDecision.message
         });
         await newScan.save();
 
@@ -142,12 +181,23 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
 });
 
 
+// ── GET /allergens/history – returnează istoricul de scanuri ──
 router.get('/history', async (req, res) => {
     try {
         const history = await Scan.find({ userId: req.userId }).sort({ date: -1 });
         res.status(200).json(history);
     } catch (error) {
         res.status(500).json({ message: "Could not fetch history." });
+    }
+});
+
+// ── DELETE /allergens/history – șterge tot istoricul de scanuri al user-ului ──
+router.delete('/history', async (req, res) => {
+    try {
+        const result = await Scan.deleteMany({ userId: req.userId });
+        res.status(200).json({ message: "Scan history cleared.", deletedCount: result.deletedCount });
+    } catch (error) {
+        res.status(500).json({ message: "Error clearing scan history." });
     }
 });
 
