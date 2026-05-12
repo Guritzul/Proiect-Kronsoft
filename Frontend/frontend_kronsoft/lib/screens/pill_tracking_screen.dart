@@ -203,6 +203,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
 
                     await LocalNotificationService.schedulePillNotifications(
                       pillId: pill['_id'].toString().hashCode.abs() % 100000,
+                      pillMongoId: pill['_id'].toString(),
                       pillName: nameCtrl.text.trim(),
                       dosage: dosageCtrl.text.trim(),
                       schedule: timeCtrl.text

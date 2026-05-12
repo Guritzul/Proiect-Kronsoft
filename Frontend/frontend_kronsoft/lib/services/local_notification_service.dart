@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
@@ -5,6 +6,9 @@ import 'package:timezone/data/latest.dart' as tz;
 class LocalNotificationService {
   static final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
+
+  static final StreamController<String> onNotificationTapped =
+      StreamController<String>.broadcast();
 
   static const AndroidNotificationChannel _channel = AndroidNotificationChannel(
     'pill_reminders',
@@ -40,10 +44,15 @@ class LocalNotificationService {
     await androidImpl?.requestNotificationsPermission();
   }
 
-  static void _onNotificationTapped(NotificationResponse response) {}
+  static void _onNotificationTapped(NotificationResponse response) {
+    if (response.payload != null) {
+      onNotificationTapped.add(response.payload!);
+    }
+  }
 
   static Future<void> schedulePillNotifications({
     required int pillId,
+    required String pillMongoId,
     required String pillName,
     required String dosage,
     required List<String> schedule,
@@ -57,6 +66,8 @@ class LocalNotificationService {
 
       final hour = int.tryParse(timeParts[0]) ?? 0;
       final minute = int.tryParse(timeParts[1]) ?? 0;
+      final timeStr =
+          '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
 
       await _scheduleNotification(
         id: pillId * 100 + i * 2,
@@ -65,7 +76,7 @@ class LocalNotificationService {
             'It\'s time to take $pillName${dosage.isNotEmpty ? ' ($dosage)' : ''}',
         hour: hour,
         minute: minute,
-        payload: 'pill_$pillId',
+        payload: 'pill|$pillMongoId|$pillName|$dosage|$timeStr',
       );
 
       if (reminderMinutes > 0) {
@@ -85,7 +96,7 @@ class LocalNotificationService {
               '$pillName in $reminderMinutes minutes${dosage.isNotEmpty ? ' ($dosage)' : ''}',
           hour: reminderHour,
           minute: reminderMinute,
-          payload: 'pill_reminder_$pillId',
+          payload: 'pill_reminder|$pillMongoId|$pillName|$dosage|$timeStr',
         );
       }
     }
