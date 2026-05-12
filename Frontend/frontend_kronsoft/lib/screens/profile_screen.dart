@@ -31,10 +31,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadProfile() async {
     try {
-      final profile = await _api.getProfile();
+      final data = await _api.getMyAllergens();
       if (mounted) {
         setState(() {
-          _allergens = List<String>.from(profile['allergens'] ?? []);
+          _allergens = List<String>.from(data['allergens'] ?? []);
           _loadingProfile = false;
         });
       }

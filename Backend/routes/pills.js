@@ -94,6 +94,18 @@ const deletePill = async (req, res) => {
   }
 };
 
+const deletePillHistory = async (req, res) => {
+  try {
+    await Pill.updateMany(
+      { userId: req.userId },
+      { $set: { takenDates: [], missedDates: [] } }
+    );
+    res.status(200).json({ message: "Pill history cleared successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to clear pill history" });
+  }
+};
+
 const markPillAsTaken = async (req, res) => {
   const { id } = req.params;
   try {
@@ -149,8 +161,9 @@ const getPillHistory = async (req, res) => {
 
 // Routes
 router.get("/", getPills);
-router.get("/:id", getPillById);
 router.post("/", createPill);
+router.delete("/history", deletePillHistory);
+router.get("/:id", getPillById);
 router.put("/:id", updatePill);
 router.delete("/:id", deletePill);
 router.post("/:id/taken", markPillAsTaken);

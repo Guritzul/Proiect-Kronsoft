@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_theme.dart';
+import '../../services/api_service.dart';
 
 /// Privacy settings – data sharing, visibility, and data management options.
 class PrivacySettingsScreen extends StatefulWidget {
@@ -9,12 +10,69 @@ class PrivacySettingsScreen extends StatefulWidget {
 }
 
 class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
+  final _api = ApiService();
+
   // Local toggle state (in a real app these would persist to backend/shared_preferences)
   bool _shareHealthData = false;
   bool _shareActivityStats = true;
   bool _profileVisible = false;
   bool _analyticsEnabled = true;
   bool _crashReporting = true;
+
+  bool _clearingScanHistory = false;
+  bool _clearingPillHistory = false;
+
+  Future<void> _clearScanHistory() async {
+    setState(() => _clearingScanHistory = true);
+    try {
+      await _api.clearScanHistory();
+      if (mounted) {
+        setState(() => _clearingScanHistory = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Scan history cleared ✓'),
+            backgroundColor: AppColors.successColor,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _clearingScanHistory = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to clear scan history: $e'),
+            backgroundColor: AppColors.dangerColor,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _clearPillHistory() async {
+    setState(() => _clearingPillHistory = true);
+    try {
+      await _api.clearPillHistory();
+      if (mounted) {
+        setState(() => _clearingPillHistory = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Pill history cleared ✓'),
+            backgroundColor: AppColors.successColor,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _clearingPillHistory = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to clear pill history: $e'),
+            backgroundColor: AppColors.dangerColor,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +155,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
             label: 'Clear Scan History',
             subtitle: 'Remove all allergen scan records',
             color: AppColors.warningColor,
+            isLoading: _clearingScanHistory,
             onTap: () {
               showDialog(
                 context: context,
@@ -109,9 +168,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                     TextButton(
                       onPressed: () {
                         Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Scan history cleared ✓')),
-                        );
+                        _clearScanHistory();
                       },
                       child: const Text('Clear', style: TextStyle(color: AppColors.dangerColor)),
                     ),
@@ -126,6 +183,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
             label: 'Clear Pill History',
             subtitle: 'Remove all pill tracking records',
             color: AppColors.warningColor,
+            isLoading: _clearingPillHistory,
             onTap: () {
               showDialog(
                 context: context,
@@ -138,9 +196,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                     TextButton(
                       onPressed: () {
                         Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Pill history cleared ✓')),
-                        );
+                        _clearPillHistory();
                       },
                       child: const Text('Clear', style: TextStyle(color: AppColors.dangerColor)),
                     ),
@@ -206,15 +262,17 @@ class _ToggleRow extends StatelessWidget {
 
 class _ActionTile extends StatelessWidget {
   final IconData icon; final String label; final String subtitle;
-  final VoidCallback onTap; final Color? color;
+  final VoidCallback onTap; final Color? color; final bool isLoading;
 
-  const _ActionTile({required this.icon, required this.label, required this.subtitle, required this.onTap, this.color});
+  const _ActionTile({required this.icon, required this.label, required this.subtitle, required this.onTap, this.color, this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
     final c = color ?? AppColors.accentColor;
-    return Material(color: AppColors.cardColor, borderRadius: BorderRadius.circular(14), child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(14), child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
-      Container(width: 40, height: 40, decoration: BoxDecoration(color: c.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: c, size: 20)),
+    return Material(color: AppColors.cardColor, borderRadius: BorderRadius.circular(14), child: InkWell(onTap: isLoading ? null : onTap, borderRadius: BorderRadius.circular(14), child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
+      Container(width: 40, height: 40, decoration: BoxDecoration(color: c.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: isLoading
+          ? Padding(padding: const EdgeInsets.all(10), child: CircularProgressIndicator(strokeWidth: 2, color: c))
+          : Icon(icon, color: c, size: 20)),
       const SizedBox(width: 14),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(label, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
