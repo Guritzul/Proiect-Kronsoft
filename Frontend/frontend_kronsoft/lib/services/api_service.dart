@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 /// Backend connection config. Folosim IP-ul local pentru a functiona atat pe emulator cat si pe telefon.
 class BackendConfig {
-  static const String baseUrl = 'http://192.168.137.1:3000/api';
+  static const String baseUrl = 'http://192.168.100.18:3000/api';
 }
 
 /// Centralized HTTP client for all backend API calls.
@@ -16,7 +16,8 @@ class ApiService {
   static String get baseUrl => BackendConfig.baseUrl;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  static final StreamController<void> allergenHistoryChanged = StreamController<void>.broadcast();
+  static final StreamController<void> allergenHistoryChanged =
+      StreamController<void>.broadcast();
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -147,18 +148,25 @@ class ApiService {
 
   Future<Map<String, dynamic>> scanImage(File imageFile) async {
     final token = await _auth.currentUser?.getIdToken();
-    final request = http.MultipartRequest('POST', Uri.parse('$baseUrl/allergens/scan-image'));
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/allergens/scan-image'),
+    );
     if (token != null) {
       request.headers['Authorization'] = 'Bearer $token';
     }
-    request.files.add(await http.MultipartFile.fromPath('image', imageFile.path));
+    request.files.add(
+      await http.MultipartFile.fromPath('image', imageFile.path),
+    );
 
     final res = await request.send().timeout(const Duration(seconds: 30));
     final responseData = await http.Response.fromStream(res);
 
     if (responseData.statusCode >= 200 && responseData.statusCode < 300) {
       allergenHistoryChanged.add(null);
-      return responseData.body.isNotEmpty ? jsonDecode(responseData.body) : null;
+      return responseData.body.isNotEmpty
+          ? jsonDecode(responseData.body)
+          : null;
     }
     throw ApiException(responseData.statusCode, responseData.body);
   }
