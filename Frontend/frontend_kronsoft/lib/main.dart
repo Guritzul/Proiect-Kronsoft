@@ -15,15 +15,22 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  await NotificationService().initialize();
-  await LocalNotificationService.initialize();
-  await LocalNotificationService.scheduleDailyExerciseNotification();
+  
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    
+    // Initializam serviciile de notificari dar nu blocam pornirea aplicatiei daca unul esueaza
+    await NotificationService().initialize().catchError((e) => debugPrint('Error initializing FCM: $e'));
+    await LocalNotificationService.initialize().catchError((e) => debugPrint('Error initializing local notifications: $e'));
+    await LocalNotificationService.scheduleDailyExerciseNotification().catchError((e) => debugPrint('Error scheduling exercise notification: $e'));
 
-  LocalNotificationService.onNotificationTapped.stream.listen((payload) {
-    _showNotificationDialog(payload);
-  });
+    LocalNotificationService.onNotificationTapped.stream.listen((payload) {
+      _showNotificationDialog(payload);
+    });
+  } catch (e) {
+    debugPrint('Critical error during initialization: $e');
+  }
 
   runApp(const MyApp());
 }
