@@ -15,7 +15,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
   List<dynamic> _pills = [];
   bool _loading = true;
   final Set<String> _takenIds = {};
-  int _reminderMinutes = 15;
+  final int _reminderMinutes = 15;
 
   @override
   void initState() {
@@ -26,11 +26,12 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
   Future<void> _loadPills() async {
     try {
       final data = await _api.getPills();
-      if (mounted)
+      if (mounted) {
         setState(() {
           _pills = data;
           _loading = false;
         });
+      }
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
