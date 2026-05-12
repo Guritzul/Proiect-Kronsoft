@@ -11,6 +11,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
+const authRoutes = require('./routes/auth');
 const pillRoutes = require("./routes/pills");
 const notificationRoutes = require("./routes/notifications");
 const allergensRoutes = require("./routes/allergens");
@@ -20,6 +21,10 @@ const dashboardRoutes = require('./routes/dashboard');
 // Middlewares
 app.use(express.json());
 
+// Auth routes (uses its own middleware from middleware/auth.js)
+app.use('/api/auth', authRoutes);
+
+// Global auth middleware – applies to all routes below
 app.use(async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -45,7 +50,7 @@ mongoose
 app.use("/api/pills", pillRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/allergens", allergensRoutes);
-app.use("/api/exercises", exerciseRoutes); //alex
+app.use("/api/exercises", exerciseRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
 app.get("/", (req, res) => {

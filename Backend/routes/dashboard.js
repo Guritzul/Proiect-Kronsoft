@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 
-const Pill = mongoose.model('Pill');
+const Pill = require('../models/pill');
 const Scan = require('../models/scan');
 const UserAllergen = require('../models/user-allergens');
 

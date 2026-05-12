@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/app_theme.dart';
 
 /// Notification settings – pill reminders, exercise reminders, scan alerts, quiet hours.
+/// All settings are persisted locally via SharedPreferences.
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
   @override
@@ -24,6 +26,49 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
   // Reminder timing
   int _pillReminderMinutes = 15;
+
+  bool _loaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
+  Future<void> _loadSettings() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (mounted) {
+      setState(() {
+        _pillReminders = prefs.getBool('notif_pill_reminders') ?? true;
+        _missedPillAlerts = prefs.getBool('notif_missed_pill_alerts') ?? true;
+        _exerciseReminders = prefs.getBool('notif_exercise_reminders') ?? true;
+        _scanAlerts = prefs.getBool('notif_scan_alerts') ?? true;
+        _dailySummary = prefs.getBool('notif_daily_summary') ?? false;
+        _weeklyReport = prefs.getBool('notif_weekly_report') ?? true;
+        _quietHoursEnabled = prefs.getBool('notif_quiet_hours') ?? false;
+        _quietStart = TimeOfDay(
+          hour: prefs.getInt('notif_quiet_start_hour') ?? 22,
+          minute: prefs.getInt('notif_quiet_start_min') ?? 0,
+        );
+        _quietEnd = TimeOfDay(
+          hour: prefs.getInt('notif_quiet_end_hour') ?? 7,
+          minute: prefs.getInt('notif_quiet_end_min') ?? 0,
+        );
+        _pillReminderMinutes = prefs.getInt('notif_pill_reminder_min') ?? 15;
+        _loaded = true;
+      });
+    }
+  }
+
+  Future<void> _saveBool(String key, bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(key, value);
+  }
+
+  Future<void> _saveInt(String key, int value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(key, value);
+  }
 
   String _formatTime(TimeOfDay t) {
     final h = t.hourOfPeriod == 0 ? 12 : t.hourOfPeriod;
@@ -48,13 +93,29 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     );
     if (picked != null) {
       setState(() {
-        if (isStart) { _quietStart = picked; } else { _quietEnd = picked; }
+        if (isStart) {
+          _quietStart = picked;
+          _saveInt('notif_quiet_start_hour', picked.hour);
+          _saveInt('notif_quiet_start_min', picked.minute);
+        } else {
+          _quietEnd = picked;
+          _saveInt('notif_quiet_end_hour', picked.hour);
+          _saveInt('notif_quiet_end_min', picked.minute);
+        }
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!_loaded) {
+      return Scaffold(
+        backgroundColor: AppColors.bgColor,
+        appBar: AppBar(title: const Text('Notifications')),
+        body: const Center(child: CircularProgressIndicator(color: AppColors.accentColor)),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.bgColor,
       appBar: AppBar(title: const Text('Notifications')),
@@ -64,10 +125,16 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
           // ── Pill Notifications ──
           const SectionHeader(title: 'Pill Reminders'),
           GlassCard(child: Column(children: [
-            _ToggleRow(icon: Icons.medication_rounded, label: 'Pill Reminders', subtitle: 'Get notified when it\'s time to take pills', value: _pillReminders, onChanged: (v) => setState(() => _pillReminders = v)),
+            _ToggleRow(icon: Icons.medication_rounded, label: 'Pill Reminders', subtitle: 'Get notified when it\'s time to take pills', value: _pillReminders, onChanged: (v) {
+              setState(() => _pillReminders = v);
+              _saveBool('notif_pill_reminders', v);
+            }),
             if (_pillReminders) ...[
               const Divider(color: AppColors.divider, height: 24),
-              _ToggleRow(icon: Icons.notification_important_outlined, label: 'Missed Pill Alerts', subtitle: 'Alert when you miss a scheduled dose', value: _missedPillAlerts, onChanged: (v) => setState(() => _missedPillAlerts = v)),
+              _ToggleRow(icon: Icons.notification_important_outlined, label: 'Missed Pill Alerts', subtitle: 'Alert when you miss a scheduled dose', value: _missedPillAlerts, onChanged: (v) {
+                setState(() => _missedPillAlerts = v);
+                _saveBool('notif_missed_pill_alerts', v);
+              }),
               const Divider(color: AppColors.divider, height: 24),
               // Reminder timing
               Row(children: [
@@ -81,13 +148,25 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               ]),
               const SizedBox(height: 12),
               Row(children: [
-                _TimingChip(label: '5 min', selected: _pillReminderMinutes == 5, onTap: () => setState(() => _pillReminderMinutes = 5)),
+                _TimingChip(label: '5 min', selected: _pillReminderMinutes == 5, onTap: () {
+                  setState(() => _pillReminderMinutes = 5);
+                  _saveInt('notif_pill_reminder_min', 5);
+                }),
                 const SizedBox(width: 8),
-                _TimingChip(label: '10 min', selected: _pillReminderMinutes == 10, onTap: () => setState(() => _pillReminderMinutes = 10)),
+                _TimingChip(label: '10 min', selected: _pillReminderMinutes == 10, onTap: () {
+                  setState(() => _pillReminderMinutes = 10);
+                  _saveInt('notif_pill_reminder_min', 10);
+                }),
                 const SizedBox(width: 8),
-                _TimingChip(label: '15 min', selected: _pillReminderMinutes == 15, onTap: () => setState(() => _pillReminderMinutes = 15)),
+                _TimingChip(label: '15 min', selected: _pillReminderMinutes == 15, onTap: () {
+                  setState(() => _pillReminderMinutes = 15);
+                  _saveInt('notif_pill_reminder_min', 15);
+                }),
                 const SizedBox(width: 8),
-                _TimingChip(label: '30 min', selected: _pillReminderMinutes == 30, onTap: () => setState(() => _pillReminderMinutes = 30)),
+                _TimingChip(label: '30 min', selected: _pillReminderMinutes == 30, onTap: () {
+                  setState(() => _pillReminderMinutes = 30);
+                  _saveInt('notif_pill_reminder_min', 30);
+                }),
               ]),
             ],
           ])),
@@ -95,24 +174,39 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
           // ── Exercise Notifications ──
           const SectionHeader(title: 'Exercise Reminders'),
-          GlassCard(child: _ToggleRow(icon: Icons.fitness_center_rounded, label: 'Exercise Reminders', subtitle: 'Daily exercise session reminders', value: _exerciseReminders, onChanged: (v) => setState(() => _exerciseReminders = v))),
+          GlassCard(child: _ToggleRow(icon: Icons.fitness_center_rounded, label: 'Exercise Reminders', subtitle: 'Daily exercise session reminders', value: _exerciseReminders, onChanged: (v) {
+            setState(() => _exerciseReminders = v);
+            _saveBool('notif_exercise_reminders', v);
+          })),
           const SizedBox(height: 24),
 
           // ── Other Notifications ──
           const SectionHeader(title: 'Other Notifications'),
           GlassCard(child: Column(children: [
-            _ToggleRow(icon: Icons.document_scanner_outlined, label: 'Scan Alerts', subtitle: 'Notifications about scan results and updates', value: _scanAlerts, onChanged: (v) => setState(() => _scanAlerts = v)),
+            _ToggleRow(icon: Icons.document_scanner_outlined, label: 'Scan Alerts', subtitle: 'Notifications about scan results and updates', value: _scanAlerts, onChanged: (v) {
+              setState(() => _scanAlerts = v);
+              _saveBool('notif_scan_alerts', v);
+            }),
             const Divider(color: AppColors.divider, height: 24),
-            _ToggleRow(icon: Icons.today_outlined, label: 'Daily Summary', subtitle: 'Receive a daily health summary at 9 PM', value: _dailySummary, onChanged: (v) => setState(() => _dailySummary = v)),
+            _ToggleRow(icon: Icons.today_outlined, label: 'Daily Summary', subtitle: 'Receive a daily health summary at 9 PM', value: _dailySummary, onChanged: (v) {
+              setState(() => _dailySummary = v);
+              _saveBool('notif_daily_summary', v);
+            }),
             const Divider(color: AppColors.divider, height: 24),
-            _ToggleRow(icon: Icons.date_range_outlined, label: 'Weekly Report', subtitle: 'Get a weekly health progress report', value: _weeklyReport, onChanged: (v) => setState(() => _weeklyReport = v)),
+            _ToggleRow(icon: Icons.date_range_outlined, label: 'Weekly Report', subtitle: 'Get a weekly health progress report', value: _weeklyReport, onChanged: (v) {
+              setState(() => _weeklyReport = v);
+              _saveBool('notif_weekly_report', v);
+            }),
           ])),
           const SizedBox(height: 24),
 
           // ── Quiet Hours ──
           const SectionHeader(title: 'Quiet Hours'),
           GlassCard(child: Column(children: [
-            _ToggleRow(icon: Icons.do_not_disturb_on_outlined, label: 'Quiet Hours', subtitle: 'Silence all notifications during set hours', value: _quietHoursEnabled, onChanged: (v) => setState(() => _quietHoursEnabled = v)),
+            _ToggleRow(icon: Icons.do_not_disturb_on_outlined, label: 'Quiet Hours', subtitle: 'Silence all notifications during set hours', value: _quietHoursEnabled, onChanged: (v) {
+              setState(() => _quietHoursEnabled = v);
+              _saveBool('notif_quiet_hours', v);
+            }),
             if (_quietHoursEnabled) ...[
               const SizedBox(height: 16),
               Row(children: [

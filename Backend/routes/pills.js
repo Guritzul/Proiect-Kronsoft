@@ -1,20 +1,4 @@
-const mongoose = require("mongoose");
-
-// Mongoose schema and model
-const pillSchema = new mongoose.Schema({
-  name: String,
-  schedule: [String],
-  frequency: String,
-  takenDates: [Date],
-  missedDates: [Date],
-  doctorAdvice: String,
-  dosage: String,
-  userId: String,
-});
-
-// Create the Pill model
-const Pill = mongoose.model("Pill", pillSchema);
-// Express router
+const Pill = require("../models/pill");
 const router = require("express").Router();
 
 
