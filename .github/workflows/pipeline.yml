@@ -77,6 +77,15 @@ jobs:
         working-directory: ./Frontend/frontend_kronsoft
         run: flutter test
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Build Android APK
         working-directory: ./Frontend/frontend_kronsoft
         run: flutter build apk --debug
