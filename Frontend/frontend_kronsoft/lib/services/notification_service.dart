@@ -18,7 +18,7 @@ class NotificationService {
     // Nu asteptam dupa token pentru ca poate dura mult sau poate ingheta daca nu e internet
     _messaging.getToken().then((token) {
       debugPrint('FCM Token: $token');
-    }).catchError((e) => debugPrint('Error getting token: $e'));
+    }).catchError((e) { debugPrint('Error getting token: $e'); return null; });
 
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('Notification received: ${message.notification?.title}');

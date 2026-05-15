@@ -46,7 +46,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgColor,
+      backgroundColor: context.appColors.bgColor,
       appBar: AppBar(title: const Text('Recovery Exercises')),
       body: Column(
         children: [
@@ -56,7 +56,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Body Part', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                Text('Body Part', style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
                 const SizedBox(height: 6),
                 SizedBox(
                   height: 36,
@@ -79,19 +79,19 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: selected
-                                ? AppColors.accentColor.withValues(alpha: 0.2)
-                                : AppColors.cardColor,
+                                ? context.appColors.accentColor.withValues(alpha: 0.2)
+                                : context.appColors.cardColor,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: selected
-                                  ? AppColors.accentColor
-                                  : AppColors.cardColor,
+                                  ? context.appColors.accentColor
+                                  : context.appColors.cardColor,
                             ),
                           ),
                           child: Text(
                             bp,
                             style: TextStyle(
-                              color: selected ? AppColors.accentColor : AppColors.textSecondary,
+                              color: selected ? context.appColors.accentColor : context.appColors.textSecondary,
                               fontSize: 13,
                               fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                             ),
@@ -102,7 +102,7 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text('Difficulty', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                Text('Difficulty', style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
                 const SizedBox(height: 6),
                 SizedBox(
                   height: 36,
@@ -125,19 +125,19 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: selected
-                                ? AppColors.accentColor.withValues(alpha: 0.2)
-                                : AppColors.cardColor,
+                                ? context.appColors.accentColor.withValues(alpha: 0.2)
+                                : context.appColors.cardColor,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: selected
-                                  ? AppColors.accentColor
-                                  : AppColors.cardColor,
+                                  ? context.appColors.accentColor
+                                  : context.appColors.cardColor,
                             ),
                           ),
                           child: Text(
                             d,
                             style: TextStyle(
-                              color: selected ? AppColors.accentColor : AppColors.textSecondary,
+                              color: selected ? context.appColors.accentColor : context.appColors.textSecondary,
                               fontSize: 13,
                               fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                             ),
@@ -155,23 +155,23 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           // ── Grid ──
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: AppColors.accentColor))
+                ? Center(child: CircularProgressIndicator(color: context.appColors.accentColor))
                 : _exercises.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.fitness_center, size: 56, color: AppColors.textSecondary.withValues(alpha: 0.4)),
+                            Icon(Icons.fitness_center, size: 56, color: context.appColors.textSecondary.withValues(alpha: 0.4)),
                             const SizedBox(height: 10),
-                            const Text('No exercises found', style: TextStyle(color: AppColors.textSecondary)),
+                            Text('No exercises found', style: TextStyle(color: context.appColors.textSecondary)),
                             const SizedBox(height: 4),
-                            const Text('Try adjusting filters', style: TextStyle(color: AppColors.textHint, fontSize: 13)),
+                            Text('Try adjusting filters', style: TextStyle(color: context.appColors.textHint, fontSize: 13)),
                           ],
                         ),
                       )
                     : RefreshIndicator(
-                        color: AppColors.accentColor,
-                        backgroundColor: AppColors.surfaceColor,
+                        color: context.appColors.accentColor,
+                        backgroundColor: context.appColors.surfaceColor,
                         onRefresh: _loadExercises,
                         child: GridView.builder(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
@@ -241,9 +241,9 @@ class _ExerciseCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.cardColor,
+          color: context.appColors.cardColor,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColors.accentColor.withValues(alpha: 0.1)),
+          border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.1)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,18 +254,18 @@ class _ExerciseCard extends StatelessWidget {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceColor,
+                  color: context.appColors.surfaceColor,
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      AppColors.accentColor.withValues(alpha: 0.08),
-                      AppColors.surfaceColor,
+                      context.appColors.accentColor.withValues(alpha: 0.08),
+                      context.appColors.surfaceColor,
                     ],
                   ),
                 ),
-                child: Icon(_bodyPartIcon, size: 40, color: AppColors.accentColor.withValues(alpha: 0.5)),
+                child: Icon(_bodyPartIcon, size: 40, color: context.appColors.accentColor.withValues(alpha: 0.5)),
               ),
             ),
             // Info
@@ -281,8 +281,8 @@ class _ExerciseCard extends StatelessWidget {
                       name,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
+                      style: TextStyle(
+                        color: context.appColors.textPrimary,
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
                         height: 1.2,
@@ -294,7 +294,7 @@ class _ExerciseCard extends StatelessWidget {
                         if (bodyPart.isNotEmpty)
                           Text(
                             bodyPart,
-                            style: const TextStyle(color: AppColors.textHint, fontSize: 11),
+                            style: TextStyle(color: context.appColors.textHint, fontSize: 11),
                           ),
                         DifficultyBadge(difficulty: difficulty),
                       ],

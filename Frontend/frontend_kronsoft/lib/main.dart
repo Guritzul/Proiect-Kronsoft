@@ -35,6 +35,8 @@ void main() async {
   runApp(const MyApp());
 }
 
+final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.dark);
+
 void _showNotificationDialog(String payload) {
   final context = navigatorKey.currentContext;
   if (context == null) return;
@@ -43,32 +45,32 @@ void _showNotificationDialog(String payload) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF2a2a2a),
+        backgroundColor: ctx.appColors.surfaceColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text(
+        title: Text(
           'Daily Exercises',
           style: TextStyle(
-            color: Color(0xFF4dd0e1),
+            color: ctx.appColors.accentColor,
             fontWeight: FontWeight.bold,
           ),
         ),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               'Don\'t forget to do your exercises today!',
-              style: TextStyle(color: Color(0xFFe0e0e0), fontSize: 15),
+              style: TextStyle(color: ctx.appColors.textPrimary, fontSize: 15),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.fitness_center, color: Color(0xFF4dd0e1), size: 18),
-                SizedBox(width: 8),
+                Icon(Icons.fitness_center, color: ctx.appColors.accentColor, size: 18),
+                const SizedBox(width: 8),
                 Text(
                   'Stay Healthy',
                   style: TextStyle(
-                    color: Color(0xFF4dd0e1),
+                    color: ctx.appColors.accentColor,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -79,7 +81,7 @@ void _showNotificationDialog(String payload) {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK', style: TextStyle(color: Color(0xFF4dd0e1))),
+            child: Text('OK', style: TextStyle(color: ctx.appColors.accentColor)),
           ),
         ],
       ),
@@ -105,12 +107,12 @@ void _showNotificationDialog(String payload) {
   showDialog(
     context: context,
     builder: (ctx) => AlertDialog(
-      backgroundColor: const Color(0xFF2a2a2a),
+      backgroundColor: ctx.appColors.surfaceColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       title: Text(
         title,
-        style: const TextStyle(
-          color: Color(0xFF4dd0e1),
+        style: TextStyle(
+          color: ctx.appColors.accentColor,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -120,17 +122,17 @@ void _showNotificationDialog(String payload) {
         children: [
           Text(
             message,
-            style: const TextStyle(color: Color(0xFFe0e0e0), fontSize: 15),
+            style: TextStyle(color: ctx.appColors.textPrimary, fontSize: 15),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.medication, color: Color(0xFF4dd0e1), size: 18),
+              Icon(Icons.medication, color: ctx.appColors.accentColor, size: 18),
               const SizedBox(width: 8),
               Text(
                 pillName,
-                style: const TextStyle(
-                  color: Color(0xFF4dd0e1),
+                style: TextStyle(
+                  color: ctx.appColors.accentColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -140,18 +142,18 @@ void _showNotificationDialog(String payload) {
             const SizedBox(height: 6),
             Row(
               children: [
-                const Icon(Icons.scale, color: Color(0xFFe0e0e0), size: 18),
+                Icon(Icons.scale, color: ctx.appColors.textPrimary, size: 18),
                 const SizedBox(width: 8),
-                Text(dosage, style: const TextStyle(color: Color(0xFFe0e0e0))),
+                Text(dosage, style: TextStyle(color: ctx.appColors.textPrimary)),
               ],
             ),
           ],
           const SizedBox(height: 6),
           Row(
             children: [
-              const Icon(Icons.access_time, color: Color(0xFFe0e0e0), size: 18),
+              Icon(Icons.access_time, color: ctx.appColors.textPrimary, size: 18),
               const SizedBox(width: 8),
-              Text(time, style: const TextStyle(color: Color(0xFFe0e0e0))),
+              Text(time, style: TextStyle(color: ctx.appColors.textPrimary)),
             ],
           ),
         ],
@@ -159,7 +161,7 @@ void _showNotificationDialog(String payload) {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx),
-          child: const Text('OK', style: TextStyle(color: Color(0xFF4dd0e1))),
+          child: Text('OK', style: TextStyle(color: ctx.appColors.accentColor)),
         ),
       ],
     ),
@@ -171,12 +173,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Health App',
-      debugShowCheckedModeBanner: false,
-      navigatorKey: navigatorKey,
-      theme: AppTheme.darkTheme,
-      home: const SplashScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: themeNotifier,
+      builder: (context, ThemeMode currentMode, child) {
+        return MaterialApp(
+          title: 'Health App',
+          debugShowCheckedModeBanner: false,
+          navigatorKey: navigatorKey,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: currentMode,
+          home: const SplashScreen(),
+        );
+      },
     );
   }
 }

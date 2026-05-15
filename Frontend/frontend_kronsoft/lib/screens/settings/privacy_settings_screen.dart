@@ -29,9 +29,9 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       if (mounted) {
         setState(() => _clearingScanHistory = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Scan history cleared ✓'),
-            backgroundColor: AppColors.successColor,
+          SnackBar(
+            content: const Text('Scan history cleared ✓'),
+            backgroundColor: context.appColors.successColor,
           ),
         );
       }
@@ -41,7 +41,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to clear scan history: $e'),
-            backgroundColor: AppColors.dangerColor,
+            backgroundColor: context.appColors.dangerColor,
           ),
         );
       }
@@ -55,9 +55,9 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
       if (mounted) {
         setState(() => _clearingPillHistory = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Pill history cleared ✓'),
-            backgroundColor: AppColors.successColor,
+          SnackBar(
+            content: const Text('Pill history cleared ✓'),
+            backgroundColor: context.appColors.successColor,
           ),
         );
       }
@@ -67,7 +67,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to clear pill history: $e'),
-            backgroundColor: AppColors.dangerColor,
+            backgroundColor: context.appColors.dangerColor,
           ),
         );
       }
@@ -77,7 +77,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgColor,
+      backgroundColor: context.appColors.bgColor,
       appBar: AppBar(title: const Text('Privacy')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
@@ -92,7 +92,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               value: _shareHealthData,
               onChanged: (v) => setState(() => _shareHealthData = v),
             ),
-            const Divider(color: AppColors.divider, height: 24),
+            Divider(color: context.appColors.divider, height: 24),
             _ToggleRow(
               icon: Icons.bar_chart_rounded,
               label: 'Share Activity Stats',
@@ -126,7 +126,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
               value: _analyticsEnabled,
               onChanged: (v) => setState(() => _analyticsEnabled = v),
             ),
-            const Divider(color: AppColors.divider, height: 24),
+            Divider(color: context.appColors.divider, height: 24),
             _ToggleRow(
               icon: Icons.bug_report_outlined,
               label: 'Crash Reporting',
@@ -154,15 +154,15 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
             icon: Icons.delete_sweep_outlined,
             label: 'Clear Scan History',
             subtitle: 'Remove all allergen scan records',
-            color: AppColors.warningColor,
+            color: context.appColors.warningColor,
             isLoading: _clearingScanHistory,
             onTap: () {
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  backgroundColor: AppColors.surfaceColor,
-                  title: const Text('Clear Scan History?'),
-                  content: const Text('This will permanently delete all your allergen scan history.', style: TextStyle(color: AppColors.textSecondary)),
+                  backgroundColor: context.appColors.surfaceColor,
+                  title: Text('Clear Scan History?'),
+                  content: Text('This will permanently delete all your allergen scan history.', style: TextStyle(color: context.appColors.textSecondary)),
                   actions: [
                     TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
                     TextButton(
@@ -170,7 +170,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                         Navigator.pop(ctx);
                         _clearScanHistory();
                       },
-                      child: const Text('Clear', style: TextStyle(color: AppColors.dangerColor)),
+                      child: Text('Clear', style: TextStyle(color: context.appColors.dangerColor)),
                     ),
                   ],
                 ),
@@ -182,15 +182,15 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
             icon: Icons.delete_forever_outlined,
             label: 'Clear Pill History',
             subtitle: 'Remove all pill tracking records',
-            color: AppColors.warningColor,
+            color: context.appColors.warningColor,
             isLoading: _clearingPillHistory,
             onTap: () {
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  backgroundColor: AppColors.surfaceColor,
-                  title: const Text('Clear Pill History?'),
-                  content: const Text('This will permanently delete all your pill tracking history.', style: TextStyle(color: AppColors.textSecondary)),
+                  backgroundColor: context.appColors.surfaceColor,
+                  title: Text('Clear Pill History?'),
+                  content: Text('This will permanently delete all your pill tracking history.', style: TextStyle(color: context.appColors.textSecondary)),
                   actions: [
                     TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
                     TextButton(
@@ -198,7 +198,7 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
                         Navigator.pop(ctx);
                         _clearPillHistory();
                       },
-                      child: const Text('Clear', style: TextStyle(color: AppColors.dangerColor)),
+                      child: Text('Clear', style: TextStyle(color: context.appColors.dangerColor)),
                     ),
                   ],
                 ),
@@ -209,17 +209,17 @@ class _PrivacySettingsScreenState extends State<PrivacySettingsScreen> {
 
           // ── Info card ──
           GlassCard(
-            borderColor: AppColors.accentColor.withValues(alpha: 0.15),
+            borderColor: context.appColors.accentColor.withValues(alpha: 0.15),
             child: Row(children: [
               Container(
                 width: 40, height: 40,
-                decoration: BoxDecoration(color: AppColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
-                child: const Icon(Icons.shield_outlined, color: AppColors.accentColor, size: 20),
+                decoration: BoxDecoration(color: context.appColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+                child: Icon(Icons.shield_outlined, color: context.appColors.accentColor, size: 20),
               ),
               const SizedBox(width: 14),
-              const Expanded(child: Text(
+              Expanded(child: Text(
                 'Your data is encrypted and stored securely. We never sell your personal information.',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
+                style: TextStyle(color: context.appColors.textSecondary, fontSize: 13, height: 1.4),
               )),
             ]),
           ),
@@ -240,21 +240,21 @@ class _ToggleRow extends StatelessWidget {
     return Row(children: [
       Container(
         width: 40, height: 40,
-        decoration: BoxDecoration(color: AppColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-        child: Icon(icon, color: AppColors.accentColor, size: 20),
+        decoration: BoxDecoration(color: context.appColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+        child: Icon(icon, color: context.appColors.accentColor, size: 20),
       ),
       const SizedBox(width: 14),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
+        Text(label, style: TextStyle(color: context.appColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
         const SizedBox(height: 2),
-        Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+        Text(subtitle, style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
       ])),
       Switch(
         value: value, onChanged: onChanged,
-        activeThumbColor: AppColors.accentColor,
-        activeTrackColor: AppColors.accentColor.withValues(alpha: 0.3),
-        inactiveThumbColor: AppColors.textSecondary,
-        inactiveTrackColor: AppColors.cardColor,
+        activeThumbColor: context.appColors.accentColor,
+        activeTrackColor: context.appColors.accentColor.withValues(alpha: 0.3),
+        inactiveThumbColor: context.appColors.textSecondary,
+        inactiveTrackColor: context.appColors.cardColor,
       ),
     ]);
   }
@@ -268,16 +268,16 @@ class _ActionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final c = color ?? AppColors.accentColor;
-    return Material(color: AppColors.cardColor, borderRadius: BorderRadius.circular(14), child: InkWell(onTap: isLoading ? null : onTap, borderRadius: BorderRadius.circular(14), child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
+    final c = color ?? context.appColors.accentColor;
+    return Material(color: context.appColors.cardColor, borderRadius: BorderRadius.circular(14), child: InkWell(onTap: isLoading ? null : onTap, borderRadius: BorderRadius.circular(14), child: Padding(padding: EdgeInsets.all(16), child: Row(children: [
       Container(width: 40, height: 40, decoration: BoxDecoration(color: c.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: isLoading
           ? Padding(padding: const EdgeInsets.all(10), child: CircularProgressIndicator(strokeWidth: 2, color: c))
           : Icon(icon, color: c, size: 20)),
       const SizedBox(width: 14),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
+        Text(label, style: TextStyle(color: context.appColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
         const SizedBox(height: 2),
-        Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+        Text(subtitle, style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
       ])),
       Icon(Icons.chevron_right, color: c.withValues(alpha: 0.5), size: 20),
     ]))));
