@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 
-/// Exercise detail screen with description, timer, and rep tracking.
 class ExerciseDetailScreen extends StatefulWidget {
   final Map<String, dynamic> exercise;
 
@@ -13,12 +12,10 @@ class ExerciseDetailScreen extends StatefulWidget {
 }
 
 class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
-  // Timer
   int _seconds = 0;
   bool _timerRunning = false;
   Timer? _timer;
 
-  // Tracking
   int _reps = 0;
   int _sets = 0;
 
@@ -35,7 +32,10 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
 
   void _resetTimer() {
     _timer?.cancel();
-    setState(() { _seconds = 0; _timerRunning = false; });
+    setState(() {
+      _seconds = 0;
+      _timerRunning = false;
+    });
   }
 
   String get _formattedTime {
@@ -65,7 +65,6 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [
-          // ── Header card ──
           Container(
             width: double.infinity,
             height: 180,
@@ -79,7 +78,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                   context.appColors.surfaceColor,
                 ],
               ),
-              border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.12)),
+              border: Border.all(
+                color: context.appColors.accentColor.withValues(alpha: 0.12),
+              ),
             ),
             child: Center(
               child: Icon(
@@ -91,7 +92,6 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           ),
           const SizedBox(height: 20),
 
-          // ── Metadata chips ──
           Wrap(
             spacing: 10,
             runSpacing: 8,
@@ -105,7 +105,6 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           ),
           const SizedBox(height: 24),
 
-          // ── Description ──
           const SectionHeader(title: 'Description'),
           GlassCard(
             child: Text(
@@ -119,7 +118,6 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           ),
           const SizedBox(height: 28),
 
-          // ── Timer ──
           const SectionHeader(title: 'Timer'),
           GlassCard(
             child: Column(
@@ -127,7 +125,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                 Text(
                   _formattedTime,
                   style: TextStyle(
-                    color: _timerRunning ? context.appColors.accentColor : context.appColors.textPrimary,
+                    color: _timerRunning
+                        ? context.appColors.accentColor
+                        : context.appColors.textPrimary,
                     fontSize: 52,
                     fontWeight: FontWeight.w300,
                     letterSpacing: 4,
@@ -142,14 +142,18 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                         height: 48,
                         child: ElevatedButton.icon(
                           onPressed: _toggleTimer,
-                          icon: Icon(_timerRunning ? Icons.pause : Icons.play_arrow),
+                          icon: Icon(
+                            _timerRunning ? Icons.pause : Icons.play_arrow,
+                          ),
                           label: Text(_timerRunning ? 'Pause' : 'Start'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _timerRunning
                                 ? context.appColors.warningColor
                                 : context.appColors.accentColor,
                             foregroundColor: context.appColors.bgColor,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                       ),
@@ -163,8 +167,14 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                         label: Text('Reset'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: context.appColors.textSecondary,
-                          side: BorderSide(color: context.appColors.textSecondary.withValues(alpha: 0.3)),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          side: BorderSide(
+                            color: context.appColors.textSecondary.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
                     ),
@@ -175,7 +185,6 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           ),
           const SizedBox(height: 28),
 
-          // ── Reps & Sets ──
           const SectionHeader(title: 'Tracking'),
           Row(
             children: [
@@ -184,7 +193,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                   label: 'Reps',
                   value: _reps,
                   onIncrement: () => setState(() => _reps++),
-                  onDecrement: () => setState(() { if (_reps > 0) _reps--; }),
+                  onDecrement: () => setState(() {
+                    if (_reps > 0) _reps--;
+                  }),
                 ),
               ),
               const SizedBox(width: 14),
@@ -193,7 +204,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                   label: 'Sets',
                   value: _sets,
                   onIncrement: () => setState(() => _sets++),
-                  onDecrement: () => setState(() { if (_sets > 0) _sets--; }),
+                  onDecrement: () => setState(() {
+                    if (_sets > 0) _sets--;
+                  }),
                 ),
               ),
             ],
@@ -216,7 +229,9 @@ class _MetaChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.appColors.cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: context.appColors.accentColor.withValues(alpha: 0.2),
+        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -225,7 +240,11 @@ class _MetaChip extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             label,
-            style: TextStyle(color: context.appColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              color: context.appColors.textPrimary,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -251,7 +270,13 @@ class _CounterCard extends StatelessWidget {
     return GlassCard(
       child: Column(
         children: [
-          Text(label, style: TextStyle(color: context.appColors.textSecondary, fontSize: 13)),
+          Text(
+            label,
+            style: TextStyle(
+              color: context.appColors.textSecondary,
+              fontSize: 13,
+            ),
+          ),
           const SizedBox(height: 8),
           Text(
             '$value',
@@ -281,7 +306,11 @@ class _RoundButton extends StatelessWidget {
   final VoidCallback onTap;
   final bool filled;
 
-  const _RoundButton({required this.icon, required this.onTap, this.filled = false});
+  const _RoundButton({
+    required this.icon,
+    required this.onTap,
+    this.filled = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -294,13 +323,17 @@ class _RoundButton extends StatelessWidget {
           color: filled ? context.appColors.accentColor : Colors.transparent,
           shape: BoxShape.circle,
           border: Border.all(
-            color: filled ? context.appColors.accentColor : context.appColors.textSecondary.withValues(alpha: 0.4),
+            color: filled
+                ? context.appColors.accentColor
+                : context.appColors.textSecondary.withValues(alpha: 0.4),
           ),
         ),
         child: Icon(
           icon,
           size: 18,
-          color: filled ? context.appColors.bgColor : context.appColors.textSecondary,
+          color: filled
+              ? context.appColors.bgColor
+              : context.appColors.textSecondary,
         ),
       ),
     );

@@ -69,7 +69,6 @@ const exerciseSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // Soft delete flag - marks exercise as inactive instead of deleting from DB
     isActive: {
       type: Boolean,
       default: true,

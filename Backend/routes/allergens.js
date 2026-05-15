@@ -7,10 +7,8 @@ const Groq = require('groq-sdk');
 const UserAllergen = require('../models/user-allergens');
 const Scan = require('../models/scan');
 
-// image save
 const upload = multer({ storage: multer.memoryStorage() });
 
-// Lazy Groq client – server starts even without GROQ_API_KEY
 let _groq = null;
 function getGroq() {
     if (!_groq) {
@@ -22,7 +20,6 @@ function getGroq() {
     return _groq;
 }
 
-// ── GET /allergens/profile – returnează profilul de alergeni al user-ului curent ──
 router.get('/profile', async (req, res) => {
     try {
         const user = await UserAllergen.findOne({ userId: req.userId });
@@ -35,7 +32,6 @@ router.get('/profile', async (req, res) => {
     }
 });
 
-// ── POST /allergens/profile – salvează/actualizează profilul de alergeni ──
 router.post('/profile', async (req, res) => {
     const userId = req.userId;
     const { name, allergens } = req.body;
@@ -52,7 +48,6 @@ router.post('/profile', async (req, res) => {
     }
 });
 
-// ── DELETE /allergens/profile – șterge toate alergenele user-ului ──
 router.delete('/profile', async (req, res) => {
     try {
         await UserAllergen.findOneAndUpdate(
@@ -132,7 +127,6 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
             return res.status(400).json({ message: "No image provided. Please upload an image with key 'image'." });
         }
 
-        // Groq a retras modelele vision, deci extragem textul cu Tesseract.js
         const Tesseract = require('tesseract.js');
         let extractedText = "";
         try {
@@ -174,7 +168,6 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
         responseText = responseText.replace(/```json/gi, '').replace(/```/gi, '').trim();
         const aiDecision = JSON.parse(responseText);
         
-        // Asigură-te că folosim textul extras real dacă AI-ul nu îl pune
         aiDecision.extractedText = extractedText;
 
         const newScan = new Scan({
@@ -195,7 +188,6 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
 });
 
 
-// ── GET /allergens/history – returnează istoricul de scanuri ──
 router.get('/history', async (req, res) => {
     try {
         const history = await Scan.find({ userId: req.userId }).sort({ date: -1 });
@@ -205,7 +197,6 @@ router.get('/history', async (req, res) => {
     }
 });
 
-// ── DELETE /allergens/history – șterge tot istoricul de scanuri al user-ului ──
 router.delete('/history', async (req, res) => {
     try {
         const result = await Scan.deleteMany({ userId: req.userId });

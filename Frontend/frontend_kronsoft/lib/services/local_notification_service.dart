@@ -182,7 +182,7 @@ class LocalNotificationService {
 
   static Future<void> scheduleDailyExerciseNotification() async {
     const int exerciseNotificationId = 10000;
-    
+
     await _scheduleNotification(
       id: exerciseNotificationId,
       title: 'Daily Exercises',

@@ -95,7 +95,9 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: context.appColors.textSecondary.withValues(alpha: 0.4),
+                    color: context.appColors.textSecondary.withValues(
+                      alpha: 0.4,
+                    ),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -139,7 +141,10 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
               const SizedBox(height: 16),
               Text(
                 'Remind me before:',
-                style: TextStyle(color: context.appColors.textSecondary, fontSize: 13),
+                style: TextStyle(
+                  color: context.appColors.textSecondary,
+                  fontSize: 13,
+                ),
               ),
               const SizedBox(height: 8),
               Row(
@@ -157,7 +162,9 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                         ),
                         decoration: BoxDecoration(
                           color: selected
-                              ? context.appColors.accentColor.withValues(alpha: 0.2)
+                              ? context.appColors.accentColor.withValues(
+                                  alpha: 0.2,
+                                )
                               : context.appColors.surfaceColor,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
@@ -257,7 +264,9 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
       ),
       body: _loading
           ? Center(
-              child: CircularProgressIndicator(color: context.appColors.accentColor),
+              child: CircularProgressIndicator(
+                color: context.appColors.accentColor,
+              ),
             )
           : RefreshIndicator(
               color: context.appColors.accentColor,
@@ -273,9 +282,8 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                               Icon(
                                 Icons.medication_outlined,
                                 size: 64,
-                                color: context.appColors.textSecondary.withValues(
-                                  alpha: 0.4,
-                                ),
+                                color: context.appColors.textSecondary
+                                    .withValues(alpha: 0.4),
                               ),
                               const SizedBox(height: 12),
                               Text(
@@ -377,7 +385,9 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                 ),
                 child: Icon(
                   taken ? Icons.check_circle : Icons.medication_rounded,
-                  color: taken ? context.appColors.successColor : context.appColors.accentColor,
+                  color: taken
+                      ? context.appColors.successColor
+                      : context.appColors.accentColor,
                   size: 24,
                 ),
               ),

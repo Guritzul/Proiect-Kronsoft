@@ -4,7 +4,6 @@ import '../services/api_service.dart';
 import '../theme/app_theme.dart';
 import 'main_shell.dart';
 
-/// Dashboard home screen – shows greeting, quick-nav cards, and summary data.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -12,7 +11,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   final _api = ApiService();
   Map<String, dynamic>? _dashboard;
   late AnimationController _animCtrl;
@@ -21,7 +21,10 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _animCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _animCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
     _fadeIn = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
     _loadDashboard();
   }
@@ -30,9 +33,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
     try {
       final data = await _api.getDashboard();
       if (mounted) setState(() => _dashboard = data);
-    } catch (_) {
-      // Dashboard load failed silently
-    }
+    } catch (_) {}
     _animCtrl.forward();
   }
 
@@ -71,10 +72,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
               children: [
-                // ── Greeting ──
                 Text(
                   _greeting,
-                  style: TextStyle(color: context.appColors.textSecondary, fontSize: 14),
+                  style: TextStyle(
+                    color: context.appColors.textSecondary,
+                    fontSize: 14,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -95,21 +98,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 ),
                 const SizedBox(height: 28),
 
-                // ── Summary Cards Row ──
                 if (_dashboard != null) ...[
                   Row(
                     children: [
                       _SummaryTile(
                         icon: Icons.medication,
                         label: 'Active Pills',
-                        value: '${(_dashboard!['pills'] as List?)?.length ?? 0}',
+                        value:
+                            '${(_dashboard!['pills'] as List?)?.length ?? 0}',
                         color: context.appColors.accentColor,
                       ),
                       const SizedBox(width: 12),
                       _SummaryTile(
                         icon: Icons.warning_amber_rounded,
                         label: 'Allergens',
-                        value: '${(_dashboard!['allergens'] as List?)?.length ?? 0}',
+                        value:
+                            '${(_dashboard!['allergens'] as List?)?.length ?? 0}',
                         color: context.appColors.warningColor,
                       ),
                     ],
@@ -124,17 +128,29 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             width: 44,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: context.appColors.successColor.withValues(alpha: 0.15),
+                              color: context.appColors.successColor.withValues(
+                                alpha: 0.15,
+                              ),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Icon(Icons.qr_code_scanner, color: context.appColors.successColor, size: 22),
+                            child: Icon(
+                              Icons.qr_code_scanner,
+                              color: context.appColors.successColor,
+                              size: 22,
+                            ),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Last Scan', style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
+                                Text(
+                                  'Last Scan',
+                                  style: TextStyle(
+                                    color: context.appColors.textSecondary,
+                                    fontSize: 12,
+                                  ),
+                                ),
                                 const SizedBox(height: 2),
                                 Text(
                                   _dashboard!['lastScan']['status'] ?? 'SAFE',
@@ -153,7 +169,6 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   const SizedBox(height: 28),
                 ],
 
-                // ── Quick Navigation ──
                 const SectionHeader(title: 'Quick Access'),
                 GridView.count(
                   crossAxisCount: 2,
@@ -166,25 +181,37 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                     _QuickNavCard(
                       icon: Icons.document_scanner,
                       title: 'Allergen\nDetection',
-                      gradient: [const Color(0xFF4DD0E1), const Color(0xFF26C6DA)],
+                      gradient: [
+                        const Color(0xFF4DD0E1),
+                        const Color(0xFF26C6DA),
+                      ],
                       onTap: () => _jumpToTab(1),
                     ),
                     _QuickNavCard(
                       icon: Icons.medication_rounded,
                       title: 'Pill\nTracking',
-                      gradient: [const Color(0xFF7C4DFF), const Color(0xFF651FFF)],
+                      gradient: [
+                        const Color(0xFF7C4DFF),
+                        const Color(0xFF651FFF),
+                      ],
                       onTap: () => _jumpToTab(2),
                     ),
                     _QuickNavCard(
                       icon: Icons.fitness_center_rounded,
                       title: 'Recovery\nExercises',
-                      gradient: [const Color(0xFFFF6E40), const Color(0xFFFF3D00)],
+                      gradient: [
+                        const Color(0xFFFF6E40),
+                        const Color(0xFFFF3D00),
+                      ],
                       onTap: () => _jumpToTab(3),
                     ),
                     _QuickNavCard(
                       icon: Icons.person_rounded,
                       title: 'My\nProfile',
-                      gradient: [const Color(0xFF66BB6A), const Color(0xFF43A047)],
+                      gradient: [
+                        const Color(0xFF66BB6A),
+                        const Color(0xFF43A047),
+                      ],
                       onTap: () => _jumpToTab(4),
                     ),
                   ],
@@ -198,15 +225,12 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   }
 
   void _jumpToTab(int index) {
-    // Walk up to MainShell and change tab
     final shellState = context.findAncestorStateOfType<MainShellState>();
     if (shellState != null) {
       shellState.switchTab(index);
     }
   }
 }
-
-// ─── Helper widgets ──────────────────────────────────────────────────────────
 
 class _SummaryTile extends StatelessWidget {
   final IconData icon;
@@ -241,8 +265,21 @@ class _SummaryTile extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(value, style: TextStyle(color: color, fontSize: 22, fontWeight: FontWeight.w800)),
-                Text(label, style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: context.appColors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
               ],
             ),
           ],
@@ -274,7 +311,10 @@ class _QuickNavCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [gradient[0].withValues(alpha: 0.18), gradient[1].withValues(alpha: 0.06)],
+            colors: [
+              gradient[0].withValues(alpha: 0.18),
+              gradient[1].withValues(alpha: 0.06),
+            ],
           ),
           borderRadius: BorderRadius.circular(18),
           border: Border.all(color: gradient[0].withValues(alpha: 0.25)),

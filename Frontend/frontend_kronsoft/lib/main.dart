@@ -15,21 +15,23 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    
-    // Initializam serviciile de notificari dar nu blocam pornirea aplicatiei daca unul esueaza
+
     await NotificationService().initialize().catchError((e) {
       debugPrint('Error initializing FCM: $e');
     });
     await LocalNotificationService.initialize().catchError((e) {
       debugPrint('Error initializing local notifications: $e');
     });
-    await LocalNotificationService.scheduleDailyExerciseNotification().catchError((e) {
-      debugPrint('Error scheduling exercise notification: $e');
-    });
+    await LocalNotificationService.scheduleDailyExerciseNotification()
+        .catchError((e) {
+          debugPrint('Error scheduling exercise notification: $e');
+        });
 
     LocalNotificationService.onNotificationTapped.stream.listen((payload) {
       _showNotificationDialog(payload);
@@ -71,7 +73,11 @@ void _showNotificationDialog(String payload) {
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.fitness_center, color: ctx.appColors.accentColor, size: 18),
+                Icon(
+                  Icons.fitness_center,
+                  color: ctx.appColors.accentColor,
+                  size: 18,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   'Stay Healthy',
@@ -87,7 +93,10 @@ void _showNotificationDialog(String payload) {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('OK', style: TextStyle(color: ctx.appColors.accentColor)),
+            child: Text(
+              'OK',
+              style: TextStyle(color: ctx.appColors.accentColor),
+            ),
           ),
         ],
       ),
@@ -133,7 +142,11 @@ void _showNotificationDialog(String payload) {
           const SizedBox(height: 12),
           Row(
             children: [
-              Icon(Icons.medication, color: ctx.appColors.accentColor, size: 18),
+              Icon(
+                Icons.medication,
+                color: ctx.appColors.accentColor,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Text(
                 pillName,
@@ -150,14 +163,21 @@ void _showNotificationDialog(String payload) {
               children: [
                 Icon(Icons.scale, color: ctx.appColors.textPrimary, size: 18),
                 const SizedBox(width: 8),
-                Text(dosage, style: TextStyle(color: ctx.appColors.textPrimary)),
+                Text(
+                  dosage,
+                  style: TextStyle(color: ctx.appColors.textPrimary),
+                ),
               ],
             ),
           ],
           const SizedBox(height: 6),
           Row(
             children: [
-              Icon(Icons.access_time, color: ctx.appColors.textPrimary, size: 18),
+              Icon(
+                Icons.access_time,
+                color: ctx.appColors.textPrimary,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Text(time, style: TextStyle(color: ctx.appColors.textPrimary)),
             ],

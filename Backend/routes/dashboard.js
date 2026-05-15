@@ -11,13 +11,10 @@ router.get('/', async (req, res) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Pastilele userului
     const pills = await Pill.find({ userId });
 
-    // Ultimul scan de alergeni
     const lastScan = await Scan.findOne({ userId }).sort({ date: -1 });
 
-    // Profilul de alergeni
     const userAllergens = await UserAllergen.findOne({ userId });
 
     res.status(200).json({

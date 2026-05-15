@@ -15,7 +15,6 @@ class NotificationService {
       debugPrint('Notification permissions granted');
     }
 
-    // Nu asteptam dupa token pentru ca poate dura mult sau poate ingheta daca nu e internet
     _messaging
         .getToken()
         .then((token) {

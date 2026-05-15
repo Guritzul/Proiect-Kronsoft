@@ -8,7 +8,6 @@ import 'settings/account_settings_screen.dart';
 import 'settings/privacy_settings_screen.dart';
 import 'settings/notification_settings_screen.dart';
 
-/// Profile screen – user info, allergen settings, and logout.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -48,14 +47,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       await _api.saveAllergenProfile(_allergens);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Allergens saved ✓')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Allergens saved ✓')));
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e'), backgroundColor: context.appColors.dangerColor),
+          SnackBar(
+            content: Text('Failed to save: $e'),
+            backgroundColor: context.appColors.dangerColor,
+          ),
         );
       }
     }
@@ -93,7 +95,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = _auth.currentUser;
-    final displayName = user?.displayName ?? user?.email?.split('@').first ?? 'User';
+    final displayName =
+        user?.displayName ?? user?.email?.split('@').first ?? 'User';
     final email = user?.email ?? '';
 
     return Scaffold(
@@ -102,7 +105,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         children: [
-          // ── Avatar & Info ──
           Center(
             child: Column(
               children: [
@@ -112,11 +114,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
-                      colors: [context.appColors.accentColor, const Color(0xFF26C6DA)],
+                      colors: [
+                        context.appColors.accentColor,
+                        const Color(0xFF26C6DA),
+                      ],
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: context.appColors.accentColor.withValues(alpha: 0.3),
+                        color: context.appColors.accentColor.withValues(
+                          alpha: 0.3,
+                        ),
                         blurRadius: 20,
                         offset: const Offset(0, 6),
                       ),
@@ -143,33 +150,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(email, style: TextStyle(color: context.appColors.textSecondary, fontSize: 14)),
+                Text(
+                  email,
+                  style: TextStyle(
+                    color: context.appColors.textSecondary,
+                    fontSize: 14,
+                  ),
+                ),
               ],
             ),
           ),
           const SizedBox(height: 32),
 
-          // ── Menu Options ──
           _MenuTile(
             icon: Icons.settings_outlined,
             label: 'Account Settings',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountSettingsScreen())),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AccountSettingsScreen()),
+            ),
           ),
           _MenuTile(
             icon: Icons.privacy_tip_outlined,
             label: 'Privacy',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacySettingsScreen())),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PrivacySettingsScreen()),
+            ),
           ),
           _MenuTile(
             icon: Icons.notifications_outlined,
             label: 'Notifications',
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationSettingsScreen())),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const NotificationSettingsScreen(),
+              ),
+            ),
           ),
           _MenuTile(
             icon: Icons.dark_mode_outlined,
             label: 'Toggle Theme',
             onTap: () {
-              // Toggle theme directly
               if (themeNotifier.value == ThemeMode.dark) {
                 themeNotifier.value = ThemeMode.light;
               } else {
@@ -179,13 +201,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 28),
 
-          // ── Allergens Section ──
           const SectionHeader(title: 'My Allergens'),
           if (_loadingProfile)
-            Center(child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: CircularProgressIndicator(color: context.appColors.accentColor),
-            ))
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: CircularProgressIndicator(
+                  color: context.appColors.accentColor,
+                ),
+              ),
+            )
           else ...[
             GlassCard(
               child: Column(
@@ -196,7 +221,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       padding: const EdgeInsets.only(bottom: 12),
                       child: Text(
                         'No allergens set. Add your allergens so we can protect you.',
-                        style: TextStyle(color: context.appColors.textSecondary, fontSize: 13),
+                        style: TextStyle(
+                          color: context.appColors.textSecondary,
+                          fontSize: 13,
+                        ),
                       ),
                     ),
                   Wrap(
@@ -204,11 +232,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     runSpacing: 8,
                     children: _allergens.map((a) {
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
-                          color: context.appColors.warningColor.withValues(alpha: 0.12),
+                          color: context.appColors.warningColor.withValues(
+                            alpha: 0.12,
+                          ),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: context.appColors.warningColor.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: context.appColors.warningColor.withValues(
+                              alpha: 0.3,
+                            ),
+                          ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -227,7 +264,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               child: Icon(
                                 Icons.close,
                                 size: 16,
-                                color: context.appColors.warningColor.withValues(alpha: 0.7),
+                                color: context.appColors.warningColor
+                                    .withValues(alpha: 0.7),
                               ),
                             ),
                           ],
@@ -241,20 +279,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Expanded(
                         child: TextField(
                           controller: _allergenController,
-                          style: TextStyle(color: context.appColors.textPrimary, fontSize: 14),
+                          style: TextStyle(
+                            color: context.appColors.textPrimary,
+                            fontSize: 14,
+                          ),
                           decoration: InputDecoration(
                             hintText: 'Add allergen (e.g. Peanuts)',
-                            hintStyle: TextStyle(color: context.appColors.textHint, fontSize: 13),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                            hintStyle: TextStyle(
+                              color: context.appColors.textHint,
+                              fontSize: 13,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
                             filled: true,
                             fillColor: context.appColors.surfaceColor,
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: context.appColors.accentColor.withValues(alpha: 0.2)),
+                              borderSide: BorderSide(
+                                color: context.appColors.accentColor.withValues(
+                                  alpha: 0.2,
+                                ),
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: context.appColors.accentColor),
+                              borderSide: BorderSide(
+                                color: context.appColors.accentColor,
+                              ),
                             ),
                           ),
                           onSubmitted: (_) => _addAllergen(),
@@ -270,7 +323,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: context.appColors.accentColor,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Icon(Icons.add, color: context.appColors.bgColor),
+                          child: Icon(
+                            Icons.add,
+                            color: context.appColors.bgColor,
+                          ),
                         ),
                       ),
                     ],
@@ -281,7 +337,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
           const SizedBox(height: 32),
 
-          // ── Logout ──
           SizedBox(
             width: double.infinity,
             height: 50,
@@ -297,10 +352,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               },
               icon: Icon(Icons.logout, color: context.appColors.dangerColor),
-              label: Text('Logout', style: TextStyle(color: context.appColors.dangerColor, fontWeight: FontWeight.w600)),
+              label: Text(
+                'Logout',
+                style: TextStyle(
+                  color: context.appColors.dangerColor,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: context.appColors.dangerColor.withValues(alpha: 0.4)),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                side: BorderSide(
+                  color: context.appColors.dangerColor.withValues(alpha: 0.4),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ),
@@ -315,7 +380,11 @@ class _MenuTile extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _MenuTile({required this.icon, required this.label, required this.onTap});
+  const _MenuTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -338,7 +407,11 @@ class _MenuTile extends StatelessWidget {
                     color: context.appColors.accentColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: context.appColors.accentColor, size: 20),
+                  child: Icon(
+                    icon,
+                    color: context.appColors.accentColor,
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -351,7 +424,11 @@ class _MenuTile extends StatelessWidget {
                     ),
                   ),
                 ),
-                Icon(Icons.chevron_right, color: context.appColors.textHint, size: 20),
+                Icon(
+                  Icons.chevron_right,
+                  color: context.appColors.textHint,
+                  size: 20,
+                ),
               ],
             ),
           ),

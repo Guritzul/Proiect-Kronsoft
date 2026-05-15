@@ -35,11 +35,20 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
 
   @override
   ThemeExtension<AppColorsExtension> copyWith({
-    Color? bgColor, Color? surfaceColor, Color? cardColor,
-    Color? accentColor, Color? accentGlow, Color? accentSubtle,
-    Color? successColor, Color? warningColor, Color? dangerColor,
-    Color? textPrimary, Color? textSecondary, Color? textHint,
-    Color? divider, Color? shimmer,
+    Color? bgColor,
+    Color? surfaceColor,
+    Color? cardColor,
+    Color? accentColor,
+    Color? accentGlow,
+    Color? accentSubtle,
+    Color? successColor,
+    Color? warningColor,
+    Color? dangerColor,
+    Color? textPrimary,
+    Color? textSecondary,
+    Color? textHint,
+    Color? divider,
+    Color? shimmer,
   }) {
     return AppColorsExtension(
       bgColor: bgColor ?? this.bgColor,
@@ -60,7 +69,10 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   }
 
   @override
-  ThemeExtension<AppColorsExtension> lerp(ThemeExtension<AppColorsExtension>? other, double t) {
+  ThemeExtension<AppColorsExtension> lerp(
+    ThemeExtension<AppColorsExtension>? other,
+    double t,
+  ) {
     if (other is! AppColorsExtension) return this;
     return AppColorsExtension(
       bgColor: Color.lerp(bgColor, other.bgColor, t)!,
@@ -82,11 +94,11 @@ class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
 }
 
 extension AppColorsGetter on BuildContext {
-  AppColorsExtension get appColors => Theme.of(this).extension<AppColorsExtension>()!;
+  AppColorsExtension get appColors =>
+      Theme.of(this).extension<AppColorsExtension>()!;
 }
 
 class AppTheme {
-  // Common Colors
   static const Color accentColor = Color(0xFF4DD0E1);
   static const Color successColor = Color(0xFF66BB6A);
   static const Color warningColor = Color(0xFFFFA726);
@@ -158,7 +170,10 @@ class AppTheme {
         unselectedItemColor: lightColors.textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
-        selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        selectedLabelStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
         unselectedLabelStyle: const TextStyle(fontSize: 11),
       ),
       cardTheme: CardThemeData(
@@ -175,7 +190,9 @@ class AppTheme {
         suffixIconColor: lightColors.accentColor,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: lightColors.accentColor.withValues(alpha: 0.3)),
+          borderSide: BorderSide(
+            color: lightColors.accentColor.withValues(alpha: 0.3),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -189,7 +206,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: lightColors.dangerColor, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -197,7 +217,9 @@ class AppTheme {
           foregroundColor: lightColors.bgColor,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
       ),
@@ -227,10 +249,7 @@ class AppTheme {
           fontWeight: FontWeight.w700,
         ),
       ),
-      dividerTheme: DividerThemeData(
-        color: lightColors.divider,
-        thickness: 1,
-      ),
+      dividerTheme: DividerThemeData(color: lightColors.divider, thickness: 1),
       chipTheme: ChipThemeData(
         backgroundColor: lightColors.cardColor,
         selectedColor: lightColors.accentColor.withValues(alpha: 0.25),
@@ -272,7 +291,10 @@ class AppTheme {
         unselectedItemColor: darkColors.textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
-        selectedLabelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        selectedLabelStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
         unselectedLabelStyle: const TextStyle(fontSize: 11),
       ),
       cardTheme: CardThemeData(
@@ -289,7 +311,9 @@ class AppTheme {
         suffixIconColor: darkColors.accentColor,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkColors.accentColor.withValues(alpha: 0.3)),
+          borderSide: BorderSide(
+            color: darkColors.accentColor.withValues(alpha: 0.3),
+          ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -303,7 +327,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: darkColors.dangerColor, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -311,7 +338,9 @@ class AppTheme {
           foregroundColor: darkColors.bgColor,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
         ),
       ),
@@ -341,10 +370,7 @@ class AppTheme {
           fontWeight: FontWeight.w700,
         ),
       ),
-      dividerTheme: DividerThemeData(
-        color: darkColors.divider,
-        thickness: 1,
-      ),
+      dividerTheme: DividerThemeData(color: darkColors.divider, thickness: 1),
       chipTheme: ChipThemeData(
         backgroundColor: darkColors.cardColor,
         selectedColor: darkColors.accentColor.withValues(alpha: 0.25),
@@ -356,10 +382,6 @@ class AppTheme {
     );
   }
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-// REUSABLE WIDGET BUILDERS
-// ─────────────────────────────────────────────────────────────────────────────
 
 class GlassCard extends StatelessWidget {
   final Widget child;
@@ -383,7 +405,9 @@ class GlassCard extends StatelessWidget {
         color: context.appColors.cardColor,
         borderRadius: BorderRadius.circular(borderRadius),
         border: Border.all(
-          color: borderColor ?? context.appColors.accentColor.withValues(alpha: 0.15),
+          color:
+              borderColor ??
+              context.appColors.accentColor.withValues(alpha: 0.15),
         ),
         boxShadow: [
           BoxShadow(
@@ -436,7 +460,9 @@ class AccentButton extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.transparent,
             shadowColor: Colors.transparent,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
           ),
           child: isLoading
               ? const SizedBox(
@@ -451,7 +477,7 @@ class AccentButton extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (icon != null) ...[
-                      Icon(icon, size: 20, color: context.appColors.bgColor,),
+                      Icon(icon, size: 20, color: context.appColors.bgColor),
                       const SizedBox(width: 8),
                     ],
                     Text(

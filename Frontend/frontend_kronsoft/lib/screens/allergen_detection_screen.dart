@@ -6,12 +6,12 @@ import '../theme/app_theme.dart';
 import '../services/api_service.dart';
 import 'package:intl/intl.dart';
 
-/// Allergen Detection Screen – scan food labels and check for allergens.
 class AllergenDetectionScreen extends StatefulWidget {
   const AllergenDetectionScreen({super.key});
 
   @override
-  State<AllergenDetectionScreen> createState() => _AllergenDetectionScreenState();
+  State<AllergenDetectionScreen> createState() =>
+      _AllergenDetectionScreenState();
 }
 
 class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
@@ -33,8 +33,11 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _resultScale = CurvedAnimation(parent: _resultAnimCtrl, curve: Curves.elasticOut);
-    
+    _resultScale = CurvedAnimation(
+      parent: _resultAnimCtrl,
+      curve: Curves.elasticOut,
+    );
+
     _historySub = ApiService.allergenHistoryChanged.stream.listen((_) {
       _loadHistory();
     });
@@ -45,7 +48,11 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
   Future<void> _loadHistory() async {
     try {
       final data = await _api.getScanHistory();
-      if (mounted) setState(() { _history = data; _loadingHistory = false; });
+      if (mounted)
+        setState(() {
+          _history = data;
+          _loadingHistory = false;
+        });
     } catch (_) {
       if (mounted) setState(() => _loadingHistory = false);
     }
@@ -53,19 +60,28 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
 
   Future<void> _scan() async {
     if (_labelController.text.trim().isEmpty) return;
-    setState(() { _scanning = true; _scanResult = null; });
+    setState(() {
+      _scanning = true;
+      _scanResult = null;
+    });
     _resultAnimCtrl.reset();
     try {
       final result = await _api.scanLabel(_labelController.text.trim());
       if (mounted) {
-        setState(() { _scanResult = result; _scanning = false; });
+        setState(() {
+          _scanResult = result;
+          _scanning = false;
+        });
         _resultAnimCtrl.forward();
       }
     } catch (e) {
       if (mounted) {
         setState(() => _scanning = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Scan failed: $e'), backgroundColor: context.appColors.dangerColor),
+          SnackBar(
+            content: Text('Scan failed: $e'),
+            backgroundColor: context.appColors.dangerColor,
+          ),
         );
       }
     }
@@ -76,13 +92,19 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
     final pickedFile = await picker.pickImage(source: source);
     if (pickedFile == null) return;
 
-    setState(() { _scanning = true; _scanResult = null; });
+    setState(() {
+      _scanning = true;
+      _scanResult = null;
+    });
     _resultAnimCtrl.reset();
 
     try {
       final result = await _api.scanImage(File(pickedFile.path));
       if (mounted) {
-        setState(() { _scanResult = result; _scanning = false; });
+        setState(() {
+          _scanResult = result;
+          _scanning = false;
+        });
         _resultAnimCtrl.forward();
       }
     } catch (e) {
@@ -164,10 +186,14 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
           decoration: BoxDecoration(
             color: context.appColors.surfaceColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-            border: Border(top: BorderSide(color: color.withValues(alpha: 0.5), width: 2)),
+            border: Border(
+              top: BorderSide(color: color.withValues(alpha: 0.5), width: 2),
+            ),
           ),
           padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.85,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -178,7 +204,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 20),
                   decoration: BoxDecoration(
-                    color: context.appColors.textSecondary.withValues(alpha: 0.3),
+                    color: context.appColors.textSecondary.withValues(
+                      alpha: 0.3,
+                    ),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -201,7 +229,11 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   if (dateStr != null)
                     Text(
                       _formatDate(dateStr),
-                      style: TextStyle(color: context.appColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        color: context.appColors.textSecondary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                 ],
               ),
@@ -222,7 +254,12 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                       Expanded(
                         child: Text(
                           message,
-                          style: TextStyle(color: context.appColors.textPrimary, fontSize: 14, height: 1.5, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                            color: context.appColors.textPrimary,
+                            fontSize: 14,
+                            height: 1.5,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ],
@@ -231,14 +268,24 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                 const SizedBox(height: 20),
               ],
               if (allergens.isNotEmpty) ...[
-                Text('Allergens Found', style: TextStyle(color: context.appColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+                Text(
+                  'Allergens Found',
+                  style: TextStyle(
+                    color: context.appColors.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
                   children: allergens.map((a) {
                     return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: color.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(20),
@@ -246,14 +293,25 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                       ),
                       child: Text(
                         a.toString(),
-                        style: TextStyle(color: color, fontWeight: FontWeight.w700, fontSize: 13),
+                        style: TextStyle(
+                          color: color,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
                       ),
                     );
                   }).toList(),
                 ),
                 const SizedBox(height: 24),
               ],
-              Text('Scanned Text', style: TextStyle(color: context.appColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(
+                'Scanned Text',
+                style: TextStyle(
+                  color: context.appColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               Expanded(
                 child: Container(
@@ -261,12 +319,20 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   decoration: BoxDecoration(
                     color: context.appColors.bgColor,
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.1)),
+                    border: Border.all(
+                      color: context.appColors.accentColor.withValues(
+                        alpha: 0.1,
+                      ),
+                    ),
                   ),
                   child: SingleChildScrollView(
                     child: Text(
                       labelText,
-                      style: TextStyle(color: context.appColors.textSecondary, fontSize: 13, height: 1.6),
+                      style: TextStyle(
+                        color: context.appColors.textSecondary,
+                        fontSize: 13,
+                        height: 1.6,
+                      ),
                     ),
                   ),
                 ),
@@ -300,33 +366,50 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
         children: [
-          // ── How it works ──
           GlassCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(Icons.lightbulb_outline, color: context.appColors.accentColor.withValues(alpha: 0.8), size: 20),
+                    Icon(
+                      Icons.lightbulb_outline,
+                      color: context.appColors.accentColor.withValues(
+                        alpha: 0.8,
+                      ),
+                      size: 20,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'How it works',
-                      style: TextStyle(color: context.appColors.accentColor, fontSize: 15, fontWeight: FontWeight.w700),
+                      style: TextStyle(
+                        color: context.appColors.accentColor,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 14),
-                _StepRow(number: '1', text: 'Read the ingredient list on the food label'),
+                _StepRow(
+                  number: '1',
+                  text: 'Read the ingredient list on the food label',
+                ),
                 const SizedBox(height: 8),
-                _StepRow(number: '2', text: 'Type or paste the ingredients below'),
+                _StepRow(
+                  number: '2',
+                  text: 'Type or paste the ingredients below',
+                ),
                 const SizedBox(height: 8),
-                _StepRow(number: '3', text: 'Tap "Scan" to check for your allergens'),
+                _StepRow(
+                  number: '3',
+                  text: 'Tap "Scan" to check for your allergens',
+                ),
               ],
             ),
           ),
           const SizedBox(height: 20),
 
-          // ── Input ──
           TextField(
             controller: _labelController,
             maxLines: 4,
@@ -338,11 +421,16 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
               fillColor: context.appColors.surfaceColor,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: context.appColors.accentColor.withValues(alpha: 0.25)),
+                borderSide: BorderSide(
+                  color: context.appColors.accentColor.withValues(alpha: 0.25),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide(color: context.appColors.accentColor, width: 2),
+                borderSide: BorderSide(
+                  color: context.appColors.accentColor,
+                  width: 2,
+                ),
               ),
             ),
           ),
@@ -358,26 +446,54 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: _scanning ? null : () => _scanFromImage(ImageSource.camera),
-                  icon: Icon(Icons.camera_alt_outlined, color: context.appColors.accentColor),
-                  label: Text('Camera', style: TextStyle(color: context.appColors.accentColor)),
+                  onPressed: _scanning
+                      ? null
+                      : () => _scanFromImage(ImageSource.camera),
+                  icon: Icon(
+                    Icons.camera_alt_outlined,
+                    color: context.appColors.accentColor,
+                  ),
+                  label: Text(
+                    'Camera',
+                    style: TextStyle(color: context.appColors.accentColor),
+                  ),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: context.appColors.accentColor.withValues(alpha: 0.5)),
+                    side: BorderSide(
+                      color: context.appColors.accentColor.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: _scanning ? null : () => _scanFromImage(ImageSource.gallery),
-                  icon: Icon(Icons.photo_library_outlined, color: context.appColors.accentColor),
-                  label: Text('Gallery', style: TextStyle(color: context.appColors.accentColor)),
+                  onPressed: _scanning
+                      ? null
+                      : () => _scanFromImage(ImageSource.gallery),
+                  icon: Icon(
+                    Icons.photo_library_outlined,
+                    color: context.appColors.accentColor,
+                  ),
+                  label: Text(
+                    'Gallery',
+                    style: TextStyle(color: context.appColors.accentColor),
+                  ),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: context.appColors.accentColor.withValues(alpha: 0.5)),
+                    side: BorderSide(
+                      color: context.appColors.accentColor.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
                   ),
                 ),
               ),
@@ -385,27 +501,35 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
           ),
           const SizedBox(height: 24),
 
-          // ── Result Card ──
           if (_scanResult != null)
-            ScaleTransition(
-              scale: _resultScale,
-              child: _buildResultCard(),
-            ),
+            ScaleTransition(scale: _resultScale, child: _buildResultCard()),
 
-          // ── History ──
           const SizedBox(height: 28),
           const SectionHeader(title: 'Scan History'),
           if (_loadingHistory)
-            Center(child: CircularProgressIndicator(color: context.appColors.accentColor))
+            Center(
+              child: CircularProgressIndicator(
+                color: context.appColors.accentColor,
+              ),
+            )
           else if (_history.isEmpty)
             Center(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24),
                 child: Column(
                   children: [
-                    Icon(Icons.history, color: context.appColors.textSecondary.withValues(alpha: 0.5), size: 48),
+                    Icon(
+                      Icons.history,
+                      color: context.appColors.textSecondary.withValues(
+                        alpha: 0.5,
+                      ),
+                      size: 48,
+                    ),
                     const SizedBox(height: 8),
-                    Text('No scans yet', style: TextStyle(color: context.appColors.textSecondary)),
+                    Text(
+                      'No scans yet',
+                      style: TextStyle(color: context.appColors.textSecondary),
+                    ),
                   ],
                 ),
               ),
@@ -415,16 +539,20 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
               final item = _history[i];
               final status = item['status'] ?? 'SAFE';
               final dateStr = item['date'];
-              final allergensFound = item['allergensFound'] as List<dynamic>? ?? [];
+              final allergensFound =
+                  item['allergensFound'] as List<dynamic>? ?? [];
               final rawText = item['labelText'] ?? '';
               final shortText = rawText.replaceAll('\n', ' ').trim();
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: GestureDetector(
                   onTap: () => _showScanDetails(item),
                   child: GlassCard(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
+                    ),
                     borderColor: _resultColor(status).withValues(alpha: 0.3),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -434,10 +562,16 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: _resultColor(status).withValues(alpha: 0.1),
+                                color: _resultColor(
+                                  status,
+                                ).withValues(alpha: 0.1),
                                 shape: BoxShape.circle,
                               ),
-                              child: Icon(_resultIcon(status), color: _resultColor(status), size: 24),
+                              child: Icon(
+                                _resultIcon(status),
+                                color: _resultColor(status),
+                                size: 24,
+                              ),
                             ),
                             const SizedBox(width: 14),
                             Expanded(
@@ -445,17 +579,24 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    shortText.isEmpty ? 'Image Scan' : shortText,
+                                    shortText.isEmpty
+                                        ? 'Image Scan'
+                                        : shortText,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(color: context.appColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w700),
+                                    style: TextStyle(
+                                      color: context.appColors.textPrimary,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
                                   if (dateStr != null) ...[
                                     const SizedBox(height: 4),
                                     Text(
                                       _formatDate(dateStr),
                                       style: TextStyle(
-                                        color: context.appColors.textSecondary.withValues(alpha: 0.8),
+                                        color: context.appColors.textSecondary
+                                            .withValues(alpha: 0.8),
                                         fontSize: 12,
                                       ),
                                     ),
@@ -465,9 +606,14 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                             ),
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
-                                color: _resultColor(status).withValues(alpha: 0.15),
+                                color: _resultColor(
+                                  status,
+                                ).withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: Text(
@@ -490,11 +636,20 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                               runSpacing: 6,
                               children: allergensFound.map<Widget>((a) {
                                 return Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: _resultColor(status).withValues(alpha: 0.1),
+                                    color: _resultColor(
+                                      status,
+                                    ).withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: _resultColor(status).withValues(alpha: 0.2)),
+                                    border: Border.all(
+                                      color: _resultColor(
+                                        status,
+                                      ).withValues(alpha: 0.2),
+                                    ),
                                   ),
                                   child: Text(
                                     a.toString(),
@@ -517,13 +672,20 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                               Text(
                                 'Tap to view full details',
                                 style: TextStyle(
-                                  color: context.appColors.accentColor.withValues(alpha: 0.9),
+                                  color: context.appColors.accentColor
+                                      .withValues(alpha: 0.9),
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              Icon(Icons.arrow_forward_ios_rounded, size: 10, color: context.appColors.accentColor.withValues(alpha: 0.9)),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 10,
+                                color: context.appColors.accentColor.withValues(
+                                  alpha: 0.9,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -580,14 +742,23 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
           ],
           if (allergens is List && allergens.isNotEmpty) ...[
             const SizedBox(height: 14),
-            Text('Detected allergens:', style: TextStyle(color: context.appColors.textSecondary, fontSize: 13)),
+            Text(
+              'Detected allergens:',
+              style: TextStyle(
+                color: context.appColors.textSecondary,
+                fontSize: 13,
+              ),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 6,
               children: allergens.map<Widget>((a) {
                 return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
@@ -595,17 +766,25 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   ),
                   child: Text(
                     a.toString(),
-                    style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 13),
+                    style: TextStyle(
+                      color: color,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
                 );
               }).toList(),
             ),
           ],
-          if (status.toString().toUpperCase() == 'SAFE' && (message == null || message.isEmpty)) ...[
+          if (status.toString().toUpperCase() == 'SAFE' &&
+              (message == null || message.isEmpty)) ...[
             const SizedBox(height: 10),
             Text(
               'No allergens detected – safe to consume!',
-              style: TextStyle(color: context.appColors.textSecondary, fontSize: 13),
+              style: TextStyle(
+                color: context.appColors.textSecondary,
+                fontSize: 13,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -647,7 +826,11 @@ class _StepRow extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: TextStyle(color: context.appColors.textSecondary, fontSize: 13, height: 1.4),
+            style: TextStyle(
+              color: context.appColors.textSecondary,
+              fontSize: 13,
+              height: 1.4,
+            ),
           ),
         ),
       ],
