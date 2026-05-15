@@ -42,6 +42,7 @@ class LocalNotificationService {
 
     await androidImpl?.createNotificationChannel(_channel);
     await androidImpl?.requestNotificationsPermission();
+    await androidImpl?.requestExactAlarmsPermission();
   }
 
   static void _onNotificationTapped(NotificationResponse response) {

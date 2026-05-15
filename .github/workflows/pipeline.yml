@@ -1,0 +1,67 @@
+name: Project CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  backend-ci:
+    name: Backend CI
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: Backend/package-lock.json
+
+      - name: Install Dependencies
+        working-directory: ./Backend
+        run: npm ci
+
+      - name: Run Backend Tests
+        working-directory: ./Backend
+        # We use || true because tests are not yet implemented in package.json
+        run: npm test || echo "No tests defined for backend"
+
+  frontend-ci:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        working-directory: ./Frontend/frontend_kronsoft
+        run: flutter pub get
+
+      - name: Analyze Code
+        working-directory: ./Frontend/frontend_kronsoft
+        run: flutter analyze
+
+      - name: Check Formatting
+        working-directory: ./Frontend/frontend_kronsoft
+        run: flutter format --set-exit-if-changed .
+
+      - name: Run Frontend Tests
+        working-directory: ./Frontend/frontend_kronsoft
+        run: flutter test
+
+      - name: Build Android APK
+        working-directory: ./Frontend/frontend_kronsoft
+        # Building the APK to ensure the project compiles correctly
+        run: flutter build apk --debug
