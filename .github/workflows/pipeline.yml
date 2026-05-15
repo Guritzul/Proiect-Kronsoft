@@ -38,11 +38,26 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
+
+      - name: Create local.properties
+        working-directory: ./Frontend/frontend_kronsoft/android
+        run: |
+          echo "flutter.sdk=$(which flutter | sed 's/\/bin\/flutter//')" >> local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> local.properties
 
       - name: Install Dependencies
         working-directory: ./Frontend/frontend_kronsoft
@@ -76,15 +91,6 @@ jobs:
       - name: Run Frontend Tests
         working-directory: ./Frontend/frontend_kronsoft
         run: flutter test
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
 
       - name: Build Android APK
         working-directory: ./Frontend/frontend_kronsoft
