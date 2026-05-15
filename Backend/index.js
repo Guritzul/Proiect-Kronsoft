@@ -1,41 +1,57 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
 const serviceAccount = require("./serviceAccountKey.json");
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Initializeaza Firebase Admin
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
+const authRoutes = require('./routes/auth');
 const pillRoutes = require("./routes/pills");
 const notificationRoutes = require("./routes/notifications");
 const allergensRoutes = require("./routes/allergens");
 const exerciseRoutes = require("./routes/exercises"); 
 const dashboardRoutes = require('./routes/dashboard');
 
-app.use('/api/dashboard', dashboardRoutes);
 // Middlewares
 app.use(express.json());
 
-// Fake auth
-app.use((req, res, next) => {
-  req.userId = "test-user-id";
-  next();
+// Auth routes (uses its own middleware from middleware/auth.js)
+app.use('/api/auth', authRoutes);
+
+// Global auth middleware – applies to all routes below
+app.use(async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    const token = authHeader.split('Bearer ')[1];
+    const decoded = await admin.auth().verifyIdToken(token);
+    req.userId = decoded.uid; // ← ID-ul real al userului din Firebase
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
 });
 
-// Connect to MongoDB
+// Connect to Railway MongoDB
 mongoose
-  .connect("mongodb://root:example@localhost:27017/projectk?authSource=admin")
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error(err));
+  .connect(process.env.MONGODB_URI)
+  .then(() => console.log("✅ Connected to Railway MongoDB"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
+// Routes (all after auth middleware)
 app.use("/api/pills", pillRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/allergens", allergensRoutes);
-app.use("/api/exercises", exerciseRoutes); //alex
+app.use("/api/exercises", exerciseRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

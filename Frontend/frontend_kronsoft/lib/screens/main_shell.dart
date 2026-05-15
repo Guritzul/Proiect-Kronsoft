@@ -38,10 +38,10 @@ class MainShellState extends State<MainShell> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: AppColors.surfaceColor,
+          color: context.appColors.surfaceColor,
           border: Border(
             top: BorderSide(
-              color: AppColors.accentColor.withValues(alpha: 0.12),
+              color: context.appColors.accentColor.withValues(alpha: 0.12),
             ),
           ),
         ),

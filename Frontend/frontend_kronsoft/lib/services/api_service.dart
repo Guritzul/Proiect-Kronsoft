@@ -1,13 +1,23 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
+
+/// Backend connection config. Folosim IP-ul local pentru a functiona atat pe emulator cat si pe telefon.
+class BackendConfig {
+  static const String baseUrl = 'https://proiect-kronsoft-backend-production.up.railway.app/api';
+}
 
 /// Centralized HTTP client for all backend API calls.
 /// Automatically attaches Firebase auth token to every request.
 class ApiService {
   // For Android emulator use 10.0.2.2, for physical device use your IP
-  static const String baseUrl = 'http://10.0.2.2:3000/api';
+  static String get baseUrl => BackendConfig.baseUrl;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  static final StreamController<void> allergenHistoryChanged =
+      StreamController<void>.broadcast();
 
   // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -90,7 +100,10 @@ class ApiService {
     return await _post('/pills', pill);
   }
 
-  Future<Map<String, dynamic>> updatePill(String id, Map<String, dynamic> pill) async {
+  Future<Map<String, dynamic>> updatePill(
+    String id,
+    Map<String, dynamic> pill,
+  ) async {
     return await _put('/pills/$id', pill);
   }
 
@@ -111,19 +124,66 @@ class ApiService {
     return data is List ? data : (data['history'] ?? []);
   }
 
+  Future<Map<String, dynamic>> clearPillHistory() async {
+    return await _delete('/pills/history');
+  }
+
   // ── Allergens ────────────────────────────────────────────────────────────
 
-  Future<Map<String, dynamic>> saveAllergenProfile(List<String> allergens) async {
+  Future<Map<String, dynamic>> saveAllergenProfile(
+    List<String> allergens,
+  ) async {
     return await _post('/allergens/profile', {'allergens': allergens});
   }
 
+  Future<Map<String, dynamic>> getMyAllergens() async {
+    return await _get('/allergens/profile');
+  }
+
   Future<Map<String, dynamic>> scanLabel(String labelText) async {
-    return await _post('/allergens/scan', {'text': labelText});
+    final result = await _post('/allergens/scan', {'text': labelText});
+    allergenHistoryChanged.add(null);
+    return result;
+  }
+
+  Future<Map<String, dynamic>> scanImage(File imageFile) async {
+    final token = await _auth.currentUser?.getIdToken();
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/allergens/scan-image'),
+    );
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    request.files.add(
+      await http.MultipartFile.fromPath('image', imageFile.path),
+    );
+
+    final res = await request.send().timeout(const Duration(seconds: 30));
+    final responseData = await http.Response.fromStream(res);
+
+    if (responseData.statusCode >= 200 && responseData.statusCode < 300) {
+      allergenHistoryChanged.add(null);
+      return responseData.body.isNotEmpty
+          ? jsonDecode(responseData.body)
+          : null;
+    }
+    throw ApiException(responseData.statusCode, responseData.body);
   }
 
   Future<List<dynamic>> getScanHistory() async {
     final data = await _get('/allergens/history');
     return data is List ? data : (data['history'] ?? []);
+  }
+
+  Future<Map<String, dynamic>> clearScanHistory() async {
+    final result = await _delete('/allergens/history');
+    allergenHistoryChanged.add(null);
+    return result;
+  }
+
+  Future<Map<String, dynamic>> clearAllergenProfile() async {
+    return await _delete('/allergens/profile');
   }
 
   // ── Exercises ────────────────────────────────────────────────────────────
@@ -141,7 +201,7 @@ class ApiService {
         ? '?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}'
         : '';
     final data = await _get('/exercises$query');
-    return data is List ? data : (data['exercises'] ?? []);
+    return data is List ? data : (data['data'] ?? []);
   }
 
   Future<Map<String, dynamic>> getExerciseById(String id) async {

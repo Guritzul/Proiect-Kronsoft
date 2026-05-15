@@ -1,19 +1,4 @@
-const mongoose = require("mongoose");
-
-// Mongoose schema and model
-const pillSchema = new mongoose.Schema({
-  name: String,
-  schedule: [String],
-  frequency: String,
-  takenDates: [Date],
-  missedDates: [Date],
-  doctorAdvice: String,
-  userId: String,
-});
-
-// Create the Pill model
-const Pill = mongoose.model("Pill", pillSchema);
-// Express router
+const Pill = require("../models/pill");
 const router = require("express").Router();
 
 
@@ -23,6 +8,7 @@ const getPills = async (req, res) => {
     const pills = await Pill.find({ userId: req.userId });
     res.status(200).json(pills);
   } catch (error) {
+    console.error("❌ getPills error:", error); // ← adaugă asta
     res.status(500).json({ message: "Failed to fetch pills" });
   }
 };
@@ -41,13 +27,14 @@ const getPillById = async (req, res) => {
 };
 
 const createPill = async (req, res) => {
-  const { name, schedule, frequency, doctorAdvice } = req.body;
+  const { name, schedule, frequency, doctorAdvice, dosage } = req.body;
   try {
     const newPill = new Pill({
       name,
       schedule,
       frequency,
       doctorAdvice,
+      dosage,
       userId: req.userId,
     });
     await newPill.save();
@@ -59,11 +46,11 @@ const createPill = async (req, res) => {
 
 const updatePill = async (req, res) => {
   const { id } = req.params;
-  const { name, schedule, frequency, doctorAdvice } = req.body;
+  const { name, schedule, frequency, doctorAdvice, dosage } = req.body;
   try {
     const updatedPill = await Pill.findOneAndUpdate(
       { _id: id, userId: req.userId },
-      { name, schedule, frequency, doctorAdvice },
+      { name, schedule, frequency, doctorAdvice, dosage },
       { new: true },
     );
     if (!updatedPill) {
@@ -88,6 +75,18 @@ const deletePill = async (req, res) => {
     res.status(200).json({ message: "Pill deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Failed to delete pill" });
+  }
+};
+
+const deletePillHistory = async (req, res) => {
+  try {
+    await Pill.updateMany(
+      { userId: req.userId },
+      { $set: { takenDates: [], missedDates: [] } }
+    );
+    res.status(200).json({ message: "Pill history cleared successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to clear pill history" });
   }
 };
 
@@ -146,8 +145,9 @@ const getPillHistory = async (req, res) => {
 
 // Routes
 router.get("/", getPills);
-router.get("/:id", getPillById);
 router.post("/", createPill);
+router.delete("/history", deletePillHistory);
+router.get("/:id", getPillById);
 router.put("/:id", updatePill);
 router.delete("/:id", deletePill);
 router.post("/:id/taken", markPillAsTaken);

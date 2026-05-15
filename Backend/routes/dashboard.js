@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 
-const Pill = mongoose.model('Pill');
+const Pill = require('../models/pill');
 const Scan = require('../models/scan');
-const User = require('../models/user-allergens');
+const UserAllergen = require('../models/user-allergens');
 
 router.get('/', async (req, res) => {
   try {
@@ -19,7 +18,7 @@ router.get('/', async (req, res) => {
     const lastScan = await Scan.findOne({ userId }).sort({ date: -1 });
 
     // Profilul de alergeni
-    const userAllergens = await User.findOne({ userId });
+    const userAllergens = await UserAllergen.findOne({ userId });
 
     res.status(200).json({
       pills,

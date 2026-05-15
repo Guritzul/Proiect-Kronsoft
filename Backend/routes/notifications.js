@@ -7,12 +7,17 @@ router.post('/send', async (req, res) => {
     const { token, title, body } = req.body;
 
     const message = {
-      notification: {
-        title: title,
-        body: body,
-      },
-      token: token,
-    };
+  notification: {
+    title: title,
+    body: body,
+  },
+  android: {
+    notification: {
+      icon: 'ic_notification',
+    },
+  },
+  token: token,
+};
 
     await admin.messaging().send(message);
     res.json({ message: 'Notificare trimisa cu succes!' });

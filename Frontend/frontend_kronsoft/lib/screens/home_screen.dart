@@ -60,13 +60,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgColor,
+      backgroundColor: context.appColors.bgColor,
       body: SafeArea(
         child: FadeTransition(
           opacity: _fadeIn,
           child: RefreshIndicator(
-            color: AppColors.accentColor,
-            backgroundColor: AppColors.surfaceColor,
+            color: context.appColors.accentColor,
+            backgroundColor: context.appColors.surfaceColor,
             onRefresh: _loadDashboard,
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
@@ -74,13 +74,13 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 // ── Greeting ──
                 Text(
                   _greeting,
-                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 14),
+                  style: TextStyle(color: context.appColors.textSecondary, fontSize: 14),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   _userName,
-                  style: const TextStyle(
-                    color: AppColors.textPrimary,
+                  style: TextStyle(
+                    color: context.appColors.textPrimary,
                     fontSize: 28,
                     fontWeight: FontWeight.w800,
                   ),
@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                 Text(
                   'Stay healthy, stay strong 💪',
                   style: TextStyle(
-                    color: AppColors.accentColor.withValues(alpha: 0.8),
+                    color: context.appColors.accentColor.withValues(alpha: 0.8),
                     fontSize: 14,
                   ),
                 ),
@@ -103,14 +103,14 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                         icon: Icons.medication,
                         label: 'Active Pills',
                         value: '${(_dashboard!['pills'] as List?)?.length ?? 0}',
-                        color: AppColors.accentColor,
+                        color: context.appColors.accentColor,
                       ),
                       const SizedBox(width: 12),
                       _SummaryTile(
                         icon: Icons.warning_amber_rounded,
                         label: 'Allergens',
                         value: '${(_dashboard!['allergens'] as List?)?.length ?? 0}',
-                        color: AppColors.warningColor,
+                        color: context.appColors.warningColor,
                       ),
                     ],
                   ),
@@ -124,22 +124,22 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                             width: 44,
                             height: 44,
                             decoration: BoxDecoration(
-                              color: AppColors.successColor.withValues(alpha: 0.15),
+                              color: context.appColors.successColor.withValues(alpha: 0.15),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(Icons.qr_code_scanner, color: AppColors.successColor, size: 22),
+                            child: Icon(Icons.qr_code_scanner, color: context.appColors.successColor, size: 22),
                           ),
                           const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text('Last Scan', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                                Text('Last Scan', style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
                                 const SizedBox(height: 2),
                                 Text(
-                                  _dashboard!['lastScan']['result'] ?? 'SAFE',
-                                  style: const TextStyle(
-                                    color: AppColors.textPrimary,
+                                  _dashboard!['lastScan']['status'] ?? 'SAFE',
+                                  style: TextStyle(
+                                    color: context.appColors.textPrimary,
                                     fontSize: 16,
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -242,7 +242,7 @@ class _SummaryTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(value, style: TextStyle(color: color, fontSize: 22, fontWeight: FontWeight.w800)),
-                Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                Text(label, style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
               ],
             ),
           ],

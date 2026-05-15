@@ -60,7 +60,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
     final category = e['category'] ?? '';
 
     return Scaffold(
-      backgroundColor: AppColors.bgColor,
+      backgroundColor: context.appColors.bgColor,
       appBar: AppBar(title: Text(name)),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
@@ -75,17 +75,17 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  AppColors.accentColor.withValues(alpha: 0.15),
-                  AppColors.surfaceColor,
+                  context.appColors.accentColor.withValues(alpha: 0.15),
+                  context.appColors.surfaceColor,
                 ],
               ),
-              border: Border.all(color: AppColors.accentColor.withValues(alpha: 0.12)),
+              border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.12)),
             ),
             child: Center(
               child: Icon(
                 Icons.fitness_center,
                 size: 64,
-                color: AppColors.accentColor.withValues(alpha: 0.5),
+                color: context.appColors.accentColor.withValues(alpha: 0.5),
               ),
             ),
           ),
@@ -110,8 +110,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           GlassCard(
             child: Text(
               description,
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              style: TextStyle(
+                color: context.appColors.textSecondary,
                 fontSize: 14,
                 height: 1.6,
               ),
@@ -127,7 +127,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                 Text(
                   _formattedTime,
                   style: TextStyle(
-                    color: _timerRunning ? AppColors.accentColor : AppColors.textPrimary,
+                    color: _timerRunning ? context.appColors.accentColor : context.appColors.textPrimary,
                     fontSize: 52,
                     fontWeight: FontWeight.w300,
                     letterSpacing: 4,
@@ -146,9 +146,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                           label: Text(_timerRunning ? 'Pause' : 'Start'),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _timerRunning
-                                ? AppColors.warningColor
-                                : AppColors.accentColor,
-                            foregroundColor: AppColors.bgColor,
+                                ? context.appColors.warningColor
+                                : context.appColors.accentColor,
+                            foregroundColor: context.appColors.bgColor,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
                         ),
@@ -160,10 +160,10 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                       child: OutlinedButton.icon(
                         onPressed: _resetTimer,
                         icon: const Icon(Icons.replay, size: 20),
-                        label: const Text('Reset'),
+                        label: Text('Reset'),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.textSecondary,
-                          side: BorderSide(color: AppColors.textSecondary.withValues(alpha: 0.3)),
+                          foregroundColor: context.appColors.textSecondary,
+                          side: BorderSide(color: context.appColors.textSecondary.withValues(alpha: 0.3)),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         ),
                       ),
@@ -214,18 +214,18 @@ class _MetaChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.cardColor,
+        color: context.appColors.cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.accentColor.withValues(alpha: 0.2)),
+        border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: AppColors.accentColor),
+          Icon(icon, size: 16, color: context.appColors.accentColor),
           const SizedBox(width: 6),
           Text(
             label,
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500),
+            style: TextStyle(color: context.appColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500),
           ),
         ],
       ),
@@ -251,12 +251,12 @@ class _CounterCard extends StatelessWidget {
     return GlassCard(
       child: Column(
         children: [
-          Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+          Text(label, style: TextStyle(color: context.appColors.textSecondary, fontSize: 13)),
           const SizedBox(height: 8),
           Text(
             '$value',
-            style: const TextStyle(
-              color: AppColors.accentColor,
+            style: TextStyle(
+              color: context.appColors.accentColor,
               fontSize: 36,
               fontWeight: FontWeight.w800,
             ),
@@ -291,16 +291,16 @@ class _RoundButton extends StatelessWidget {
         width: 38,
         height: 38,
         decoration: BoxDecoration(
-          color: filled ? AppColors.accentColor : Colors.transparent,
+          color: filled ? context.appColors.accentColor : Colors.transparent,
           shape: BoxShape.circle,
           border: Border.all(
-            color: filled ? AppColors.accentColor : AppColors.textSecondary.withValues(alpha: 0.4),
+            color: filled ? context.appColors.accentColor : context.appColors.textSecondary.withValues(alpha: 0.4),
           ),
         ),
         child: Icon(
           icon,
           size: 18,
-          color: filled ? AppColors.bgColor : AppColors.textSecondary,
+          color: filled ? context.appColors.bgColor : context.appColors.textSecondary,
         ),
       ),
     );

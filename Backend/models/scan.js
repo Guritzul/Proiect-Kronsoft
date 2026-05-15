@@ -6,6 +6,7 @@ const scanSchema = new mongoose.Schema({
     labelText: String,
     allergensFound: [String],
     status: String,
+    message: String,
     date: { type: Date, default: Date.now }
 });
 

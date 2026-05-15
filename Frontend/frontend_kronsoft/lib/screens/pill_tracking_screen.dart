@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../services/api_service.dart';
+import '../services/local_notification_service.dart';
 
-/// Pill Tracking Screen – list, add, mark taken/missed, swipe to delete.
 class PillTrackingScreen extends StatefulWidget {
   const PillTrackingScreen({super.key});
 
@@ -14,8 +14,8 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
   final _api = ApiService();
   List<dynamic> _pills = [];
   bool _loading = true;
-  // Track which pills were taken this session (optimistic UI)
   final Set<String> _takenIds = {};
+  final int _reminderMinutes = 15;
 
   @override
   void initState() {
@@ -26,7 +26,12 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
   Future<void> _loadPills() async {
     try {
       final data = await _api.getPills();
-      if (mounted) setState(() { _pills = data; _loading = false; });
+      if (mounted) {
+        setState(() {
+          _pills = data;
+          _loading = false;
+        });
+      }
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
@@ -45,16 +50,17 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
     try {
       await _api.markPillMissed(id);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Marked as missed')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Marked as missed')));
       }
     } catch (_) {}
   }
 
-  Future<void> _deletePill(String id) async {
+  Future<void> _deletePill(String id, int pillId) async {
     try {
       await _api.deletePill(id);
+      await LocalNotificationService.cancelPillNotifications(pillId);
       _loadPills();
     } catch (_) {}
   }
@@ -63,89 +69,177 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
     final nameCtrl = TextEditingController();
     final dosageCtrl = TextEditingController();
     final timeCtrl = TextEditingController();
+    int selectedReminder = _reminderMinutes;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: AppColors.surfaceColor,
+      backgroundColor: context.appColors.surfaceColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(
-          24, 20, 24,
-          MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.textSecondary.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(2),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.fromLTRB(
+            24,
+            20,
+            24,
+            MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: context.appColors.textSecondary.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Add New Pill',
-              style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: nameCtrl,
-              style: const TextStyle(color: AppColors.textPrimary),
-              decoration: const InputDecoration(
-                labelText: 'Pill Name',
-                prefixIcon: Icon(Icons.medication),
+              const SizedBox(height: 20),
+              Text(
+                'Add New Pill',
+                style: TextStyle(
+                  color: context.appColors.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: dosageCtrl,
-              style: const TextStyle(color: AppColors.textPrimary),
-              decoration: const InputDecoration(
-                labelText: 'Dosage (e.g. 500mg)',
-                prefixIcon: Icon(Icons.scale),
+              const SizedBox(height: 20),
+              TextField(
+                controller: nameCtrl,
+                style: TextStyle(color: context.appColors.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'Pill Name',
+                  prefixIcon: Icon(Icons.medication),
+                ),
               ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: timeCtrl,
-              style: const TextStyle(color: AppColors.textPrimary),
-              decoration: const InputDecoration(
-                labelText: 'Schedule (e.g. 08:00, 20:00)',
-                prefixIcon: Icon(Icons.access_time),
+              const SizedBox(height: 14),
+              TextField(
+                controller: dosageCtrl,
+                style: TextStyle(color: context.appColors.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'Dosage (e.g. 500mg)',
+                  prefixIcon: Icon(Icons.scale),
+                ),
               ),
-            ),
-            const SizedBox(height: 24),
-            AccentButton(
-              label: 'Save Pill',
-              icon: Icons.save_rounded,
-              onPressed: () async {
-                if (nameCtrl.text.trim().isEmpty) return;
-                Navigator.pop(ctx);
-                try {
-                  await _api.createPill({
-                    'name': nameCtrl.text.trim(),
-                    'dosage': dosageCtrl.text.trim(),
-                    'schedule': timeCtrl.text.trim().split(',').map((s) => s.trim()).toList(),
-                  });
-                  _loadPills();
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed: $e'), backgroundColor: AppColors.dangerColor),
+              const SizedBox(height: 14),
+              TextField(
+                controller: timeCtrl,
+                style: TextStyle(color: context.appColors.textPrimary),
+                decoration: const InputDecoration(
+                  labelText: 'Schedule (e.g. 08:00, 20:00)',
+                  prefixIcon: Icon(Icons.access_time),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Remind me before:',
+                style: TextStyle(color: context.appColors.textSecondary, fontSize: 13),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [5, 10, 15, 30].map((min) {
+                  final selected = selectedReminder == min;
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: GestureDetector(
+                      onTap: () => setSheetState(() => selectedReminder = min),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: selected
+                              ? context.appColors.accentColor.withValues(alpha: 0.2)
+                              : context.appColors.surfaceColor,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: selected
+                                ? context.appColors.accentColor
+                                : context.appColors.cardColor,
+                          ),
+                        ),
+                        child: Text(
+                          '$min min',
+                          style: TextStyle(
+                            color: selected
+                                ? context.appColors.accentColor
+                                : context.appColors.textSecondary,
+                            fontSize: 13,
+                            fontWeight: selected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 24),
+              AccentButton(
+                label: 'Save Pill',
+                icon: Icons.save_rounded,
+                onPressed: () async {
+                  if (nameCtrl.text.trim().isEmpty) return;
+                  Navigator.pop(ctx);
+                  try {
+                    final pill = await _api.createPill({
+                      'name': nameCtrl.text.trim(),
+                      'dosage': dosageCtrl.text.trim(),
+                      'schedule': timeCtrl.text
+                          .trim()
+                          .split(',')
+                          .map((s) => s.trim())
+                          .toList(),
+                    });
+
+                    await LocalNotificationService.schedulePillNotifications(
+                      pillId: pill['_id'].toString().hashCode.abs() % 100000,
+                      pillMongoId: pill['_id'].toString(),
+                      pillName: nameCtrl.text.trim(),
+                      dosage: dosageCtrl.text.trim(),
+                      schedule: timeCtrl.text
+                          .trim()
+                          .split(',')
+                          .map((s) => s.trim())
+                          .toList(),
+                      reminderMinutes: selectedReminder,
                     );
+
+                    _loadPills();
+
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '✅ Pill saved! Reminder set $selectedReminder min before.',
+                          ),
+                          backgroundColor: context.appColors.successColor,
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Failed: $e'),
+                          backgroundColor: context.appColors.dangerColor,
+                        ),
+                      );
+                    }
                   }
-                }
-              },
-            ),
-          ],
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -154,7 +248,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgColor,
+      backgroundColor: context.appColors.bgColor,
       appBar: AppBar(title: const Text('Pill Tracking')),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _showAddPillSheet,
@@ -162,10 +256,12 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
         label: const Text('Add Pill'),
       ),
       body: _loading
-          ? const Center(child: CircularProgressIndicator(color: AppColors.accentColor))
+          ? Center(
+              child: CircularProgressIndicator(color: context.appColors.accentColor),
+            )
           : RefreshIndicator(
-              color: AppColors.accentColor,
-              backgroundColor: AppColors.surfaceColor,
+              color: context.appColors.accentColor,
+              backgroundColor: context.appColors.surfaceColor,
               onRefresh: _loadPills,
               child: _pills.isEmpty
                   ? ListView(
@@ -174,11 +270,29 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                         Center(
                           child: Column(
                             children: [
-                              Icon(Icons.medication_outlined, size: 64, color: AppColors.textSecondary.withValues(alpha: 0.4)),
+                              Icon(
+                                Icons.medication_outlined,
+                                size: 64,
+                                color: context.appColors.textSecondary.withValues(
+                                  alpha: 0.4,
+                                ),
+                              ),
                               const SizedBox(height: 12),
-                              const Text('No pills added yet', style: TextStyle(color: AppColors.textSecondary, fontSize: 16)),
+                              Text(
+                                'No pills added yet',
+                                style: TextStyle(
+                                  color: context.appColors.textSecondary,
+                                  fontSize: 16,
+                                ),
+                              ),
                               const SizedBox(height: 6),
-                              const Text('Tap + to add your first pill', style: TextStyle(color: AppColors.textHint, fontSize: 13)),
+                              Text(
+                                'Tap + to add your first pill',
+                                style: TextStyle(
+                                  color: context.appColors.textHint,
+                                  fontSize: 13,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -186,7 +300,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                     )
                   : ListView.builder(
                       padding: const EdgeInsets.fromLTRB(20, 12, 20, 100),
-                      itemCount: _pills.length + 1, // +1 for tip card
+                      itemCount: _pills.length + 1,
                       itemBuilder: (context, i) {
                         if (i == _pills.length) return _buildTipCard();
                         return _buildPillCard(_pills[i]);
@@ -198,6 +312,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
 
   Widget _buildPillCard(Map<String, dynamic> pill) {
     final id = pill['_id'] ?? pill['id'] ?? '';
+    final pillId = id.hashCode;
     final name = pill['name'] ?? 'Unknown';
     final dosage = pill['dosage'] ?? '';
     final schedule = pill['schedule'];
@@ -212,10 +327,14 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
           alignment: Alignment.centerRight,
           padding: const EdgeInsets.only(right: 24),
           decoration: BoxDecoration(
-            color: AppColors.dangerColor.withValues(alpha: 0.15),
+            color: context.appColors.dangerColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Icon(Icons.delete_outline, color: AppColors.dangerColor, size: 28),
+          child: Icon(
+            Icons.delete_outline,
+            color: context.appColors.dangerColor,
+            size: 28,
+          ),
         ),
         confirmDismiss: (_) async {
           return await showDialog<bool>(
@@ -224,41 +343,45 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
               title: const Text('Delete Pill'),
               content: Text('Remove "$name" from your list?'),
               actions: [
-                TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: const Text('Cancel'),
+                ),
                 TextButton(
                   onPressed: () => Navigator.pop(ctx, true),
-                  child: const Text('Delete', style: TextStyle(color: AppColors.dangerColor)),
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(color: context.appColors.dangerColor),
+                  ),
                 ),
               ],
             ),
           );
         },
-        onDismissed: (_) => _deletePill(id),
+        onDismissed: (_) => _deletePill(id, pillId),
         child: GlassCard(
           padding: const EdgeInsets.all(16),
           borderColor: taken
-              ? AppColors.successColor.withValues(alpha: 0.3)
-              : AppColors.accentColor.withValues(alpha: 0.12),
+              ? context.appColors.successColor.withValues(alpha: 0.3)
+              : context.appColors.accentColor.withValues(alpha: 0.12),
           child: Row(
             children: [
-              // Pill icon
               Container(
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
                   color: taken
-                      ? AppColors.successColor.withValues(alpha: 0.15)
-                      : AppColors.accentColor.withValues(alpha: 0.12),
+                      ? context.appColors.successColor.withValues(alpha: 0.15)
+                      : context.appColors.accentColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
                   taken ? Icons.check_circle : Icons.medication_rounded,
-                  color: taken ? AppColors.successColor : AppColors.accentColor,
+                  color: taken ? context.appColors.successColor : context.appColors.accentColor,
                   size: 24,
                 ),
               ),
               const SizedBox(width: 14),
-              // Info
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,7 +389,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                     Text(
                       name,
                       style: TextStyle(
-                        color: AppColors.textPrimary,
+                        color: context.appColors.textPrimary,
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         decoration: taken ? TextDecoration.lineThrough : null,
@@ -274,17 +397,32 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                     ),
                     if (dosage.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      Text(dosage, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+                      Text(
+                        dosage,
+                        style: TextStyle(
+                          color: context.appColors.textSecondary,
+                          fontSize: 13,
+                        ),
+                      ),
                     ],
                     if (schedule != null) ...[
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.access_time, size: 14, color: AppColors.textHint),
+                          Icon(
+                            Icons.access_time,
+                            size: 14,
+                            color: context.appColors.textHint,
+                          ),
                           const SizedBox(width: 4),
                           Text(
-                            schedule is List ? schedule.join(', ') : schedule.toString(),
-                            style: const TextStyle(color: AppColors.textHint, fontSize: 12),
+                            schedule is List
+                                ? schedule.join(', ')
+                                : schedule.toString(),
+                            style: TextStyle(
+                              color: context.appColors.textHint,
+                              fontSize: 12,
+                            ),
                           ),
                         ],
                       ),
@@ -292,20 +430,26 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                   ],
                 ),
               ),
-              // Action buttons
               if (!taken) ...[
                 IconButton(
                   onPressed: () => _markTaken(id),
-                  icon: const Icon(Icons.check_circle_outline, color: AppColors.successColor),
+                  icon: Icon(
+                    Icons.check_circle_outline,
+                    color: context.appColors.successColor,
+                  ),
                   tooltip: 'Mark as taken',
                 ),
                 IconButton(
                   onPressed: () => _markMissed(id),
-                  icon: const Icon(Icons.cancel_outlined, color: AppColors.warningColor, size: 22),
+                  icon: Icon(
+                    Icons.cancel_outlined,
+                    color: context.appColors.warningColor,
+                    size: 22,
+                  ),
                   tooltip: 'Mark as missed',
                 ),
               ] else
-                const Icon(Icons.done_all, color: AppColors.successColor),
+                Icon(Icons.done_all, color: context.appColors.successColor),
             ],
           ),
         ),
@@ -317,23 +461,31 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: GlassCard(
-        borderColor: AppColors.warningColor.withValues(alpha: 0.2),
+        borderColor: context.appColors.warningColor.withValues(alpha: 0.2),
         child: Row(
           children: [
             Container(
               width: 40,
               height: 40,
               decoration: BoxDecoration(
-                color: AppColors.warningColor.withValues(alpha: 0.12),
+                color: context.appColors.warningColor.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(Icons.tips_and_updates, color: AppColors.warningColor, size: 20),
+              child: Icon(
+                Icons.tips_and_updates,
+                color: context.appColors.warningColor,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 14),
-            const Expanded(
+            Expanded(
               child: Text(
                 'Forgot a pill? Don\'t worry, just ask your doctor for advice.',
-                style: TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4),
+                style: TextStyle(
+                  color: context.appColors.textSecondary,
+                  fontSize: 13,
+                  height: 1.4,
+                ),
               ),
             ),
           ],
