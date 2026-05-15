@@ -19,22 +19,22 @@ class WorkoutSession {
   });
 
   Map<String, dynamic> toJson() => {
-        'exerciseId': exerciseId,
-        'exerciseName': exerciseName,
-        'reps': reps,
-        'sets': sets,
-        'durationSeconds': durationSeconds,
-        'date': date.toIso8601String(),
-      };
+    'exerciseId': exerciseId,
+    'exerciseName': exerciseName,
+    'reps': reps,
+    'sets': sets,
+    'durationSeconds': durationSeconds,
+    'date': date.toIso8601String(),
+  };
 
   factory WorkoutSession.fromJson(Map<String, dynamic> json) => WorkoutSession(
-        exerciseId: json['exerciseId'],
-        exerciseName: json['exerciseName'],
-        reps: json['reps'],
-        sets: json['sets'],
-        durationSeconds: json['durationSeconds'],
-        date: DateTime.parse(json['date']),
-      );
+    exerciseId: json['exerciseId'],
+    exerciseName: json['exerciseName'],
+    reps: json['reps'],
+    sets: json['sets'],
+    durationSeconds: json['durationSeconds'],
+    date: DateTime.parse(json['date']),
+  );
 }
 
 class WorkoutService {

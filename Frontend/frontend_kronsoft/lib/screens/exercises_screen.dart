@@ -99,7 +99,10 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           indicatorColor: context.appColors.accentColor,
           labelColor: context.appColors.accentColor,
           unselectedLabelColor: context.appColors.textSecondary,
-          tabs: const [Tab(text: 'All'), Tab(text: 'Favorites')],
+          tabs: const [
+            Tab(text: 'All'),
+            Tab(text: 'Favorites'),
+          ],
         ),
       ),
       body: Column(
@@ -114,8 +117,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                     ),
                   )
                 : _tabController.index == 0
-                    ? _buildExerciseGrid(_exercises)
-                    : _buildExerciseGrid(_favorites, isFavorites: true),
+                ? _buildExerciseGrid(_exercises)
+                : _buildExerciseGrid(_favorites, isFavorites: true),
           ),
         ],
       ),
@@ -154,8 +157,9 @@ class _ExercisesScreenState extends State<ExercisesScreen>
             _loadData();
           }),
           const SizedBox(height: 8),
-          _buildFilterRow('Difficulty', _difficulties, _selectedDifficulty,
-              (val) {
+          _buildFilterRow('Difficulty', _difficulties, _selectedDifficulty, (
+            val,
+          ) {
             setState(() => _selectedDifficulty = val == 'All' ? null : val);
             _loadData();
           }),
@@ -164,8 +168,12 @@ class _ExercisesScreenState extends State<ExercisesScreen>
     );
   }
 
-  Widget _buildFilterRow(String label, List<String> items, String? selected,
-      Function(String) onSelect) {
+  Widget _buildFilterRow(
+    String label,
+    List<String> items,
+    String? selected,
+    Function(String) onSelect,
+  ) {
     return SizedBox(
       height: 32,
       child: ListView.separated(
@@ -175,7 +183,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (_, i) {
           final item = items[i];
-          final isSelected = (selected == null && item == 'All') ||
+          final isSelected =
+              (selected == null && item == 'All') ||
               selected?.toLowerCase() == item.toLowerCase();
           return GestureDetector(
             onTap: () => onSelect(item),
@@ -352,8 +361,9 @@ class _ExerciseCard extends StatelessWidget {
                     child: Icon(
                       _bodyPartIcon,
                       size: 44,
-                      color:
-                          context.appColors.accentColor.withValues(alpha: 0.6),
+                      color: context.appColors.accentColor.withValues(
+                        alpha: 0.6,
+                      ),
                     ),
                   ),
                 ),

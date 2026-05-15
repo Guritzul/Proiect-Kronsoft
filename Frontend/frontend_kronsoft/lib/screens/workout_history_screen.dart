@@ -54,7 +54,10 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text('Clear', style: TextStyle(color: Colors.red)),
+                        child: const Text(
+                          'Clear',
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ),
                     ],
                   ),
@@ -68,10 +71,14 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
         ],
       ),
       body: _loading
-          ? Center(child: CircularProgressIndicator(color: context.appColors.accentColor))
+          ? Center(
+              child: CircularProgressIndicator(
+                color: context.appColors.accentColor,
+              ),
+            )
           : _history.isEmpty
-              ? _buildEmptyState()
-              : _buildHistoryList(),
+          ? _buildEmptyState()
+          : _buildHistoryList(),
     );
   }
 
@@ -88,7 +95,10 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
           const SizedBox(height: 16),
           Text(
             'No history yet',
-            style: TextStyle(color: context.appColors.textSecondary, fontSize: 16),
+            style: TextStyle(
+              color: context.appColors.textSecondary,
+              fontSize: 16,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
@@ -108,7 +118,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
       itemBuilder: (_, i) {
         final s = _history[i];
         final dateStr = DateFormat('MMM dd, yyyy • HH:mm').format(s.date);
-        
+
         return GlassCard(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -170,13 +180,21 @@ class _StatTile extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
-  const _StatTile({required this.label, required this.value, required this.icon});
+  const _StatTile({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 14, color: context.appColors.accentColor.withValues(alpha: 0.7)),
+        Icon(
+          icon,
+          size: 14,
+          color: context.appColors.accentColor.withValues(alpha: 0.7),
+        ),
         const SizedBox(width: 6),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -191,10 +209,7 @@ class _StatTile extends StatelessWidget {
             ),
             Text(
               label,
-              style: TextStyle(
-                color: context.appColors.textHint,
-                fontSize: 10,
-              ),
+              style: TextStyle(color: context.appColors.textHint, fontSize: 10),
             ),
           ],
         ),
