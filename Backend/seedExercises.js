@@ -5,7 +5,7 @@ const Exercise = require("./models/exercise");
 const exercises = [
   {
     name: "Push-ups",
-    description: "Un exercițiu clasic pentru partea superioară a corpului, axat pe piept, umeri și tricepși. Excelent pentru construirea forței cu greutatea corpului.",
+    description: "A classic upper body exercise focusing on the chest, shoulders, and triceps. Great for building bodyweight strength.",
     bodyPart: "chest",
     difficulty: "medium",
     durationMinutes: 5,
@@ -15,7 +15,7 @@ const exercises = [
   },
   {
     name: "Squats",
-    description: "Exercițiu fundamental pentru trenul inferior. Lucrează mușchii coapselor, fesierii și partea inferioară a spatelui.",
+    description: "Fundamental lower body exercise. Works the thighs, glutes, and lower back.",
     bodyPart: "legs",
     difficulty: "medium",
     durationMinutes: 5,
@@ -25,7 +25,7 @@ const exercises = [
   },
   {
     name: "Plank",
-    description: "Exercițiu izometric excelent pentru întărirea zonei core, îmbunătățind stabilitatea și postura.",
+    description: "Excellent isometric exercise for strengthening the core, improving stability and posture.",
     bodyPart: "core",
     difficulty: "easy",
     durationMinutes: 2,
@@ -35,7 +35,7 @@ const exercises = [
   },
   {
     name: "Jumping Jacks",
-    description: "Mișcare cardio clasică, excelentă pentru încălzirea întregului corp și creșterea ritmului cardiac.",
+    description: "Classic cardio move, great for warming up the entire body and increasing heart rate.",
     bodyPart: "cardio",
     difficulty: "easy",
     durationMinutes: 5,
@@ -45,7 +45,7 @@ const exercises = [
   },
   {
     name: "Pull-ups",
-    description: "Exercițiu avansat de tracțiune care izolează și dezvoltă spatele, în special mușchiul marele dorsal.",
+    description: "Advanced pulling exercise that isolates and develops the back, especially the latissimus dorsi.",
     bodyPart: "back",
     difficulty: "hard",
     durationMinutes: 5,
@@ -55,7 +55,7 @@ const exercises = [
   },
   {
     name: "Bicep Curls",
-    description: "Flexii care izolează bicepsul, ideal pentru creșterea masei musculare la nivelul brațelor. Poate fi făcut cu gantere sau sticle cu apă.",
+    description: "Bicep curls that isolate the biceps, ideal for building arm muscle mass. Can be done with dumbbells or water bottles.",
     bodyPart: "biceps",
     difficulty: "medium",
     durationMinutes: 5,
@@ -65,7 +65,7 @@ const exercises = [
   },
   {
     name: "Tricep Dips",
-    description: "Flotări la bancă sau scaun. Exercițiu foarte eficient pentru izolarea tricepșilor.",
+    description: "Bench or chair dips. Very effective exercise for isolating the triceps.",
     bodyPart: "triceps",
     difficulty: "medium",
     durationMinutes: 5,
@@ -75,7 +75,7 @@ const exercises = [
   },
   {
     name: "Shoulder Press",
-    description: "Presă deasupra capului pentru umeri. Lucrează deltoizii și ajută la stabilitatea umerilor.",
+    description: "Overhead shoulder press. Works the deltoids and helps with shoulder stability.",
     bodyPart: "shoulders",
     difficulty: "medium",
     durationMinutes: 5,
@@ -85,7 +85,7 @@ const exercises = [
   },
   {
     name: "Neck Stretch",
-    description: "O întindere lentă pentru detensionarea gâtului. Recomandat persoanelor care stau mult la birou.",
+    description: "A slow stretch for neck tension relief. Recommended for people who spend a lot of time at a desk.",
     bodyPart: "neck",
     difficulty: "easy",
     durationMinutes: 2,
@@ -95,7 +95,7 @@ const exercises = [
   },
   {
     name: "Wrist Curls",
-    description: "Flexii specifice pentru antebrațe. Recomandate pentru forța prizei și a recuperării la încheieturi.",
+    description: "Specific forearm curls. Recommended for grip strength and wrist recovery.",
     bodyPart: "forearm",
     difficulty: "easy",
     durationMinutes: 3,
