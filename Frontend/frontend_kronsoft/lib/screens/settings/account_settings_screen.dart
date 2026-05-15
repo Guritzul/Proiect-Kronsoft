@@ -39,7 +39,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed: $e'), backgroundColor: AppColors.dangerColor),
+          SnackBar(content: Text('Failed: $e'), backgroundColor: context.appColors.dangerColor),
         );
       }
     }
@@ -58,7 +58,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDialogState) => AlertDialog(
-          backgroundColor: AppColors.surfaceColor,
+          backgroundColor: context.appColors.surfaceColor,
           title: const Text('Change Password'),
           content: SingleChildScrollView(
             child: Column(
@@ -66,7 +66,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               children: [
                 TextField(
                   controller: currentPwCtrl, obscureText: obscureCurrent,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: TextStyle(color: context.appColors.textPrimary),
                   decoration: InputDecoration(
                     labelText: 'Current Password', prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
@@ -78,7 +78,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 const SizedBox(height: 14),
                 TextField(
                   controller: newPwCtrl, obscureText: obscureNew,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: TextStyle(color: context.appColors.textPrimary),
                   decoration: InputDecoration(
                     labelText: 'New Password', prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
@@ -90,7 +90,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 const SizedBox(height: 14),
                 TextField(
                   controller: confirmPwCtrl, obscureText: true,
-                  style: const TextStyle(color: AppColors.textPrimary),
+                  style: TextStyle(color: context.appColors.textPrimary),
                   decoration: const InputDecoration(labelText: 'Confirm New Password', prefixIcon: Icon(Icons.lock)),
                 ),
               ],
@@ -102,13 +102,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               onPressed: loading ? null : () async {
                 if (newPwCtrl.text.length < 6) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Password must be at least 6 characters'), backgroundColor: AppColors.warningColor),
+                    SnackBar(content: Text('Password must be at least 6 characters'), backgroundColor: context.appColors.warningColor),
                   );
                   return;
                 }
                 if (newPwCtrl.text != confirmPwCtrl.text) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Passwords do not match'), backgroundColor: AppColors.warningColor),
+                    SnackBar(content: Text('Passwords do not match'), backgroundColor: context.appColors.warningColor),
                   );
                   return;
                 }
@@ -123,14 +123,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   setDialogState(() => loading = false);
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Failed: ${e.toString().contains('wrong-password') ? 'Wrong current password' : e}'), backgroundColor: AppColors.dangerColor),
+                      SnackBar(content: Text('Failed: ${e.toString().contains('wrong-password') ? 'Wrong current password' : e}'), backgroundColor: context.appColors.dangerColor),
                     );
                   }
                 }
               },
               child: loading
                   ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Change', style: TextStyle(color: AppColors.accentColor)),
+                  : Text('Change', style: TextStyle(color: context.appColors.accentColor)),
             ),
           ],
         ),
@@ -143,20 +143,20 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.surfaceColor,
-        title: const Row(children: [
-          Icon(Icons.warning_rounded, color: AppColors.dangerColor, size: 24),
-          SizedBox(width: 10),
-          Text('Delete Account'),
+        backgroundColor: context.appColors.surfaceColor,
+        title: Row(children: [
+          Icon(Icons.warning_rounded, color: context.appColors.dangerColor, size: 24),
+          const SizedBox(width: 10),
+          const Text('Delete Account'),
         ]),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('This action is permanent. All data will be lost.', style: TextStyle(color: AppColors.textSecondary, fontSize: 14, height: 1.5)),
+            Text('This action is permanent. All data will be lost.', style: TextStyle(color: context.appColors.textSecondary, fontSize: 14, height: 1.5)),
             const SizedBox(height: 16),
             TextField(
               controller: pwCtrl, obscureText: true,
-              style: const TextStyle(color: AppColors.textPrimary),
+              style: TextStyle(color: context.appColors.textPrimary),
               decoration: const InputDecoration(labelText: 'Enter password to confirm', prefixIcon: Icon(Icons.lock_outline)),
             ),
           ],
@@ -175,12 +175,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed: ${e.toString().contains('wrong-password') ? 'Wrong password' : e}'), backgroundColor: AppColors.dangerColor),
+                    SnackBar(content: Text('Failed: ${e.toString().contains('wrong-password') ? 'Wrong password' : e}'), backgroundColor: context.appColors.dangerColor),
                   );
                 }
               }
             },
-            child: const Text('Delete Forever', style: TextStyle(color: AppColors.dangerColor, fontWeight: FontWeight.w700)),
+            child: Text('Delete Forever', style: TextStyle(color: context.appColors.dangerColor, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -194,7 +194,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
     final createdAt = user?.metadata.creationTime;
 
     return Scaffold(
-      backgroundColor: AppColors.bgColor,
+      backgroundColor: context.appColors.bgColor,
       appBar: AppBar(title: const Text('Account Settings')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
@@ -202,7 +202,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           // Display Name
           const SectionHeader(title: 'Display Name'),
           GlassCard(child: Column(children: [
-            TextField(controller: _nameController, style: const TextStyle(color: AppColors.textPrimary), decoration: const InputDecoration(labelText: 'Your name', prefixIcon: Icon(Icons.person_outline))),
+            TextField(controller: _nameController, style: TextStyle(color: context.appColors.textPrimary), decoration: InputDecoration(labelText: 'Your name', prefixIcon: Icon(Icons.person_outline))),
             const SizedBox(height: 14),
             AccentButton(label: 'Save Name', icon: Icons.save_rounded, isLoading: _saving, onPressed: _updateDisplayName),
           ])),
@@ -211,12 +211,12 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           // Email
           const SectionHeader(title: 'Email Address'),
           GlassCard(child: Row(children: [
-            Container(width: 44, height: 44, decoration: BoxDecoration(color: AppColors.accentColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.email_outlined, color: AppColors.accentColor, size: 22)),
+            Container(width: 44, height: 44, decoration: BoxDecoration(color: context.appColors.accentColor.withValues(alpha: 0.12), borderRadius: BorderRadius.circular(12)), child: Icon(Icons.email_outlined, color: context.appColors.accentColor, size: 22)),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(email, style: const TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
+              Text(email, style: TextStyle(color: context.appColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
               const SizedBox(height: 2),
-              Text(user?.emailVerified == true ? 'Verified ✓' : 'Not verified', style: TextStyle(color: user?.emailVerified == true ? AppColors.successColor : AppColors.warningColor, fontSize: 12)),
+              Text(user?.emailVerified == true ? 'Verified ✓' : 'Not verified', style: TextStyle(color: user?.emailVerified == true ? context.appColors.successColor : context.appColors.warningColor, fontSize: 12)),
             ])),
             if (user?.emailVerified != true)
               TextButton(onPressed: () async { final messenger = ScaffoldMessenger.of(context); try { await user?.sendEmailVerification(); messenger.showSnackBar(const SnackBar(content: Text('Verification email sent ✓'))); } catch (_) {} }, child: const Text('Verify', style: TextStyle(fontSize: 12))),
@@ -232,9 +232,9 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           const SectionHeader(title: 'Account Info'),
           GlassCard(child: Column(children: [
             _InfoRow(label: 'User ID', value: user?.uid ?? '—'),
-            const Divider(color: AppColors.divider, height: 20),
+            Divider(color: context.appColors.divider, height: 20),
             _InfoRow(label: 'Member Since', value: createdAt != null ? '${createdAt.day}/${createdAt.month}/${createdAt.year}' : '—'),
-            const Divider(color: AppColors.divider, height: 20),
+            Divider(color: context.appColors.divider, height: 20),
             _InfoRow(label: 'Auth Provider', value: user?.providerData.isNotEmpty == true ? user!.providerData.first.providerId : 'email'),
           ])),
           const SizedBox(height: 32),
@@ -242,14 +242,14 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
           // Danger Zone
           const SectionHeader(title: 'Danger Zone'),
           Container(
-            decoration: BoxDecoration(color: AppColors.dangerColor.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.dangerColor.withValues(alpha: 0.2))),
+            decoration: BoxDecoration(color: context.appColors.dangerColor.withValues(alpha: 0.06), borderRadius: BorderRadius.circular(16), border: Border.all(color: context.appColors.dangerColor.withValues(alpha: 0.2))),
             padding: const EdgeInsets.all(20),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Row(children: [Icon(Icons.warning_amber_rounded, color: AppColors.dangerColor, size: 20), SizedBox(width: 8), Text('Delete Account', style: TextStyle(color: AppColors.dangerColor, fontSize: 16, fontWeight: FontWeight.w700))]),
+              Row(children: [Icon(Icons.warning_amber_rounded, color: context.appColors.dangerColor, size: 20), SizedBox(width: 8), Text('Delete Account', style: TextStyle(color: context.appColors.dangerColor, fontSize: 16, fontWeight: FontWeight.w700))]),
               const SizedBox(height: 8),
-              const Text('Permanently delete your account and all data. This cannot be undone.', style: TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4)),
+              Text('Permanently delete your account and all data. This cannot be undone.', style: TextStyle(color: context.appColors.textSecondary, fontSize: 13, height: 1.4)),
               const SizedBox(height: 16),
-              SizedBox(width: double.infinity, height: 44, child: OutlinedButton(onPressed: _showDeleteAccountDialog, style: OutlinedButton.styleFrom(foregroundColor: AppColors.dangerColor, side: const BorderSide(color: AppColors.dangerColor), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))), child: const Text('Delete My Account', style: TextStyle(fontWeight: FontWeight.w700)))),
+              SizedBox(width: double.infinity, height: 44, child: OutlinedButton(onPressed: _showDeleteAccountDialog, style: OutlinedButton.styleFrom(foregroundColor: context.appColors.dangerColor, side: BorderSide(color: context.appColors.dangerColor), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))), child: Text('Delete My Account', style: TextStyle(fontWeight: FontWeight.w700)))),
             ]),
           ),
         ],
@@ -263,15 +263,15 @@ class _ActionTile extends StatelessWidget {
   const _ActionTile({required this.icon, required this.label, required this.subtitle, required this.onTap});
   @override
   Widget build(BuildContext context) {
-    return Material(color: AppColors.cardColor, borderRadius: BorderRadius.circular(14), child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(14), child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
-      Container(width: 44, height: 44, decoration: BoxDecoration(color: AppColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: AppColors.accentColor, size: 22)),
+    return Material(color: context.appColors.cardColor, borderRadius: BorderRadius.circular(14), child: InkWell(onTap: onTap, borderRadius: BorderRadius.circular(14), child: Padding(padding: EdgeInsets.all(16), child: Row(children: [
+      Container(width: 44, height: 44, decoration: BoxDecoration(color: context.appColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: context.appColors.accentColor, size: 22)),
       const SizedBox(width: 14),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: const TextStyle(color: AppColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
+        Text(label, style: TextStyle(color: context.appColors.textPrimary, fontSize: 15, fontWeight: FontWeight.w600)),
         const SizedBox(height: 2),
-        Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+        Text(subtitle, style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
       ])),
-      const Icon(Icons.chevron_right, color: AppColors.textHint, size: 20),
+      Icon(Icons.chevron_right, color: context.appColors.textHint, size: 20),
     ]))));
   }
 }
@@ -282,8 +282,8 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-      Flexible(child: Text(value, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500), textAlign: TextAlign.end, overflow: TextOverflow.ellipsis)),
+      Text(label, style: TextStyle(color: context.appColors.textSecondary, fontSize: 13)),
+      Flexible(child: Text(value, style: TextStyle(color: context.appColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500), textAlign: TextAlign.end, overflow: TextOverflow.ellipsis)),
     ]);
   }
 }

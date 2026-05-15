@@ -83,9 +83,9 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
       initialTime: isStart ? _quietStart : _quietEnd,
       builder: (ctx, child) => Theme(
         data: Theme.of(ctx).copyWith(
-          colorScheme: const ColorScheme.dark(
-            primary: AppColors.accentColor,
-            surface: AppColors.surfaceColor,
+          colorScheme: ColorScheme.dark(
+            primary: context.appColors.accentColor,
+            surface: context.appColors.surfaceColor,
           ),
         ),
         child: child!,
@@ -110,14 +110,14 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
   Widget build(BuildContext context) {
     if (!_loaded) {
       return Scaffold(
-        backgroundColor: AppColors.bgColor,
-        appBar: AppBar(title: const Text('Notifications')),
-        body: const Center(child: CircularProgressIndicator(color: AppColors.accentColor)),
+        backgroundColor: context.appColors.bgColor,
+        appBar: AppBar(title: Text('Notifications')),
+        body: Center(child: CircularProgressIndicator(color: context.appColors.accentColor)),
       );
     }
 
     return Scaffold(
-      backgroundColor: AppColors.bgColor,
+      backgroundColor: context.appColors.bgColor,
       appBar: AppBar(title: const Text('Notifications')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
@@ -130,20 +130,20 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               _saveBool('notif_pill_reminders', v);
             }),
             if (_pillReminders) ...[
-              const Divider(color: AppColors.divider, height: 24),
+              Divider(color: context.appColors.divider, height: 24),
               _ToggleRow(icon: Icons.notification_important_outlined, label: 'Missed Pill Alerts', subtitle: 'Alert when you miss a scheduled dose', value: _missedPillAlerts, onChanged: (v) {
                 setState(() => _missedPillAlerts = v);
                 _saveBool('notif_missed_pill_alerts', v);
               }),
-              const Divider(color: AppColors.divider, height: 24),
+              Divider(color: context.appColors.divider, height: 24),
               // Reminder timing
               Row(children: [
-                Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: const Icon(Icons.timer_outlined, color: AppColors.accentColor, size: 20)),
+                Container(width: 40, height: 40, decoration: BoxDecoration(color: context.appColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Icon(Icons.timer_outlined, color: context.appColors.accentColor, size: 20)),
                 const SizedBox(width: 14),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text('Remind Me Before', style: TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
+                  Text('Remind Me Before', style: TextStyle(color: context.appColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 2),
-                  Text('$_pillReminderMinutes minutes before scheduled time', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                  Text('$_pillReminderMinutes minutes before scheduled time', style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
                 ])),
               ]),
               const SizedBox(height: 12),
@@ -187,12 +187,12 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
               setState(() => _scanAlerts = v);
               _saveBool('notif_scan_alerts', v);
             }),
-            const Divider(color: AppColors.divider, height: 24),
+            Divider(color: context.appColors.divider, height: 24),
             _ToggleRow(icon: Icons.today_outlined, label: 'Daily Summary', subtitle: 'Receive a daily health summary at 9 PM', value: _dailySummary, onChanged: (v) {
               setState(() => _dailySummary = v);
               _saveBool('notif_daily_summary', v);
             }),
-            const Divider(color: AppColors.divider, height: 24),
+            Divider(color: context.appColors.divider, height: 24),
             _ToggleRow(icon: Icons.date_range_outlined, label: 'Weekly Report', subtitle: 'Get a weekly health progress report', value: _weeklyReport, onChanged: (v) {
               setState(() => _weeklyReport = v);
               _saveBool('notif_weekly_report', v);
@@ -220,11 +220,11 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
           // ── Info ──
           GlassCard(
-            borderColor: AppColors.accentColor.withValues(alpha: 0.15),
+            borderColor: context.appColors.accentColor.withValues(alpha: 0.15),
             child: Row(children: [
-              Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: const Icon(Icons.info_outline, color: AppColors.accentColor, size: 20)),
+              Container(width: 40, height: 40, decoration: BoxDecoration(color: context.appColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)), child: Icon(Icons.info_outline, color: context.appColors.accentColor, size: 20)),
               const SizedBox(width: 14),
-              const Expanded(child: Text('Notifications use Firebase Cloud Messaging. Make sure notifications are enabled in your device settings.', style: TextStyle(color: AppColors.textSecondary, fontSize: 13, height: 1.4))),
+              Expanded(child: Text('Notifications use Firebase Cloud Messaging. Make sure notifications are enabled in your device settings.', style: TextStyle(color: context.appColors.textSecondary, fontSize: 13, height: 1.4))),
             ]),
           ),
         ],
@@ -241,14 +241,14 @@ class _ToggleRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(children: [
-      Container(width: 40, height: 40, decoration: BoxDecoration(color: AppColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Icon(icon, color: AppColors.accentColor, size: 20)),
+      Container(width: 40, height: 40, decoration: BoxDecoration(color: context.appColors.accentColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)), child: Icon(icon, color: context.appColors.accentColor, size: 20)),
       const SizedBox(width: 14),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(label, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
+        Text(label, style: TextStyle(color: context.appColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
         const SizedBox(height: 2),
-        Text(subtitle, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+        Text(subtitle, style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
       ])),
-      Switch(value: value, onChanged: onChanged, activeThumbColor: AppColors.accentColor, activeTrackColor: AppColors.accentColor.withValues(alpha: 0.3), inactiveThumbColor: AppColors.textSecondary, inactiveTrackColor: AppColors.cardColor),
+      Switch(value: value, onChanged: onChanged, activeThumbColor: context.appColors.accentColor, activeTrackColor: context.appColors.accentColor.withValues(alpha: 0.3), inactiveThumbColor: context.appColors.textSecondary, inactiveTrackColor: context.appColors.cardColor),
     ]);
   }
 }
@@ -265,11 +265,11 @@ class _TimingChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? AppColors.accentColor.withValues(alpha: 0.2) : AppColors.surfaceColor,
+          color: selected ? context.appColors.accentColor.withValues(alpha: 0.2) : context.appColors.surfaceColor,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? AppColors.accentColor : AppColors.cardColor),
+          border: Border.all(color: selected ? context.appColors.accentColor : context.appColors.cardColor),
         ),
-        child: Text(label, style: TextStyle(color: selected ? AppColors.accentColor : AppColors.textSecondary, fontSize: 13, fontWeight: selected ? FontWeight.w700 : FontWeight.w500)),
+        child: Text(label, style: TextStyle(color: selected ? context.appColors.accentColor : context.appColors.textSecondary, fontSize: 13, fontWeight: selected ? FontWeight.w700 : FontWeight.w500)),
       ),
     );
   }
@@ -285,11 +285,11 @@ class _TimePickerTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14),
-        decoration: BoxDecoration(color: AppColors.surfaceColor, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.accentColor.withValues(alpha: 0.2))),
+        decoration: BoxDecoration(color: context.appColors.surfaceColor, borderRadius: BorderRadius.circular(12), border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.2))),
         child: Column(children: [
-          Text(label, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+          Text(label, style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
           const SizedBox(height: 4),
-          Text(time, style: const TextStyle(color: AppColors.accentColor, fontSize: 18, fontWeight: FontWeight.w700)),
+          Text(time, style: TextStyle(color: context.appColors.accentColor, fontSize: 18, fontWeight: FontWeight.w700)),
         ]),
       ),
     );
