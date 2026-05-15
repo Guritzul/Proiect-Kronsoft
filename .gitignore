@@ -94,3 +94,8 @@ google-services.json
 serviceAccountKey.json
 node_modules
 .env
+logcat.txt
+fix_const.dart
+fix_const.py
+refactor.py
+*.log
