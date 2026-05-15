@@ -54,10 +54,10 @@ jobs:
           cache: true
 
       - name: Create local.properties
-        working-directory: ./Frontend/frontend_kronsoft/android
         run: |
-          echo "flutter.sdk=$(which flutter | sed 's/\/bin\/flutter//')" >> local.properties
-          echo "sdk.dir=$ANDROID_SDK_ROOT" >> local.properties
+          mkdir -p Frontend/frontend_kronsoft/android
+          echo "flutter.sdk=$(which flutter | sed 's/\/bin\/flutter//')" >> Frontend/frontend_kronsoft/android/local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> Frontend/frontend_kronsoft/android/local.properties
 
       - name: Install Dependencies
         working-directory: ./Frontend/frontend_kronsoft
