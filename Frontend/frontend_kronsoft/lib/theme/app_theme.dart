@@ -95,8 +95,8 @@ class AppTheme {
   static Color accentSubtle = const Color(0xFF4DD0E1).withValues(alpha: 0.10);
 
   static final lightColors = AppColorsExtension(
-    bgColor: const Color(0xFFF5F5F7),
-    surfaceColor: const Color(0xFFFFFFFF),
+    bgColor: const Color(0xFFFFFFFF),
+    surfaceColor: const Color(0xFFF8F9FA),
     cardColor: const Color(0xFFFFFFFF),
     accentColor: accentColor,
     accentGlow: accentGlow,
@@ -104,28 +104,28 @@ class AppTheme {
     successColor: successColor,
     warningColor: warningColor,
     dangerColor: dangerColor,
-    textPrimary: const Color(0xFF1A1A2E),
-    textSecondary: const Color(0xFF6E6E8A),
-    textHint: const Color(0xFF9E9EB8),
-    divider: const Color(0xFFE0E0E0),
-    shimmer: const Color(0xFFEEEEEE),
+    textPrimary: const Color(0xFF111827),
+    textSecondary: const Color(0xFF6B7280),
+    textHint: const Color(0xFF9CA3AF),
+    divider: const Color(0xFFE5E7EB),
+    shimmer: const Color(0xFFF3F4F6),
   );
 
   static final darkColors = AppColorsExtension(
-    bgColor: const Color(0xFF0F0F1A),
-    surfaceColor: const Color(0xFF1A1A2E),
-    cardColor: const Color(0xFF252540),
+    bgColor: const Color(0xFF0B0F19),
+    surfaceColor: const Color(0xFF111827),
+    cardColor: const Color(0xFF1F2937),
     accentColor: accentColor,
     accentGlow: accentGlow,
     accentSubtle: accentSubtle,
     successColor: successColor,
     warningColor: warningColor,
     dangerColor: dangerColor,
-    textPrimary: const Color(0xFFF0F0F0),
-    textSecondary: const Color(0xFF9E9EB8),
-    textHint: const Color(0xFF6E6E8A),
-    divider: const Color(0xFF2A2A45),
-    shimmer: const Color(0xFF3A3A55),
+    textPrimary: const Color(0xFFF9FAFB),
+    textSecondary: const Color(0xFF9CA3AF),
+    textHint: const Color(0xFF6B7280),
+    divider: const Color(0xFF374151),
+    shimmer: const Color(0xFF4B5563),
   );
 
   static ThemeData get lightTheme {
