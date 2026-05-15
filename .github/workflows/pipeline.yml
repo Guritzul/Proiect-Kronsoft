@@ -70,7 +70,7 @@ jobs:
 
       - name: Check Formatting
         working-directory: ./Frontend/frontend_kronsoft
-        run: flutter format --set-exit-if-changed .
+        run: dart format --set-exit-if-changed .
 
       - name: Run Frontend Tests
         working-directory: ./Frontend/frontend_kronsoft
