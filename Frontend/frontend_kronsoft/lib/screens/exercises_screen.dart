@@ -3,7 +3,6 @@ import '../theme/app_theme.dart';
 import '../services/api_service.dart';
 import 'exercise_detail_screen.dart';
 
-/// Exercises grid screen with filters for body part and difficulty.
 class ExercisesScreen extends StatefulWidget {
   const ExercisesScreen({super.key});
 
@@ -20,7 +19,17 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
   String? _selectedDifficulty;
 
   final List<String> _bodyParts = [
-    'All', 'Forearm', 'Biceps', 'Triceps', 'Back', 'Legs', 'Shoulders', 'Chest', 'Core', 'Neck', 'Cardio',
+    'All',
+    'Forearm',
+    'Biceps',
+    'Triceps',
+    'Back',
+    'Legs',
+    'Shoulders',
+    'Chest',
+    'Core',
+    'Neck',
+    'Cardio',
   ];
   final List<String> _difficulties = ['All', 'Easy', 'Medium', 'Hard'];
 
@@ -37,7 +46,11 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         bodyPart: _selectedBodyPart?.toLowerCase(),
         difficulty: _selectedDifficulty,
       );
-      if (mounted) setState(() { _exercises = data; _loading = false; });
+      if (mounted)
+        setState(() {
+          _exercises = data;
+          _loading = false;
+        });
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }
@@ -50,27 +63,36 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
       appBar: AppBar(title: const Text('Recovery Exercises')),
       body: Column(
         children: [
-          // ── Filters ──
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Body Part', style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
+                Text(
+                  'Body Part',
+                  style: TextStyle(
+                    color: context.appColors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 SizedBox(
                   height: 36,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: _bodyParts.length,
-                    separatorBuilder: (context, index) => const SizedBox(width: 8),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 8),
                     itemBuilder: (_, i) {
                       final bp = _bodyParts[i];
-                      final selected = (_selectedBodyPart == null && bp == 'All') ||
+                      final selected =
+                          (_selectedBodyPart == null && bp == 'All') ||
                           _selectedBodyPart == bp;
                       return GestureDetector(
                         onTap: () {
-                          setState(() => _selectedBodyPart = bp == 'All' ? null : bp);
+                          setState(
+                            () => _selectedBodyPart = bp == 'All' ? null : bp,
+                          );
                           _loadExercises();
                         },
                         child: AnimatedContainer(
@@ -79,7 +101,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: selected
-                                ? context.appColors.accentColor.withValues(alpha: 0.2)
+                                ? context.appColors.accentColor.withValues(
+                                    alpha: 0.2,
+                                  )
                                 : context.appColors.cardColor,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
@@ -91,9 +115,13 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                           child: Text(
                             bp,
                             style: TextStyle(
-                              color: selected ? context.appColors.accentColor : context.appColors.textSecondary,
+                              color: selected
+                                  ? context.appColors.accentColor
+                                  : context.appColors.textSecondary,
                               fontSize: 13,
-                              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                              fontWeight: selected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
                             ),
                           ),
                         ),
@@ -102,21 +130,33 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                Text('Difficulty', style: TextStyle(color: context.appColors.textSecondary, fontSize: 12)),
+                Text(
+                  'Difficulty',
+                  style: TextStyle(
+                    color: context.appColors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 SizedBox(
                   height: 36,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     itemCount: _difficulties.length,
-                    separatorBuilder: (context, index) => const SizedBox(width: 8),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(width: 8),
                     itemBuilder: (_, i) {
                       final d = _difficulties[i];
-                      final selected = (_selectedDifficulty == null && d == 'All') ||
+                      final selected =
+                          (_selectedDifficulty == null && d == 'All') ||
                           _selectedDifficulty?.toLowerCase() == d.toLowerCase();
                       return GestureDetector(
                         onTap: () {
-                          setState(() => _selectedDifficulty = d == 'All' ? null : d.toLowerCase());
+                          setState(
+                            () => _selectedDifficulty = d == 'All'
+                                ? null
+                                : d.toLowerCase(),
+                          );
                           _loadExercises();
                         },
                         child: AnimatedContainer(
@@ -125,7 +165,9 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: selected
-                                ? context.appColors.accentColor.withValues(alpha: 0.2)
+                                ? context.appColors.accentColor.withValues(
+                                    alpha: 0.2,
+                                  )
                                 : context.appColors.cardColor,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
@@ -137,9 +179,13 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
                           child: Text(
                             d,
                             style: TextStyle(
-                              color: selected ? context.appColors.accentColor : context.appColors.textSecondary,
+                              color: selected
+                                  ? context.appColors.accentColor
+                                  : context.appColors.textSecondary,
                               fontSize: 13,
-                              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                              fontWeight: selected
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
                             ),
                           ),
                         ),
@@ -152,47 +198,69 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
           ),
           const SizedBox(height: 12),
 
-          // ── Grid ──
           Expanded(
             child: _loading
-                ? Center(child: CircularProgressIndicator(color: context.appColors.accentColor))
+                ? Center(
+                    child: CircularProgressIndicator(
+                      color: context.appColors.accentColor,
+                    ),
+                  )
                 : _exercises.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.fitness_center, size: 56, color: context.appColors.textSecondary.withValues(alpha: 0.4)),
-                            const SizedBox(height: 10),
-                            Text('No exercises found', style: TextStyle(color: context.appColors.textSecondary)),
-                            const SizedBox(height: 4),
-                            Text('Try adjusting filters', style: TextStyle(color: context.appColors.textHint, fontSize: 13)),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.fitness_center,
+                          size: 56,
+                          color: context.appColors.textSecondary.withValues(
+                            alpha: 0.4,
+                          ),
                         ),
-                      )
-                    : RefreshIndicator(
-                        color: context.appColors.accentColor,
-                        backgroundColor: context.appColors.surfaceColor,
-                        onRefresh: _loadExercises,
-                        child: GridView.builder(
-                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        const SizedBox(height: 10),
+                        Text(
+                          'No exercises found',
+                          style: TextStyle(
+                            color: context.appColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Try adjusting filters',
+                          style: TextStyle(
+                            color: context.appColors.textHint,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : RefreshIndicator(
+                    color: context.appColors.accentColor,
+                    backgroundColor: context.appColors.surfaceColor,
+                    onRefresh: _loadExercises,
+                    child: GridView.builder(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             mainAxisSpacing: 14,
                             crossAxisSpacing: 14,
                             childAspectRatio: 0.78,
                           ),
-                          itemCount: _exercises.length,
-                          itemBuilder: (_, i) => _ExerciseCard(
-                            exercise: _exercises[i],
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ExerciseDetailScreen(exercise: _exercises[i]),
-                              ),
-                            ),
+                      itemCount: _exercises.length,
+                      itemBuilder: (_, i) => _ExerciseCard(
+                        exercise: _exercises[i],
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ExerciseDetailScreen(exercise: _exercises[i]),
                           ),
                         ),
                       ),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -243,19 +311,22 @@ class _ExerciseCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: context.appColors.cardColor,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.1)),
+          border: Border.all(
+            color: context.appColors.accentColor.withValues(alpha: 0.1),
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image placeholder with icon
             Expanded(
               flex: 3,
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: context.appColors.surfaceColor,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(18),
+                  ),
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -265,10 +336,13 @@ class _ExerciseCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                child: Icon(_bodyPartIcon, size: 40, color: context.appColors.accentColor.withValues(alpha: 0.5)),
+                child: Icon(
+                  _bodyPartIcon,
+                  size: 40,
+                  color: context.appColors.accentColor.withValues(alpha: 0.5),
+                ),
               ),
             ),
-            // Info
             Expanded(
               flex: 2,
               child: Padding(
@@ -294,7 +368,10 @@ class _ExerciseCard extends StatelessWidget {
                         if (bodyPart.isNotEmpty)
                           Text(
                             bodyPart,
-                            style: TextStyle(color: context.appColors.textHint, fontSize: 11),
+                            style: TextStyle(
+                              color: context.appColors.textHint,
+                              fontSize: 11,
+                            ),
                           ),
                         DifficultyBadge(difficulty: difficulty),
                       ],

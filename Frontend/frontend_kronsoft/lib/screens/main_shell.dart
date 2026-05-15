@@ -6,7 +6,6 @@ import 'pill_tracking_screen.dart';
 import 'exercises_screen.dart';
 import 'profile_screen.dart';
 
-/// Main scaffold with bottom navigation bar – acts as the app shell after login.
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -32,10 +31,7 @@ class MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: context.appColors.surfaceColor,

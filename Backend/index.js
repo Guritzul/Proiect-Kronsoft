@@ -6,7 +6,6 @@ const serviceAccount = require("./serviceAccountKey.json");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Initializeaza Firebase Admin
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -18,13 +17,10 @@ const allergensRoutes = require("./routes/allergens");
 const exerciseRoutes = require("./routes/exercises"); 
 const dashboardRoutes = require('./routes/dashboard');
 
-// Middlewares
 app.use(express.json());
 
-// Auth routes (uses its own middleware from middleware/auth.js)
 app.use('/api/auth', authRoutes);
 
-// Global auth middleware – applies to all routes below
 app.use(async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -40,13 +36,11 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Connect to Railway MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("✅ Connected to Railway MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Routes (all after auth middleware)
 app.use("/api/pills", pillRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/allergens", allergensRoutes);

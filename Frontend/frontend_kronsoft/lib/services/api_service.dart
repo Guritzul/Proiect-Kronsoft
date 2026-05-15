@@ -4,22 +4,17 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
-/// Backend connection config. Folosim IP-ul local pentru a functiona atat pe emulator cat si pe telefon.
 class BackendConfig {
-  static const String baseUrl = 'https://proiect-kronsoft-backend-production.up.railway.app/api';
+  static const String baseUrl =
+      'https://proiect-kronsoft-backend-production.up.railway.app/api';
 }
 
-/// Centralized HTTP client for all backend API calls.
-/// Automatically attaches Firebase auth token to every request.
 class ApiService {
-  // For Android emulator use 10.0.2.2, for physical device use your IP
   static String get baseUrl => BackendConfig.baseUrl;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   static final StreamController<void> allergenHistoryChanged =
       StreamController<void>.broadcast();
-
-  // ── Helpers ──────────────────────────────────────────────────────────────
 
   Future<Map<String, String>> _headers() async {
     final token = await _auth.currentUser?.getIdToken();
@@ -77,19 +72,13 @@ class ApiService {
     throw ApiException(res.statusCode, res.body);
   }
 
-  // ── Dashboard ────────────────────────────────────────────────────────────
-
   Future<Map<String, dynamic>> getDashboard() async {
     return await _get('/dashboard');
   }
 
-  // ── Auth / Profile ───────────────────────────────────────────────────────
-
   Future<Map<String, dynamic>> getProfile() async {
     return await _get('/auth/profile');
   }
-
-  // ── Pills ────────────────────────────────────────────────────────────────
 
   Future<List<dynamic>> getPills() async {
     final data = await _get('/pills');
@@ -127,8 +116,6 @@ class ApiService {
   Future<Map<String, dynamic>> clearPillHistory() async {
     return await _delete('/pills/history');
   }
-
-  // ── Allergens ────────────────────────────────────────────────────────────
 
   Future<Map<String, dynamic>> saveAllergenProfile(
     List<String> allergens,
@@ -186,8 +173,6 @@ class ApiService {
     return await _delete('/allergens/profile');
   }
 
-  // ── Exercises ────────────────────────────────────────────────────────────
-
   Future<List<dynamic>> getExercises({
     String? bodyPart,
     String? difficulty,
@@ -208,14 +193,11 @@ class ApiService {
     return await _get('/exercises/$id');
   }
 
-  // ── Notifications ────────────────────────────────────────────────────────
-
   Future<void> sendNotification(Map<String, dynamic> payload) async {
     await _post('/notifications/send', payload);
   }
 }
 
-/// Simple API error wrapper.
 class ApiException implements Exception {
   final int statusCode;
   final String body;
