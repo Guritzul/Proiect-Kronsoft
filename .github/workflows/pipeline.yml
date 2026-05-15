@@ -63,6 +63,7 @@ jobs:
             );
           }
           EOF
+          dart format lib/firebase_options.dart
 
       - name: Analyze Code
         working-directory: ./Frontend/frontend_kronsoft
