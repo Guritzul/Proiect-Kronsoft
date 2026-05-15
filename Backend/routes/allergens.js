@@ -138,7 +138,7 @@ router.post('/scan-image', upload.single('image'), async (req, res) => {
         }
 
         if (!extractedText || extractedText.length < 5) {
-            return res.status(400).json({ message: "Nu am putut gasi suficient text vizibil in imagine. Incearca o poza mai clara." });
+            return res.status(400).json({ message: "Could not find enough visible text in the image. Try a clearer picture." });
         }
 
         const prompt = `

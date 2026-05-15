@@ -6,13 +6,14 @@ const getAllExercises = async (req, res) => {
       bodyPart: req.query.bodyPart,
       difficulty: req.query.difficulty,
       category: req.query.category,
+      search: req.query.search,
     };
 
     const exercises = await exerciseService.getAllExercises(filters);
 
     res.status(200).json({
       success: true,
-      count: exercises.length, // util pentru aplicația mobilă
+      count: exercises.length,
       data: exercises,
     });
   } catch (error) {
@@ -80,7 +81,7 @@ const deleteExercise = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Exercițiul a fost dezactivat cu succes",
+      message: "Exercise successfully deactivated",
     });
   } catch (error) {
     res.status(400).json({
@@ -90,10 +91,33 @@ const deleteExercise = async (req, res) => {
   }
 };
 
+const toggleFavorite = async (req, res) => {
+  try {
+    const favorites = await exerciseService.toggleFavorite(
+      req.user.uid,
+      req.params.id,
+    );
+    res.status(200).json({ success: true, data: favorites });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+const getFavorites = async (req, res) => {
+  try {
+    const favorites = await exerciseService.getFavorites(req.user.uid);
+    res.status(200).json({ success: true, data: favorites });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   getAllExercises,
   getExerciseById,
   createExercise,
   updateExercise,
   deleteExercise,
+  toggleFavorite,
+  getFavorites,
 };

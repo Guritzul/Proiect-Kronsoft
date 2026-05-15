@@ -177,15 +177,28 @@ class ApiService {
     String? bodyPart,
     String? difficulty,
     String? category,
+    String? search,
   }) async {
     final params = <String, String>{};
     if (bodyPart != null) params['bodyPart'] = bodyPart;
     if (difficulty != null) params['difficulty'] = difficulty;
     if (category != null) params['category'] = category;
+    if (search != null) params['search'] = search;
+
     final query = params.isNotEmpty
-        ? '?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}'
+        ? '?${params.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')}'
         : '';
     final data = await _get('/exercises$query');
+    return data is List ? data : (data['data'] ?? []);
+  }
+
+  Future<List<dynamic>> getFavoriteExercises() async {
+    final data = await _get('/exercises/favorites');
+    return data is List ? data : (data['data'] ?? []);
+  }
+
+  Future<List<dynamic>> toggleFavoriteExercise(String id) async {
+    final data = await _post('/exercises/$id/favorite');
     return data is List ? data : (data['data'] ?? []);
   }
 

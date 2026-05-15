@@ -20,9 +20,9 @@ router.post('/send', async (req, res) => {
 };
 
     await admin.messaging().send(message);
-    res.json({ message: 'Notificare trimisa cu succes!' });
+    res.json({ message: 'Notification successfully sent!' });
   } catch (err) {
-    res.status(500).json({ message: 'Eroare', error: err.message });
+    res.status(500).json({ message: 'Error', error: err.message });
   }
 });
 

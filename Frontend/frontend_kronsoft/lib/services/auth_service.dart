@@ -46,7 +46,7 @@ class AuthService {
       return userCredential;
     } catch (e) {
       debugPrint('Google Sign-In error: $e');
-      return null;
+      rethrow;
     }
   }
 
