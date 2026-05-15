@@ -138,11 +138,18 @@ class _LoginScreenState extends State<LoginScreen>
         );
       }
     } catch (e) {
+      debugPrint('Detailed Google Sign-In error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ $e'),
+            content: Text('❌ Error: $e'),
             backgroundColor: context.appColors.dangerColor,
+            duration: const Duration(seconds: 10),
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
           ),
         );
       }

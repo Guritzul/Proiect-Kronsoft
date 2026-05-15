@@ -81,14 +81,16 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
 
     setState(() => _saving = true);
     try {
-      await _workoutService.saveSession(WorkoutSession(
-        exerciseId: widget.exercise['_id'],
-        exerciseName: widget.exercise['name'],
-        reps: _reps,
-        sets: _sets,
-        durationSeconds: _seconds,
-        date: DateTime.now(),
-      ));
+      await _workoutService.saveSession(
+        WorkoutSession(
+          exerciseId: widget.exercise['_id'],
+          exerciseName: widget.exercise['name'],
+          reps: _reps,
+          sets: _sets,
+          durationSeconds: _seconds,
+          date: DateTime.now(),
+        ),
+      );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Workout saved successfully! ✓')),
@@ -97,9 +99,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving workout: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error saving workout: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -245,7 +247,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: _toggleTimer,
-                      icon: Icon(_timerRunning ? Icons.pause : Icons.play_arrow),
+                      icon: Icon(
+                        _timerRunning ? Icons.pause : Icons.play_arrow,
+                      ),
                       label: Text(_timerRunning ? 'Pause' : 'Start Timer'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: _timerRunning
@@ -254,7 +258,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                     ),
                   ),
@@ -416,15 +421,19 @@ class _RoundButton extends StatelessWidget {
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: filled ? context.appColors.accentColor : context.appColors.surfaceColor,
+          color: filled
+              ? context.appColors.accentColor
+              : context.appColors.surfaceColor,
           shape: BoxShape.circle,
-          boxShadow: filled ? [
-            BoxShadow(
-              color: context.appColors.accentColor.withValues(alpha: 0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            )
-          ] : null,
+          boxShadow: filled
+              ? [
+                  BoxShadow(
+                    color: context.appColors.accentColor.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
         child: Icon(
           icon,
