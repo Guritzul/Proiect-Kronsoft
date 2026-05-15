@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 /// Backend connection config. Folosim IP-ul local pentru a functiona atat pe emulator cat si pe telefon.
 class BackendConfig {
-  static const String baseUrl = 'http://192.168.100.18:3000/api';
+  static const String baseUrl = 'https://proiect-kronsoft-backend-production.up.railway.app/api';
 }
 
 /// Centralized HTTP client for all backend API calls.

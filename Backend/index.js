@@ -40,10 +40,10 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Connect to MongoDB Atlas
+// Connect to Railway MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .then(() => console.log("✅ Connected to Railway MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // Routes (all after auth middleware)

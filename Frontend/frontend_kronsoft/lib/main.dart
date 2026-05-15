@@ -21,9 +21,15 @@ void main() async {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
     
     // Initializam serviciile de notificari dar nu blocam pornirea aplicatiei daca unul esueaza
-    await NotificationService().initialize().catchError((e) => debugPrint('Error initializing FCM: $e'));
-    await LocalNotificationService.initialize().catchError((e) => debugPrint('Error initializing local notifications: $e'));
-    await LocalNotificationService.scheduleDailyExerciseNotification().catchError((e) => debugPrint('Error scheduling exercise notification: $e'));
+    await NotificationService().initialize().catchError((e) {
+      debugPrint('Error initializing FCM: $e');
+    });
+    await LocalNotificationService.initialize().catchError((e) {
+      debugPrint('Error initializing local notifications: $e');
+    });
+    await LocalNotificationService.scheduleDailyExerciseNotification().catchError((e) {
+      debugPrint('Error scheduling exercise notification: $e');
+    });
 
     LocalNotificationService.onNotificationTapped.stream.listen((payload) {
       _showNotificationDialog(payload);
