@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "groq-sdk": "^1.2.0",
-    "multer": "^2.1.1"
-  }
-}
