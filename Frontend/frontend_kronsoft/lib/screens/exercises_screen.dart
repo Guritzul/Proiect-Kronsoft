@@ -46,11 +46,12 @@ class _ExercisesScreenState extends State<ExercisesScreen> {
         bodyPart: _selectedBodyPart?.toLowerCase(),
         difficulty: _selectedDifficulty,
       );
-      if (mounted)
+      if (mounted) {
         setState(() {
           _exercises = data;
           _loading = false;
         });
+      }
     } catch (_) {
       if (mounted) setState(() => _loading = false);
     }

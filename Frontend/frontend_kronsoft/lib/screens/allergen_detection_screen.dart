@@ -48,11 +48,12 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
   Future<void> _loadHistory() async {
     try {
       final data = await _api.getScanHistory();
-      if (mounted)
+      if (mounted) {
         setState(() {
           _history = data;
           _loadingHistory = false;
         });
+      }
     } catch (_) {
       if (mounted) setState(() => _loadingHistory = false);
     }

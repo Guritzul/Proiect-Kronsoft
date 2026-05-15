@@ -161,10 +161,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                         );
                         await _auth.currentUser!.updatePassword(newPwCtrl.text);
                         if (ctx.mounted) Navigator.pop(ctx);
-                        if (mounted)
+                        if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Password changed ✓')),
                           );
+                        }
                       } catch (e) {
                         setDialogState(() => loading = false);
                         if (mounted) {
@@ -252,12 +253,13 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                 await _auth.currentUser!.reauthenticateWithCredential(cred);
                 await _auth.currentUser!.delete();
                 if (ctx.mounted) Navigator.pop(ctx);
-                if (mounted)
+                if (mounted) {
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (_) => const LoginScreen()),
                     (_) => false,
                   );
+                }
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
