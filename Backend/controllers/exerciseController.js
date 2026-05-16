@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const exerciseService = require("../services/exerciseService");
 
 const getAllExercises = async (req, res) => {
@@ -26,6 +27,9 @@ const getAllExercises = async (req, res) => {
 
 const getExerciseById = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid exercise ID" });
+    }
     const exercise = await exerciseService.getExerciseById(req.params.id);
 
     res.status(200).json({
@@ -58,6 +62,9 @@ const createExercise = async (req, res) => {
 
 const updateExercise = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid exercise ID" });
+    }
     const exercise = await exerciseService.updateExercise(
       req.params.id,
       req.body,
@@ -77,6 +84,9 @@ const updateExercise = async (req, res) => {
 
 const deleteExercise = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid exercise ID" });
+    }
     await exerciseService.deleteExercise(req.params.id);
 
     res.status(200).json({
@@ -93,6 +103,9 @@ const deleteExercise = async (req, res) => {
 
 const toggleFavorite = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ success: false, message: "Invalid exercise ID" });
+    }
     const favorites = await exerciseService.toggleFavorite(
       req.userId,
       req.params.id,
