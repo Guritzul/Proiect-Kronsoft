@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_theme.dart';
 import '../services/api_service.dart';
 import '../services/local_notification_service.dart';
@@ -37,10 +38,26 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
     }
   }
 
-  Future<void> _markTaken(String id) async {
+  Future<void> _markTaken(Map<String, dynamic> pill) async {
+    final id = pill['_id'] ?? pill['id'] ?? '';
     setState(() => _takenIds.add(id));
     try {
       await _api.markPillTaken(id);
+
+      // Reschedule to skip today's missed pill alert
+      final prefs = await SharedPreferences.getInstance();
+      final missedAlerts = prefs.getBool('notif_missed_pill_alerts') ?? true;
+      final reminderMin = prefs.getInt('notif_pill_reminder_min') ?? 15;
+
+      await LocalNotificationService.schedulePillNotifications(
+        pillId: id.hashCode.abs() % 100000,
+        pillMongoId: id,
+        pillName: pill['name'] ?? '',
+        dosage: pill['dosage'] ?? '',
+        schedule: List<String>.from(pill['schedule'] ?? []),
+        reminderMinutes: reminderMin,
+        missedPillAlerts: missedAlerts,
+      );
     } catch (_) {
       if (mounted) setState(() => _takenIds.remove(id));
     }
@@ -208,6 +225,10 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                           .toList(),
                     });
 
+                    final prefs = await SharedPreferences.getInstance();
+                    final missedAlerts =
+                        prefs.getBool('notif_missed_pill_alerts') ?? true;
+
                     await LocalNotificationService.schedulePillNotifications(
                       pillId: pill['_id'].toString().hashCode.abs() % 100000,
                       pillMongoId: pill['_id'].toString(),
@@ -219,6 +240,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                           .map((s) => s.trim())
                           .toList(),
                       reminderMinutes: selectedReminder,
+                      missedPillAlerts: missedAlerts,
                     );
 
                     _loadPills();
@@ -442,7 +464,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
               ),
               if (!taken) ...[
                 IconButton(
-                  onPressed: () => _markTaken(id),
+                  onPressed: () => _markTaken(pill),
                   icon: Icon(
                     Icons.check_circle_outline,
                     color: context.appColors.successColor,

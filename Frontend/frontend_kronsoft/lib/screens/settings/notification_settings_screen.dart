@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/app_theme.dart';
+import '../../services/api_service.dart';
+import '../../services/local_notification_service.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -65,6 +67,36 @@ class _NotificationSettingsScreenState
   Future<void> _saveInt(String key, int value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(key, value);
+  }
+
+  Future<void> _refreshPillNotifications() async {
+    final api = ApiService();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final pillReminders = prefs.getBool('notif_pill_reminders') ?? true;
+      final missedAlerts = prefs.getBool('notif_missed_pill_alerts') ?? true;
+      final reminderMin = prefs.getInt('notif_pill_reminder_min') ?? 15;
+
+      final pills = await api.getPills();
+      for (var pill in pills) {
+        final id = pill['_id'] ?? pill['id'] ?? '';
+        final pillId = id.hashCode.abs() % 100000;
+
+        if (!pillReminders) {
+          await LocalNotificationService.cancelPillNotifications(pillId);
+        } else {
+          await LocalNotificationService.schedulePillNotifications(
+            pillId: pillId,
+            pillMongoId: id,
+            pillName: pill['name'] ?? '',
+            dosage: pill['dosage'] ?? '',
+            schedule: List<String>.from(pill['schedule'] ?? []),
+            reminderMinutes: reminderMin,
+            missedPillAlerts: missedAlerts,
+          );
+        }
+      }
+    } catch (_) {}
   }
 
   String _formatTime(TimeOfDay t) {
@@ -132,9 +164,10 @@ class _NotificationSettingsScreenState
                   label: 'Pill Reminders',
                   subtitle: 'Get notified when it\'s time to take pills',
                   value: _pillReminders,
-                  onChanged: (v) {
+                  onChanged: (v) async {
                     setState(() => _pillReminders = v);
-                    _saveBool('notif_pill_reminders', v);
+                    await _saveBool('notif_pill_reminders', v);
+                    _refreshPillNotifications();
                   },
                 ),
                 if (_pillReminders) ...[
@@ -144,9 +177,10 @@ class _NotificationSettingsScreenState
                     label: 'Missed Pill Alerts',
                     subtitle: 'Alert when you miss a scheduled dose',
                     value: _missedPillAlerts,
-                    onChanged: (v) {
+                    onChanged: (v) async {
                       setState(() => _missedPillAlerts = v);
-                      _saveBool('notif_missed_pill_alerts', v);
+                      await _saveBool('notif_missed_pill_alerts', v);
+                      _refreshPillNotifications();
                     },
                   ),
                   Divider(color: context.appColors.divider, height: 24),
@@ -199,36 +233,40 @@ class _NotificationSettingsScreenState
                       _TimingChip(
                         label: '5 min',
                         selected: _pillReminderMinutes == 5,
-                        onTap: () {
+                        onTap: () async {
                           setState(() => _pillReminderMinutes = 5);
-                          _saveInt('notif_pill_reminder_min', 5);
+                          await _saveInt('notif_pill_reminder_min', 5);
+                          _refreshPillNotifications();
                         },
                       ),
                       const SizedBox(width: 8),
                       _TimingChip(
                         label: '10 min',
                         selected: _pillReminderMinutes == 10,
-                        onTap: () {
+                        onTap: () async {
                           setState(() => _pillReminderMinutes = 10);
-                          _saveInt('notif_pill_reminder_min', 10);
+                          await _saveInt('notif_pill_reminder_min', 10);
+                          _refreshPillNotifications();
                         },
                       ),
                       const SizedBox(width: 8),
                       _TimingChip(
                         label: '15 min',
                         selected: _pillReminderMinutes == 15,
-                        onTap: () {
+                        onTap: () async {
                           setState(() => _pillReminderMinutes = 15);
-                          _saveInt('notif_pill_reminder_min', 15);
+                          await _saveInt('notif_pill_reminder_min', 15);
+                          _refreshPillNotifications();
                         },
                       ),
                       const SizedBox(width: 8),
                       _TimingChip(
                         label: '30 min',
                         selected: _pillReminderMinutes == 30,
-                        onTap: () {
+                        onTap: () async {
                           setState(() => _pillReminderMinutes = 30);
-                          _saveInt('notif_pill_reminder_min', 30);
+                          await _saveInt('notif_pill_reminder_min', 30);
+                          _refreshPillNotifications();
                         },
                       ),
                     ],
