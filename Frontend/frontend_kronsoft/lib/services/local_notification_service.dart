@@ -104,9 +104,9 @@ class LocalNotificationService {
         );
       }
 
-      // 3. Missed pill alert (2 minutes after for testing)
+      // 3. Missed pill alert (30 minutes after)
       if (missedPillAlerts) {
-        int missedMinute = minute + 2;
+        int missedMinute = minute + 30;
         int missedHour = hour;
 
         if (missedMinute >= 60) {
