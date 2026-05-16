@@ -80,6 +80,40 @@ jobs:
           EOF
           dart format lib/firebase_options.dart
 
+      - name: Create Dummy Google Services JSON
+        working-directory: ./Frontend/frontend_kronsoft
+        run: |
+          cat <<EOF > android/app/google-services.json
+          {
+            "project_info": {
+              "project_number": "123456789012",
+              "project_id": "dummy-project-id",
+              "storage_bucket": "dummy-project-id.appspot.com"
+            },
+            "client": [
+              {
+                "client_info": {
+                  "mobilesdk_app_id": "1:123456789012:android:123456789012",
+                  "android_client_info": {
+                    "package_name": "com.example.frontend_kronsoft"
+                  }
+                },
+                "api_key": [
+                  {
+                    "current_key": "dummy-api-key"
+                  }
+                ],
+                "services": {
+                  "appinvite_service": {
+                    "other_platform_oauth_client": []
+                  }
+                }
+              }
+            ],
+            "configuration_version": "1"
+          }
+          EOF
+
       - name: Analyze Code
         working-directory: ./Frontend/frontend_kronsoft
         run: flutter analyze
