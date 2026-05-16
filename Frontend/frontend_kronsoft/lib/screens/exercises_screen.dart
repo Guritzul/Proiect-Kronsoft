@@ -62,7 +62,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       final results = await Future.wait([
         _api.getExercises(
           bodyPart: _selectedBodyPart?.toLowerCase(),
-          difficulty: _selectedDifficulty,
+          difficulty: _selectedDifficulty?.toLowerCase(),
           search: _searchController.text.trim(),
         ),
         _api.getFavoriteExercises(),
@@ -74,8 +74,16 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           _loading = false;
         });
       }
-    } catch (_) {
-      if (mounted) setState(() => _loading = false);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _loading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading exercises: $e'),
+            backgroundColor: context.appColors.dangerColor,
+          ),
+        );
+      }
     }
   }
 
