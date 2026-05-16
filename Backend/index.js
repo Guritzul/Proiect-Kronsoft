@@ -2,7 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT 
+  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+  : require("./serviceAccountKey.json");
 const app = express();
 const port = process.env.PORT || 3000;
 
