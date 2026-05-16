@@ -11,11 +11,11 @@ router
   .get(controller.getAllExercises)
   .post(controller.createExercise);
 
-// Parameterized routes last - using regex to ensure it only matches 24-char hex strings (ObjectIds)
-router.post("/:id([0-9a-fA-F]{24})/favorite", controller.toggleFavorite);
+// Parameterized routes last
+router.post("/:id/favorite", controller.toggleFavorite);
 
 router
-  .route("/:id([0-9a-fA-F]{24})")
+  .route("/:id")
   .get(controller.getExerciseById)
   .put(controller.updateExercise)
   .delete(controller.deleteExercise);
