@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
-const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT 
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
   ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
   : require("./serviceAccountKey.json");
 const app = express();
@@ -16,7 +16,7 @@ const authRoutes = require('./routes/auth');
 const pillRoutes = require("./routes/pills");
 const notificationRoutes = require("./routes/notifications");
 const allergensRoutes = require("./routes/allergens");
-const exerciseRoutes = require("./routes/exercises"); 
+const exerciseRoutes = require("./routes/exercises");
 const dashboardRoutes = require('./routes/dashboard');
 
 app.use(express.json());
