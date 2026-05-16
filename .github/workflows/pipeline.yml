@@ -63,56 +63,16 @@ jobs:
         working-directory: ./Frontend/frontend_kronsoft
         run: flutter pub get
 
-      - name: Create Dummy Firebase Options
+      - name: Create Firebase Options from Secret
         working-directory: ./Frontend/frontend_kronsoft
         run: |
-          cat <<EOF > lib/firebase_options.dart
-          import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
-          class DefaultFirebaseOptions {
-            static FirebaseOptions get currentPlatform => android;
-            static const FirebaseOptions android = FirebaseOptions(
-              apiKey: 'dummy',
-              appId: 'dummy',
-              messagingSenderId: 'dummy',
-              projectId: 'dummy',
-            );
-          }
-          EOF
+          echo "${{ secrets.FIREBASE_OPTIONS_DART }}" > lib/firebase_options.dart
           dart format lib/firebase_options.dart
 
-      - name: Create Dummy Google Services JSON
+      - name: Create Google Services JSON from Secret
         working-directory: ./Frontend/frontend_kronsoft
         run: |
-          cat <<EOF > android/app/google-services.json
-          {
-            "project_info": {
-              "project_number": "123456789012",
-              "project_id": "dummy-project-id",
-              "storage_bucket": "dummy-project-id.appspot.com"
-            },
-            "client": [
-              {
-                "client_info": {
-                  "mobilesdk_app_id": "1:123456789012:android:123456789012",
-                  "android_client_info": {
-                    "package_name": "com.example.frontend_kronsoft"
-                  }
-                },
-                "api_key": [
-                  {
-                    "current_key": "dummy-api-key"
-                  }
-                ],
-                "services": {
-                  "appinvite_service": {
-                    "other_platform_oauth_client": []
-                  }
-                }
-              }
-            ],
-            "configuration_version": "1"
-          }
-          EOF
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" > android/app/google-services.json
 
       - name: Analyze Code
         working-directory: ./Frontend/frontend_kronsoft
@@ -129,6 +89,12 @@ jobs:
       - name: Build Android APK
         working-directory: ./Frontend/frontend_kronsoft
         run: flutter build apk --debug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug
+          path: Frontend/frontend_kronsoft/build/app/outputs/flutter-apk/app-debug.apk
 
   versioning:
     name: Automatic Versioning
@@ -150,6 +116,12 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: minor
           tag_prefix: v
+
+      - name: Download APK Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-debug
+          path: release-artifacts
           
       - name: Create a GitHub Release
         uses: ncipollo/release-action@v1
@@ -157,4 +129,5 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+          artifacts: release-artifacts/*.apk
           token: ${{ secrets.GITHUB_TOKEN }}
