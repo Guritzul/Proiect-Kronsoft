@@ -94,7 +94,7 @@ const deleteExercise = async (req, res) => {
 const toggleFavorite = async (req, res) => {
   try {
     const favorites = await exerciseService.toggleFavorite(
-      req.user.uid,
+      req.userId,
       req.params.id,
     );
     res.status(200).json({ success: true, data: favorites });
@@ -105,7 +105,7 @@ const toggleFavorite = async (req, res) => {
 
 const getFavorites = async (req, res) => {
   try {
-    const favorites = await exerciseService.getFavorites(req.user.uid);
+    const favorites = await exerciseService.getFavorites(req.userId);
     res.status(200).json({ success: true, data: favorites });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
