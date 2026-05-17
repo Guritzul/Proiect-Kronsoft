@@ -171,7 +171,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
     return ListView.separated(
       padding: const EdgeInsets.all(20),
       itemCount: _workoutHistory.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 24),
+      separatorBuilder: (_, _) => const SizedBox(height: 24),
       itemBuilder: (_, index) {
         final group = _workoutHistory[index];
         final dateStr = group['date'] ?? '';
@@ -264,7 +264,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: sessionLogs.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 16),
+                        separatorBuilder: (_, _) => const SizedBox(height: 16),
                         itemBuilder: (ctx, i) {
                           final log = sessionLogs[i];
                           final ex = log['exerciseId'] ?? {};
@@ -360,7 +360,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
     return ListView.separated(
       padding: const EdgeInsets.all(20),
       itemCount: _singleExerciseHistory.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 24),
+      separatorBuilder: (_, _) => const SizedBox(height: 24),
       itemBuilder: (_, index) {
         final group = _singleExerciseHistory[index];
         final dateStr = group['date'] ?? '';
@@ -381,7 +381,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: logs.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (ctx, i) {
                 final log = logs[i];
                 final ex = log['exerciseId'] ?? {};

@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../services/api_service.dart';
@@ -194,7 +193,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: bodyPart.toLowerCase(),
+                        initialValue: bodyPart.toLowerCase(),
                         decoration: const InputDecoration(
                           labelText: 'Body Part',
                           prefixIcon: Icon(Icons.accessibility_new_rounded),
@@ -207,7 +206,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: difficulty.toLowerCase(),
+                        initialValue: difficulty.toLowerCase(),
                         decoration: const InputDecoration(
                           labelText: 'Difficulty',
                           prefixIcon: Icon(Icons.speed_rounded),
@@ -302,6 +301,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                         'category': category,
                         'mediaUrl': mediaUrl,
                       });
+                      if (!mounted) return;
                       navigator.pop();
                       setState(() {
                         _exerciseData = updated;
@@ -354,6 +354,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
     );
 
     if (confirm == true) {
+      if (!mounted) return;
       final navigator = Navigator.of(context);
       final messenger = ScaffoldMessenger.of(context);
       final colors = context.appColors;

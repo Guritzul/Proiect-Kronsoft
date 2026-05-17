@@ -175,6 +175,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                   final reminderMin = pillRemindersEnabled
                       ? (prefs.getInt('notif_pill_reminder_min') ?? 15)
                       : 0;
+                  final missedAlerts = prefs.getBool('notif_missed_pill_alerts') ?? true;
 
                   await LocalNotificationService.schedulePillNotifications(
                     pillId: pill['_id'].toString().hashCode.abs() % 100000,
@@ -187,26 +188,9 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                         .map((s) => s.trim())
                         .toList(),
                     reminderMinutes: reminderMin,
+                    missedPillAlerts: missedAlerts,
                   );
 
-<<<<<<< HEAD
-                    final prefs = await SharedPreferences.getInstance();
-                    final missedAlerts =
-                        prefs.getBool('notif_missed_pill_alerts') ?? true;
-
-                    await LocalNotificationService.schedulePillNotifications(
-                      pillId: pill['_id'].toString().hashCode.abs() % 100000,
-                      pillMongoId: pill['_id'].toString(),
-                      pillName: nameCtrl.text.trim(),
-                      dosage: dosageCtrl.text.trim(),
-                      schedule: timeCtrl.text
-                          .trim()
-                          .split(',')
-                          .map((s) => s.trim())
-                          .toList(),
-                      reminderMinutes: selectedReminder,
-                      missedPillAlerts: missedAlerts,
-=======
                   _loadPills();
 
                   if (mounted) {
@@ -219,7 +203,6 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                         ),
                         backgroundColor: context.appColors.successColor,
                       ),
->>>>>>> d3d7538f9fdf8e9594e7a14b9627a9246c2b8206
                     );
                   }
                 } catch (e) {
