@@ -18,16 +18,24 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load saved theme mode
+  // Load saved theme and skin
   ThemeMode initialTheme = ThemeMode.light;
+  AppSkin initialSkin = AppSkin.defaultSkin;
   try {
     final prefs = await SharedPreferences.getInstance();
     final isDark = prefs.getBool('app_theme_dark') ?? false;
     initialTheme = isDark ? ThemeMode.dark : ThemeMode.light;
+
+    final skinName = prefs.getString('app_skin') ?? 'defaultSkin';
+    initialSkin = AppSkin.values.firstWhere(
+      (e) => e.toString().split('.').last == skinName,
+      orElse: () => AppSkin.defaultSkin,
+    );
   } catch (e) {
-    debugPrint('Error loading saved theme: $e');
+    debugPrint('Error loading saved theme or skin: $e');
   }
   themeNotifier.value = initialTheme;
+  skinNotifier.value = initialSkin;
 
   try {
     await Firebase.initializeApp(
@@ -212,15 +220,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: themeNotifier,
-      builder: (context, ThemeMode currentMode, child) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([themeNotifier, skinNotifier]),
+      builder: (context, _) {
+        final currentMode = themeNotifier.value;
+        final currentSkin = skinNotifier.value;
         return MaterialApp(
           title: 'Health App',
           debugShowCheckedModeBanner: false,
           navigatorKey: navigatorKey,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
+          theme: AppTheme.getThemeFor(currentSkin, Brightness.light),
+          darkTheme: AppTheme.getThemeFor(currentSkin, Brightness.dark),
           themeMode: currentMode,
           home: const SplashScreen(),
         );

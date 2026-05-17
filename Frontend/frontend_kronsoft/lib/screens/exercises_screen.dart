@@ -881,16 +881,22 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         ],
       ),
       floatingActionButton: _tabController.index == 0
-          ? FloatingActionButton(
-              onPressed: _showAddExerciseDialog,
-              tooltip: 'Add Custom Exercise',
-              child: const Icon(Icons.add_rounded),
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 80),
+              child: FloatingActionButton(
+                onPressed: _showAddExerciseDialog,
+                tooltip: 'Add Custom Exercise',
+                child: const Icon(Icons.add_rounded),
+              ),
             )
           : _tabController.index == 2
-          ? FloatingActionButton(
-              onPressed: _showCreateWorkoutDialog,
-              tooltip: 'Create Custom Workout',
-              child: const Icon(Icons.playlist_add_rounded),
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 80),
+              child: FloatingActionButton(
+                onPressed: _showCreateWorkoutDialog,
+                tooltip: 'Create Custom Workout',
+                child: const Icon(Icons.playlist_add_rounded),
+              ),
             )
           : null,
     );

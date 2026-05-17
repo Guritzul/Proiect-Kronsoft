@@ -137,24 +137,24 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
   IconData _resultIcon(String? status) {
     switch (status?.toUpperCase()) {
       case 'SAFE':
-        return Icons.check_circle;
+        return Icons.check_circle_rounded;
       case 'WARNING':
-        return Icons.warning_rounded;
+        return Icons.warning_amber_rounded;
       case 'DANGER':
         return Icons.dangerous_rounded;
       default:
-        return Icons.info_outline;
+        return Icons.info_outline_rounded;
     }
   }
 
   String _statusLabel(String? status) {
     switch (status?.toUpperCase()) {
       case 'SAFE':
-        return 'SAFE';
+        return 'SAFE TO CONSUME';
       case 'WARNING':
-        return 'WARNING';
+        return 'POTENTIAL ALLERGENS';
       case 'DANGER':
-        return 'DANGER';
+        return 'DANGER - AVOID';
       default:
         return 'UNKNOWN';
     }
@@ -186,12 +186,12 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
         return Container(
           decoration: BoxDecoration(
             color: context.appColors.surfaceColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
             border: Border(
-              top: BorderSide(color: color.withValues(alpha: 0.5), width: 2),
+              top: BorderSide(color: color.withValues(alpha: 0.3), width: 1.5),
             ),
           ),
-          padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.85,
           ),
@@ -201,56 +201,66 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
             children: [
               Center(
                 child: Container(
-                  width: 40,
+                  width: 44,
                   height: 4,
-                  margin: const EdgeInsets.only(bottom: 20),
+                  margin: const EdgeInsets.only(bottom: 24),
                   decoration: BoxDecoration(
-                    color: context.appColors.textSecondary.withValues(
-                      alpha: 0.3,
-                    ),
+                    color: context.appColors.textSecondary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
               ),
               Row(
                 children: [
-                  Icon(_resultIcon(status), color: color, size: 36),
-                  const SizedBox(width: 12),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(_resultIcon(status), color: color, size: 28),
+                  ),
+                  const SizedBox(width: 14),
                   Expanded(
-                    child: Text(
-                      _statusLabel(status),
-                      style: TextStyle(
-                        color: color,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _statusLabel(status),
+                          style: TextStyle(
+                            color: color,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        if (dateStr != null)
+                          Text(
+                            _formatDate(dateStr),
+                            style: TextStyle(
+                              color: context.appColors.textSecondary,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                  if (dateStr != null)
-                    Text(
-                      _formatDate(dateStr),
-                      style: TextStyle(
-                        color: context.appColors.textSecondary,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
                 ],
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               if (message != null && message.isNotEmpty) ...[
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.08),
+                    color: color.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: color.withValues(alpha: 0.2)),
+                    border: Border.all(color: color.withValues(alpha: 0.15)),
                   ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline, color: color, size: 22),
+                      Icon(Icons.info_outline_rounded, color: color, size: 20),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
@@ -273,8 +283,8 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   'Allergens Found',
                   style: TextStyle(
                     color: context.appColors.textPrimary,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -288,9 +298,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.15),
+                        color: color.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: color.withValues(alpha: 0.3)),
+                        border: Border.all(color: color.withValues(alpha: 0.25)),
                       ),
                       child: Text(
                         a.toString(),
@@ -306,11 +316,11 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                 const SizedBox(height: 24),
               ],
               Text(
-                'Scanned Text',
+                'Extracted Ingredient Text',
                 style: TextStyle(
                   color: context.appColors.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
               const SizedBox(height: 12),
@@ -319,11 +329,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: context.appColors.bgColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: context.appColors.accentColor.withValues(
-                        alpha: 0.1,
-                      ),
+                      color: context.appColors.accentColor.withValues(alpha: 0.08),
                     ),
                   ),
                   child: SingleChildScrollView(
@@ -338,10 +346,10 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               AccentButton(
-                label: 'Close Details',
-                icon: Icons.close_rounded,
+                label: 'Close Analysis Report',
+                icon: Icons.check_circle_outline_rounded,
                 onPressed: () => Navigator.pop(context),
               ),
             ],
@@ -365,46 +373,53 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
       backgroundColor: context.appColors.bgColor,
       appBar: AppBar(title: const Text('Allergen Detection')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         children: [
           GlassCard(
+            padding: const EdgeInsets.all(18),
+            borderColor: context.appColors.accentColor.withValues(alpha: 0.1),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.lightbulb_outline,
-                      color: context.appColors.accentColor.withValues(
-                        alpha: 0.8,
+                    Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: context.appColors.accentColor.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
                       ),
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'How it works',
-                      style: TextStyle(
+                      child: Icon(
+                        Icons.insights_rounded,
                         color: context.appColors.accentColor,
+                        size: 18,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'AI Diagnostic Guide',
+                      style: TextStyle(
+                        color: context.appColors.textPrimary,
                         fontSize: 15,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 16),
                 _StepRow(
                   number: '1',
-                  text: 'Read the ingredient list on the food label',
+                  text: 'Place ingredient label inside camera target',
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 _StepRow(
                   number: '2',
-                  text: 'Type or paste the ingredients below',
+                  text: 'Take photo or paste label text below',
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 10),
                 _StepRow(
                   number: '3',
-                  text: 'Tap "Scan" to check for your allergens',
+                  text: 'Inspect the customized allergen report instantly',
                 ),
               ],
             ),
@@ -421,24 +436,24 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
               filled: true,
               fillColor: context.appColors.surfaceColor,
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(
-                  color: context.appColors.accentColor.withValues(alpha: 0.25),
+                  color: context.appColors.accentColor.withValues(alpha: 0.15),
                 ),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide(
                   color: context.appColors.accentColor,
-                  width: 2,
+                  width: 1.5,
                 ),
               ),
             ),
           ),
           const SizedBox(height: 16),
           AccentButton(
-            label: 'Scan Text',
-            icon: Icons.search_rounded,
+            label: 'Analyze Ingredients',
+            icon: Icons.biotech_rounded,
             isLoading: _scanning,
             onPressed: _scan,
           ),
@@ -451,22 +466,25 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                       ? null
                       : () => _scanFromImage(ImageSource.camera),
                   icon: Icon(
-                    Icons.camera_alt_outlined,
+                    Icons.camera_alt_rounded,
                     color: context.appColors.accentColor,
+                    size: 18,
                   ),
                   label: Text(
-                    'Camera',
-                    style: TextStyle(color: context.appColors.accentColor),
+                    'Camera OCR',
+                    style: TextStyle(
+                      color: context.appColors.accentColor,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
-                      color: context.appColors.accentColor.withValues(
-                        alpha: 0.5,
-                      ),
+                      color: context.appColors.accentColor.withValues(alpha: 0.25),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                 ),
@@ -478,22 +496,25 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                       ? null
                       : () => _scanFromImage(ImageSource.gallery),
                   icon: Icon(
-                    Icons.photo_library_outlined,
+                    Icons.photo_library_rounded,
                     color: context.appColors.accentColor,
+                    size: 18,
                   ),
                   label: Text(
-                    'Gallery',
-                    style: TextStyle(color: context.appColors.accentColor),
+                    'Upload Photo',
+                    style: TextStyle(
+                      color: context.appColors.accentColor,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 13,
+                    ),
                   ),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
-                      color: context.appColors.accentColor.withValues(
-                        alpha: 0.5,
-                      ),
+                      color: context.appColors.accentColor.withValues(alpha: 0.25),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                 ),
@@ -506,30 +527,36 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
             ScaleTransition(scale: _resultScale, child: _buildResultCard()),
 
           const SizedBox(height: 28),
-          const SectionHeader(title: 'Scan History'),
+          const SectionHeader(title: 'Diagnostic Scan Logs'),
+          const SizedBox(height: 12),
           if (_loadingHistory)
             Center(
-              child: CircularProgressIndicator(
-                color: context.appColors.accentColor,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: CircularProgressIndicator(
+                  color: context.appColors.accentColor,
+                ),
               ),
             )
           else if (_history.isEmpty)
             Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
+                padding: const EdgeInsets.symmetric(vertical: 28),
                 child: Column(
                   children: [
                     Icon(
-                      Icons.history,
-                      color: context.appColors.textSecondary.withValues(
-                        alpha: 0.5,
-                      ),
-                      size: 48,
+                      Icons.manage_search_rounded,
+                      color: context.appColors.textSecondary.withValues(alpha: 0.4),
+                      size: 54,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Text(
-                      'No scans yet',
-                      style: TextStyle(color: context.appColors.textSecondary),
+                      'No diagnosis records found',
+                      style: TextStyle(
+                        color: context.appColors.textSecondary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ],
                 ),
@@ -544,153 +571,170 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   item['allergensFound'] as List<dynamic>? ?? [];
               final rawText = item['labelText'] ?? '';
               final shortText = rawText.replaceAll('\n', ' ').trim();
+              final color = _resultColor(status);
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: GestureDetector(
                   onTap: () => _showScanDetails(item),
-                  child: GlassCard(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: context.appColors.cardColor,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: color.withValues(alpha: 0.15),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: color.withValues(alpha: 0.02),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    borderColor: _resultColor(status).withValues(alpha: 0.3),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: _resultColor(
-                                  status,
-                                ).withValues(alpha: 0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                _resultIcon(status),
-                                color: _resultColor(status),
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    shortText.isEmpty
-                                        ? 'Image Scan'
-                                        : shortText,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                      color: context.appColors.textPrimary,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w700,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            left: 0,
+                            top: 0,
+                            bottom: 0,
+                            width: 5,
+                            child: Container(color: color),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(20, 16, 16, 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(6),
+                                      decoration: BoxDecoration(
+                                        color: color.withValues(alpha: 0.1),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        _resultIcon(status),
+                                        color: color,
+                                        size: 20,
+                                      ),
                                     ),
-                                  ),
-                                  if (dateStr != null) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      _formatDate(dateStr),
-                                      style: TextStyle(
-                                        color: context.appColors.textSecondary
-                                            .withValues(alpha: 0.8),
-                                        fontSize: 12,
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            shortText.isEmpty
+                                                ? 'Image Scan'
+                                                : shortText,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: context.appColors.textPrimary,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                          ),
+                                          if (dateStr != null) ...[
+                                            const SizedBox(height: 3),
+                                            Text(
+                                              _formatDate(dateStr),
+                                              style: TextStyle(
+                                                color: context.appColors.textSecondary,
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 5,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: color.withValues(alpha: 0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        status.toString().toUpperCase(),
+                                        style: TextStyle(
+                                          color: color,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w900,
+                                          letterSpacing: 0.5,
+                                        ),
                                       ),
                                     ),
                                   ],
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _resultColor(
-                                  status,
-                                ).withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                _statusLabel(status),
-                                style: TextStyle(
-                                  color: _resultColor(status),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w800,
                                 ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        if (allergensFound.isNotEmpty) ...[
-                          const SizedBox(height: 14),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 54),
-                            child: Wrap(
-                              spacing: 8,
-                              runSpacing: 6,
-                              children: allergensFound.map<Widget>((a) {
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: _resultColor(
-                                      status,
-                                    ).withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: _resultColor(
-                                        status,
-                                      ).withValues(alpha: 0.2),
+                                if (allergensFound.isNotEmpty) ...[
+                                  const SizedBox(height: 12),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 38),
+                                    child: Wrap(
+                                      spacing: 6,
+                                      runSpacing: 6,
+                                      children: allergensFound.map<Widget>((a) {
+                                        return Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8,
+                                            vertical: 4,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: color.withValues(alpha: 0.08),
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: color.withValues(alpha: 0.15),
+                                            ),
+                                          ),
+                                          child: Text(
+                                            a.toString(),
+                                            style: TextStyle(
+                                              color: color,
+                                              fontSize: 10.5,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
                                     ),
                                   ),
-                                  child: Text(
-                                    a.toString(),
-                                    style: TextStyle(
-                                      color: _resultColor(status),
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                    ),
+                                ],
+                                const SizedBox(height: 12),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 38),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'View complete report',
+                                        style: TextStyle(
+                                          color: context.appColors.accentColor,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Icon(
+                                        Icons.arrow_forward_rounded,
+                                        size: 12,
+                                        color: context.appColors.accentColor,
+                                      ),
+                                    ],
                                   ),
-                                );
-                              }).toList(),
+                                ),
+                              ],
                             ),
                           ),
                         ],
-                        const SizedBox(height: 12),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 54),
-                          child: Row(
-                            children: [
-                              Text(
-                                'Tap to view full details',
-                                style: TextStyle(
-                                  color: context.appColors.accentColor
-                                      .withValues(alpha: 0.9),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              Icon(
-                                Icons.arrow_forward_ios_rounded,
-                                size: 10,
-                                color: context.appColors.accentColor.withValues(
-                                  alpha: 0.9,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -708,52 +752,62 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
     final message = _scanResult!['message'] as String?;
 
     return GlassCard(
-      borderColor: color.withValues(alpha: 0.5),
+      borderColor: color.withValues(alpha: 0.35),
       child: Column(
         children: [
-          Icon(_resultIcon(status), color: color, size: 52),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(_resultIcon(status), color: color, size: 40),
+          ),
           const SizedBox(height: 12),
           Text(
             _statusLabel(status),
             style: TextStyle(
               color: color,
-              fontSize: 24,
+              fontSize: 20,
               fontWeight: FontWeight.w900,
-              letterSpacing: 2,
+              letterSpacing: 0.5,
             ),
           ),
           if (message != null && message.isNotEmpty) ...[
             const SizedBox(height: 12),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
+                color: color.withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: color.withValues(alpha: 0.1)),
               ),
               child: Text(
                 message,
                 style: TextStyle(
-                  color: color.withValues(alpha: 0.9),
+                  color: context.appColors.textPrimary,
                   fontSize: 13,
-                  height: 1.4,
+                  height: 1.45,
+                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
               ),
             ),
           ],
           if (allergens is List && allergens.isNotEmpty) ...[
-            const SizedBox(height: 14),
+            const SizedBox(height: 16),
             Text(
-              'Detected allergens:',
+              'Detected Allergens:',
               style: TextStyle(
                 color: context.appColors.textSecondary,
-                fontSize: 13,
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Wrap(
               spacing: 8,
-              runSpacing: 6,
+              runSpacing: 8,
               children: allergens.map<Widget>((a) {
                 return Container(
                   padding: const EdgeInsets.symmetric(
@@ -761,16 +815,16 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
+                    color: color.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: color.withValues(alpha: 0.35)),
+                    border: Border.all(color: color.withValues(alpha: 0.25)),
                   ),
                   child: Text(
                     a.toString(),
                     style: TextStyle(
                       color: color,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 12.5,
                     ),
                   ),
                 );
@@ -809,8 +863,9 @@ class _StepRow extends StatelessWidget {
           width: 24,
           height: 24,
           decoration: BoxDecoration(
-            color: context.appColors.accentColor.withValues(alpha: 0.15),
+            color: context.appColors.accentColor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
+            border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.15)),
           ),
           child: Center(
             child: Text(
@@ -818,7 +873,7 @@ class _StepRow extends StatelessWidget {
               style: TextStyle(
                 color: context.appColors.accentColor,
                 fontSize: 12,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ),
@@ -829,8 +884,9 @@ class _StepRow extends StatelessWidget {
             text,
             style: TextStyle(
               color: context.appColors.textSecondary,
-              fontSize: 13,
-              height: 1.4,
+              fontSize: 13.5,
+              height: 1.45,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
