@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'home_screen.dart';
@@ -111,15 +112,20 @@ class MainShellState extends State<MainShell> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(36),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _buildNavItem(0, Icons.home_rounded, 'Home'),
-                  _buildNavItem(1, Icons.qr_code_scanner_rounded, 'Scan'),
-                  _buildNavItem(2, Icons.medication_rounded, 'Pills'),
-                  _buildNavItem(3, Icons.fitness_center_rounded, 'Workout'),
-                  _buildNavItem(4, Icons.person_rounded, 'Profile'),
-                ],
+              child: BackdropFilter(
+                filter: skinNotifier.value == AppSkin.glassSkin
+                    ? ImageFilter.blur(sigmaX: 15, sigmaY: 15)
+                    : ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildNavItem(0, Icons.home_rounded, 'Home'),
+                    _buildNavItem(1, Icons.qr_code_scanner_rounded, 'Scan'),
+                    _buildNavItem(2, Icons.medication_rounded, 'Pills'),
+                    _buildNavItem(3, Icons.fitness_center_rounded, 'Workout'),
+                    _buildNavItem(4, Icons.person_rounded, 'Profile'),
+                  ],
+                ),
               ),
             ),
           ),

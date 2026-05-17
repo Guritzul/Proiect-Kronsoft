@@ -233,6 +233,12 @@ class MyApp extends StatelessWidget {
           darkTheme: AppTheme.getThemeFor(currentSkin, Brightness.dark),
           themeMode: currentMode,
           home: const SplashScreen(),
+          builder: (context, child) {
+            if (currentSkin == AppSkin.glassSkin) {
+              return AeroBackground(child: child ?? const SizedBox());
+            }
+            return child ?? const SizedBox();
+          },
         );
       },
     );
