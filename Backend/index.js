@@ -2,11 +2,12 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
+  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+  : require("./serviceAccountKey.json");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Initializeaza Firebase Admin
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -15,16 +16,14 @@ const authRoutes = require('./routes/auth');
 const pillRoutes = require("./routes/pills");
 const notificationRoutes = require("./routes/notifications");
 const allergensRoutes = require("./routes/allergens");
-const exerciseRoutes = require("./routes/exercises"); 
+const exerciseRoutes = require("./routes/exercises");
 const dashboardRoutes = require('./routes/dashboard');
+const workoutRoutes = require('./routes/workouts');
 
-// Middlewares
 app.use(express.json());
 
-// Auth routes (uses its own middleware from middleware/auth.js)
 app.use('/api/auth', authRoutes);
 
-// Global auth middleware – applies to all routes below
 app.use(async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -40,18 +39,17 @@ app.use(async (req, res, next) => {
   }
 });
 
-// Connect to Railway MongoDB
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => console.log("✅ Connected to Railway MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Routes (all after auth middleware)
 app.use("/api/pills", pillRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/allergens", allergensRoutes);
 app.use("/api/exercises", exerciseRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/workouts', workoutRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

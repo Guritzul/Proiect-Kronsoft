@@ -7,6 +7,8 @@ import 'services/local_notification_service.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -15,21 +17,42 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
+  // Load saved theme and skin
+  ThemeMode initialTheme = ThemeMode.light;
+  AppSkin initialSkin = AppSkin.defaultSkin;
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    final prefs = await SharedPreferences.getInstance();
+    final isDark = prefs.getBool('app_theme_dark') ?? false;
+    initialTheme = isDark ? ThemeMode.dark : ThemeMode.light;
+
+    final skinName = prefs.getString('app_skin') ?? 'defaultSkin';
+    initialSkin = AppSkin.values.firstWhere(
+      (e) => e.toString().split('.').last == skinName,
+      orElse: () => AppSkin.defaultSkin,
+    );
+  } catch (e) {
+    debugPrint('Error loading saved theme or skin: $e');
+  }
+  themeNotifier.value = initialTheme;
+  skinNotifier.value = initialSkin;
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    
-    // Initializam serviciile de notificari dar nu blocam pornirea aplicatiei daca unul esueaza
+
     await NotificationService().initialize().catchError((e) {
       debugPrint('Error initializing FCM: $e');
     });
     await LocalNotificationService.initialize().catchError((e) {
       debugPrint('Error initializing local notifications: $e');
     });
-    await LocalNotificationService.scheduleDailyExerciseNotification().catchError((e) {
-      debugPrint('Error scheduling exercise notification: $e');
-    });
+    await LocalNotificationService.scheduleDailyExerciseNotification()
+        .catchError((e) {
+          debugPrint('Error scheduling exercise notification: $e');
+        });
 
     LocalNotificationService.onNotificationTapped.stream.listen((payload) {
       _showNotificationDialog(payload);
@@ -41,7 +64,7 @@ void main() async {
   runApp(const MyApp());
 }
 
-final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.dark);
+final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
 void _showNotificationDialog(String payload) {
   final context = navigatorKey.currentContext;
@@ -71,7 +94,11 @@ void _showNotificationDialog(String payload) {
             const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.fitness_center, color: ctx.appColors.accentColor, size: 18),
+                Icon(
+                  Icons.fitness_center,
+                  color: ctx.appColors.accentColor,
+                  size: 18,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   'Stay Healthy',
@@ -87,7 +114,10 @@ void _showNotificationDialog(String payload) {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('OK', style: TextStyle(color: ctx.appColors.accentColor)),
+            child: Text(
+              'OK',
+              style: TextStyle(color: ctx.appColors.accentColor),
+            ),
           ),
         ],
       ),
@@ -133,7 +163,11 @@ void _showNotificationDialog(String payload) {
           const SizedBox(height: 12),
           Row(
             children: [
-              Icon(Icons.medication, color: ctx.appColors.accentColor, size: 18),
+              Icon(
+                Icons.medication,
+                color: ctx.appColors.accentColor,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Text(
                 pillName,
@@ -150,14 +184,21 @@ void _showNotificationDialog(String payload) {
               children: [
                 Icon(Icons.scale, color: ctx.appColors.textPrimary, size: 18),
                 const SizedBox(width: 8),
-                Text(dosage, style: TextStyle(color: ctx.appColors.textPrimary)),
+                Text(
+                  dosage,
+                  style: TextStyle(color: ctx.appColors.textPrimary),
+                ),
               ],
             ),
           ],
           const SizedBox(height: 6),
           Row(
             children: [
-              Icon(Icons.access_time, color: ctx.appColors.textPrimary, size: 18),
+              Icon(
+                Icons.access_time,
+                color: ctx.appColors.textPrimary,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Text(time, style: TextStyle(color: ctx.appColors.textPrimary)),
             ],
@@ -179,17 +220,25 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
-      valueListenable: themeNotifier,
-      builder: (context, ThemeMode currentMode, child) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([themeNotifier, skinNotifier]),
+      builder: (context, _) {
+        final currentMode = themeNotifier.value;
+        final currentSkin = skinNotifier.value;
         return MaterialApp(
           title: 'Health App',
           debugShowCheckedModeBanner: false,
           navigatorKey: navigatorKey,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
+          theme: AppTheme.getThemeFor(currentSkin, Brightness.light),
+          darkTheme: AppTheme.getThemeFor(currentSkin, Brightness.dark),
           themeMode: currentMode,
           home: const SplashScreen(),
+          builder: (context, child) {
+            if (currentSkin == AppSkin.glassSkin) {
+              return AeroBackground(child: child ?? const SizedBox());
+            }
+            return child ?? const SizedBox();
+          },
         );
       },
     );

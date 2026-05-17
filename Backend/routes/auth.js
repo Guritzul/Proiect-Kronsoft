@@ -16,17 +16,17 @@ router.post('/sync', auth, async (req, res) => {
     }
     res.json({ user });
   } catch (err) {
-    res.status(500).json({ message: 'Eroare server', error: err.message });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 
 router.get('/profile', auth, async (req, res) => {
   try {
     const user = await User.findOne({ firebaseUid: req.user.uid });
-    if (!user) return res.status(404).json({ message: 'User negasit' });
+    if (!user) return res.status(404).json({ message: 'User not found' });
     res.json({ user });
   } catch (err) {
-    res.status(500).json({ message: 'Eroare server', error: err.message });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 });
 

@@ -1,112 +1,139 @@
-// Importăm repository-ul - service-ul nu vorbește direct cu DB,
-// ci prin repository
 const exerciseRepository = require("../repositories/exerciseRepository");
+const User = require("../models/User");
 
-// ==================== GET ALL ====================
-// Aduce toate exercițiile active, cu filtre opționale
-// filters poate conține: { bodyPart, difficulty, category }
-const getAllExercises = async (filters = {}) => {
-  // Construim obiectul de filtrare
-  // Adăugăm doar filtrele care au fost trimise, nu pe toate
-  const query = { isActive: true }; // afișăm doar exercițiile active
+const getAllExercises = async (filters = {}, userId) => {
+  const query = { isActive: true };
 
-  // Dacă s-a trimis filtru pentru partea corpului, îl adăugăm la query
+  if (userId) {
+    query.$or = [
+      { createdBy: { $exists: false } },
+      { createdBy: null },
+      { createdBy: userId }
+    ];
+  } else {
+    query.$or = [
+      { createdBy: { $exists: false } },
+      { createdBy: null }
+    ];
+  }
+
+  if (filters.search) {
+    query.name = { $regex: filters.search, $options: "i" };
+  }
+
   if (filters.bodyPart) {
     query.bodyPart = filters.bodyPart;
   }
 
-  // Dacă s-a trimis filtru pentru dificultate, îl adăugăm la query
   if (filters.difficulty) {
     query.difficulty = filters.difficulty;
   }
 
-  // Dacă s-a trimis filtru pentru categorie, îl adăugăm la query
   if (filters.category) {
     query.category = filters.category;
   }
 
-  // Trimitem query-ul construit către repository
   return await exerciseRepository.findAll(query);
 };
 
-// ==================== GET BY ID ====================
-// Aduce un exercițiu după ID
-// Aruncă eroare dacă exercițiul nu există sau e inactiv
-const getExerciseById = async (id) => {
+const getExerciseById = async (id, userId) => {
   const exercise = await exerciseRepository.findById(id);
 
-  // Dacă exercițiul nu există în DB, aruncăm o eroare cu mesaj clar
   if (!exercise) {
-    throw new Error("Exercițiul nu a fost găsit");
+    throw new Error("Exercise not found");
   }
 
-  // Dacă exercițiul există dar e marcat ca inactiv (șters soft),
-  // nu îl returnăm
   if (!exercise.isActive) {
-    throw new Error("Exercițiul nu mai este disponibil");
+    throw new Error("Exercise is no longer available");
+  }
+
+  if (exercise.createdBy && exercise.createdBy !== userId) {
+    throw new Error("You do not have permission to access this exercise");
   }
 
   return exercise;
 };
 
-// ==================== CREATE ====================
-// Creează un exercițiu nou după validarea datelor
 const createExercise = async (data) => {
-  // Validare de business - verificăm că numele nu e deja folosit
-  // Această logică aparține service-ului, nu repository-ului
-  const existing = await exerciseRepository.findByName(data.name);
+  const existing = await exerciseRepository.findByNameAndUser(data.name, data.createdBy);
 
   if (existing) {
-    throw new Error("Un exercițiu cu acest nume există deja");
+    throw new Error("An exercise with this name already exists");
   }
 
-  // Dacă totul e ok, trimitem datele la repository pentru salvare
   return await exerciseRepository.create(data);
 };
 
-// ==================== UPDATE ====================
-// Modifică un exercițiu existent
-const updateExercise = async (id, data) => {
-  // Verificăm mai întâi că exercițiul există
+const updateExercise = async (id, data, userId) => {
   const exercise = await exerciseRepository.findById(id);
 
   if (!exercise) {
-    throw new Error("Exercițiul nu a fost găsit");
+    throw new Error("Exercise not found");
   }
 
   if (!exercise.isActive) {
-    throw new Error("Nu poți modifica un exercițiu inactiv");
+    throw new Error("You cannot modify an inactive exercise");
   }
 
-  // Trimitem datele noi la repository pentru update
+  if (!exercise.createdBy) {
+    throw new Error("You cannot modify global exercises");
+  }
+
+  if (exercise.createdBy !== userId) {
+    throw new Error("You do not have permission to modify this exercise");
+  }
+
   return await exerciseRepository.update(id, data);
 };
 
-// ==================== SOFT DELETE ====================
-// Marchează exercițiul ca inactiv în loc să îl șteargă din DB
-// Astfel păstrăm istoricul - exercițiul există în DB dar nu mai e vizibil
-const deleteExercise = async (id) => {
-  // Verificăm că exercițiul există înainte să îl ștergem
+const deleteExercise = async (id, userId) => {
   const exercise = await exerciseRepository.findById(id);
 
   if (!exercise) {
-    throw new Error("Exercițiul nu a fost găsit");
+    throw new Error("Exercise not found");
   }
 
-  // Dacă e deja inactiv, nu are sens să îl ștergem din nou
   if (!exercise.isActive) {
-    throw new Error("Exercițiul este deja inactiv");
+    throw new Error("Exercise is already inactive");
   }
 
-  // Apelăm soft delete în repository
+  if (!exercise.createdBy) {
+    throw new Error("You cannot delete global exercises");
+  }
+
+  if (exercise.createdBy !== userId) {
+    throw new Error("You do not have permission to delete this exercise");
+  }
+
   return await exerciseRepository.softDelete(id);
 };
 
-// Exportăm toate funcțiile pentru a fi folosite în controller
+const toggleFavorite = async (firebaseUid, exerciseId) => {
+  const user = await User.findOne({ firebaseUid });
+  if (!user) throw new Error("User not found");
+
+  const index = user.favoriteExercises.indexOf(exerciseId);
+  if (index === -1) {
+    user.favoriteExercises.push(exerciseId);
+  } else {
+    user.favoriteExercises.splice(index, 1);
+  }
+  await user.save();
+  return user.favoriteExercises;
+};
+
+const getFavorites = async (firebaseUid) => {
+  const user = await User.findOne({ firebaseUid }).populate("favoriteExercises");
+  if (!user) throw new Error("User not found");
+  return user.favoriteExercises;
+};
+
 module.exports = {
   getAllExercises,
   getExerciseById,
   createExercise,
   updateExercise,
   deleteExercise,
+  toggleFavorite,
+  getFavorites,
 };

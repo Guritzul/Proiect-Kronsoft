@@ -38,15 +38,45 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
 
+      - name: Create local.properties
+        run: |
+          mkdir -p Frontend/frontend_kronsoft/android
+          echo "flutter.sdk=$(which flutter | sed 's/\/bin\/flutter//')" >> Frontend/frontend_kronsoft/android/local.properties
+          echo "sdk.dir=$ANDROID_SDK_ROOT" >> Frontend/frontend_kronsoft/android/local.properties
+
       - name: Install Dependencies
         working-directory: ./Frontend/frontend_kronsoft
         run: flutter pub get
+
+      - name: Create Firebase Options from Secret
+        working-directory: ./Frontend/frontend_kronsoft
+        env:
+          FIREBASE_OPTIONS_DART: ${{ secrets.FIREBASE_OPTIONS_DART }}
+        run: |
+          printf "%s" "$FIREBASE_OPTIONS_DART" > lib/firebase_options.dart
+          dart format lib/firebase_options.dart
+
+      - name: Create Google Services JSON from Secret
+        working-directory: ./Frontend/frontend_kronsoft
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          printf "%s" "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
 
       - name: Analyze Code
         working-directory: ./Frontend/frontend_kronsoft
@@ -54,15 +84,40 @@ jobs:
 
       - name: Check Formatting
         working-directory: ./Frontend/frontend_kronsoft
-        run: flutter format --set-exit-if-changed .
+        run: dart format --set-exit-if-changed .
 
       - name: Run Frontend Tests
         working-directory: ./Frontend/frontend_kronsoft
         run: flutter test
 
+      - name: Setup Keystore
+        working-directory: ./Frontend/frontend_kronsoft/android
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > app/release-keystore.jks
+
+      - name: Create key.properties
+        working-directory: ./Frontend/frontend_kronsoft/android
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "storePassword=$ANDROID_KEYSTORE_PASSWORD" > key.properties
+          echo "keyPassword=$ANDROID_KEY_PASSWORD" >> key.properties
+          echo "keyAlias=$ANDROID_KEY_ALIAS" >> key.properties
+          echo "storeFile=release-keystore.jks" >> key.properties
+
       - name: Build Android APK
         working-directory: ./Frontend/frontend_kronsoft
-        run: flutter build apk --debug
+        run: flutter build apk --release
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: Frontend/frontend_kronsoft/build/app/outputs/flutter-apk/app-release.apk
 
   versioning:
     name: Automatic Versioning
@@ -84,6 +139,12 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: minor
           tag_prefix: v
+
+      - name: Download APK Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release
+          path: release-artifacts
           
       - name: Create a GitHub Release
         uses: ncipollo/release-action@v1
@@ -91,4 +152,5 @@ jobs:
           tag: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
           body: ${{ steps.tag_version.outputs.changelog }}
+          artifacts: release-artifacts/*.apk
           token: ${{ secrets.GITHUB_TOKEN }}

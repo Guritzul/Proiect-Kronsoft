@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'api_service.dart';
 
 class AuthService {
-  // Uses the same backend config as ApiService
   String get baseUrl => '${BackendConfig.baseUrl}/auth';
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -47,7 +46,7 @@ class AuthService {
       return userCredential;
     } catch (e) {
       debugPrint('Google Sign-In error: $e');
-      return null;
+      rethrow;
     }
   }
 

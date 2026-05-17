@@ -2,13 +2,12 @@ const Pill = require("../models/pill");
 const router = require("express").Router();
 
 
-// Controller functions
 const getPills = async (req, res) => {
   try {
     const pills = await Pill.find({ userId: req.userId });
     res.status(200).json(pills);
   } catch (error) {
-    console.error("❌ getPills error:", error); // ← adaugă asta
+    console.error("❌ getPills error:", error);
     res.status(500).json({ message: "Failed to fetch pills" });
   }
 };
@@ -143,7 +142,6 @@ const getPillHistory = async (req, res) => {
 };
 
 
-// Routes
 router.get("/", getPills);
 router.post("/", createPill);
 router.delete("/history", deletePillHistory);

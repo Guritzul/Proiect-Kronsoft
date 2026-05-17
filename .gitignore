@@ -77,7 +77,6 @@ Frontend/frontend_kronsoft/app.*.symbols
 Frontend/frontend_kronsoft/app.*.map.json
 
 Frontend/frontend_kronsoft/ios
-Frontend/frontend_kronsoft/android
 Frontend/frontend_kronsoft/linux
 Frontend/frontend_kronsoft/macos
 Frontend/frontend_kronsoft/web
@@ -94,3 +93,8 @@ google-services.json
 serviceAccountKey.json
 node_modules
 .env
+logcat.txt
+fix_const.dart
+fix_const.py
+refactor.py
+*.log

@@ -1,19 +1,28 @@
-//validate input
 const { Router } = require("express");
 const controller = require("../controllers/exerciseController");
+const logController = require("../controllers/exerciseLogController");
 
 const router = Router();
 
-// GET /exercises        → lista tuturor exercițiilor (cu filtre opționale)
-// POST /exercises       → creare exercițiu nou
+// Static routes first
+router.get("/favorites", controller.getFavorites);
+router.get("/history", logController.getHistory);
+
+router
+  .route("/logs")
+  .get(logController.getLogs)
+  .post(logController.logExercise);
+
+router.delete("/logs/:id", logController.deleteLog);
+
 router
   .route("/")
   .get(controller.getAllExercises)
   .post(controller.createExercise);
 
-// GET /exercises/:id    → un exercițiu după ID
-// PUT /exercises/:id    → modificare exercițiu
-// DELETE /exercises/:id → dezactivare exercițiu
+// Parameterized routes last
+router.post("/:id/favorite", controller.toggleFavorite);
+
 router
   .route("/:id")
   .get(controller.getExerciseById)

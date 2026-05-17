@@ -4,22 +4,27 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
-/// Backend connection config. Folosim IP-ul local pentru a functiona atat pe emulator cat si pe telefon.
 class BackendConfig {
-  static const String baseUrl = 'https://proiect-kronsoft-backend-production.up.railway.app/api';
+  // Production Railway URL:
+  static const String baseUrl =
+      'https://proiect-kronsoft-backend-production.up.railway.app/api';
+
+  // Your computer's local Wi-Fi IP (works for both physical phones and emulators on the same Wi-Fi!)
+  // static const String baseUrl = 'http://192.168.0.235:3000/api';
+
+  // Local Android Emulator address:
+  // static const String baseUrl = 'http://10.0.2.2:3000/api';
+
+  // For Local Web, iOS, or real device on localhost:
+  // static const String baseUrl = 'http://localhost:3000/api';
 }
 
-/// Centralized HTTP client for all backend API calls.
-/// Automatically attaches Firebase auth token to every request.
 class ApiService {
-  // For Android emulator use 10.0.2.2, for physical device use your IP
   static String get baseUrl => BackendConfig.baseUrl;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   static final StreamController<void> allergenHistoryChanged =
       StreamController<void>.broadcast();
-
-  // ── Helpers ──────────────────────────────────────────────────────────────
 
   Future<Map<String, String>> _headers() async {
     final token = await _auth.currentUser?.getIdToken();
@@ -77,19 +82,13 @@ class ApiService {
     throw ApiException(res.statusCode, res.body);
   }
 
-  // ── Dashboard ────────────────────────────────────────────────────────────
-
   Future<Map<String, dynamic>> getDashboard() async {
     return await _get('/dashboard');
   }
 
-  // ── Auth / Profile ───────────────────────────────────────────────────────
-
   Future<Map<String, dynamic>> getProfile() async {
     return await _get('/auth/profile');
   }
-
-  // ── Pills ────────────────────────────────────────────────────────────────
 
   Future<List<dynamic>> getPills() async {
     final data = await _get('/pills');
@@ -127,8 +126,6 @@ class ApiService {
   Future<Map<String, dynamic>> clearPillHistory() async {
     return await _delete('/pills/history');
   }
-
-  // ── Allergens ────────────────────────────────────────────────────────────
 
   Future<Map<String, dynamic>> saveAllergenProfile(
     List<String> allergens,
@@ -186,21 +183,32 @@ class ApiService {
     return await _delete('/allergens/profile');
   }
 
-  // ── Exercises ────────────────────────────────────────────────────────────
-
   Future<List<dynamic>> getExercises({
     String? bodyPart,
     String? difficulty,
     String? category,
+    String? search,
   }) async {
     final params = <String, String>{};
     if (bodyPart != null) params['bodyPart'] = bodyPart;
     if (difficulty != null) params['difficulty'] = difficulty;
     if (category != null) params['category'] = category;
+    if (search != null) params['search'] = search;
+
     final query = params.isNotEmpty
-        ? '?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}'
+        ? '?${params.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')}'
         : '';
     final data = await _get('/exercises$query');
+    return data is List ? data : (data['data'] ?? []);
+  }
+
+  Future<List<dynamic>> getFavoriteExercises() async {
+    final data = await _get('/exercises/favorites');
+    return data is List ? data : (data['data'] ?? []);
+  }
+
+  Future<List<dynamic>> toggleFavoriteExercise(String id) async {
+    final data = await _post('/exercises/$id/favorite');
     return data is List ? data : (data['data'] ?? []);
   }
 
@@ -208,14 +216,66 @@ class ApiService {
     return await _get('/exercises/$id');
   }
 
-  // ── Notifications ────────────────────────────────────────────────────────
+  Future<Map<String, dynamic>> createExercise(
+    Map<String, dynamic> exercise,
+  ) async {
+    return await _post('/exercises', exercise);
+  }
+
+  Future<Map<String, dynamic>> logExercise(Map<String, dynamic> log) async {
+    return await _post('/exercises/logs', log);
+  }
+
+  Future<List<dynamic>> getExerciseHistory() async {
+    final data = await _get('/exercises/history');
+    return data is List ? data : (data['data'] ?? []);
+  }
+
+  Future<Map<String, dynamic>> createWorkout(
+    Map<String, dynamic> workout,
+  ) async {
+    return await _post('/workouts', workout);
+  }
+
+  Future<List<dynamic>> getWorkouts() async {
+    final data = await _get('/workouts');
+    return data is List ? data : (data['data'] ?? []);
+  }
+
+  Future<Map<String, dynamic>> updateExercise(
+    String id,
+    Map<String, dynamic> exercise,
+  ) async {
+    final data = await _put('/exercises/$id', exercise);
+    return data is Map<String, dynamic> ? (data['data'] ?? data) : data;
+  }
+
+  Future<void> deleteExercise(String id) async {
+    await _delete('/exercises/$id');
+  }
+
+  Future<Map<String, dynamic>> updateWorkout(
+    String id,
+    Map<String, dynamic> workout,
+  ) async {
+    final data = await _put('/workouts/$id', workout);
+    return data is Map<String, dynamic> ? (data['data'] ?? data) : data;
+  }
+
+  Future<void> deleteWorkout(String id) async {
+    await _delete('/workouts/$id');
+  }
+
+  Future<Map<String, dynamic>> getWorkoutById(String id) async {
+    final data = await _get('/workouts/$id');
+    return data is Map<String, dynamic> ? (data['data'] ?? data) : data;
+  }
 
   Future<void> sendNotification(Map<String, dynamic> payload) async {
     await _post('/notifications/send', payload);
   }
 }
 
-/// Simple API error wrapper.
 class ApiException implements Exception {
   final int statusCode;
   final String body;

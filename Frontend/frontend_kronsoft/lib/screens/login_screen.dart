@@ -138,11 +138,18 @@ class _LoginScreenState extends State<LoginScreen>
         );
       }
     } catch (e) {
+      debugPrint('Detailed Google Sign-In error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('❌ $e'),
+            content: Text('❌ Error: $e'),
             backgroundColor: context.appColors.dangerColor,
+            duration: const Duration(seconds: 10),
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
           ),
         );
       }
@@ -176,7 +183,9 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: context.appColors.accentColor.withValues(alpha: 0.25),
+                          color: context.appColors.accentColor.withValues(
+                            alpha: 0.25,
+                          ),
                           blurRadius: 24,
                           offset: const Offset(0, 6),
                         ),
@@ -277,13 +286,14 @@ class _LoginScreenState extends State<LoginScreen>
                           children: [
                             Expanded(
                               child: Divider(
-                                color: context.appColors.textSecondary.withValues(
-                                  alpha: 0.4,
-                                ),
+                                color: context.appColors.textSecondary
+                                    .withValues(alpha: 0.4),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
                               child: Text(
                                 'or',
                                 style: TextStyle(
@@ -293,9 +303,8 @@ class _LoginScreenState extends State<LoginScreen>
                             ),
                             Expanded(
                               child: Divider(
-                                color: context.appColors.textSecondary.withValues(
-                                  alpha: 0.4,
-                                ),
+                                color: context.appColors.textSecondary
+                                    .withValues(alpha: 0.4),
                               ),
                             ),
                           ],
@@ -394,7 +403,10 @@ class _LoginScreenState extends State<LoginScreen>
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: context.appColors.accentColor, width: 2),
+          borderSide: BorderSide(
+            color: context.appColors.accentColor,
+            width: 2,
+          ),
         ),
         filled: true,
         fillColor: context.appColors.surfaceColor,
