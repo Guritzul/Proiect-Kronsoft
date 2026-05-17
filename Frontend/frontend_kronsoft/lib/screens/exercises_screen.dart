@@ -105,7 +105,9 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           return Container(
             decoration: BoxDecoration(
               color: context.appColors.surfaceColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
             ),
             padding: EdgeInsets.fromLTRB(
               24,
@@ -196,7 +198,9 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                       navigator.pop();
                       messenger.showSnackBar(
                         SnackBar(
-                          content: Text('${exercise['name']} logged successfully! ✓'),
+                          content: Text(
+                            '${exercise['name']} logged successfully! ✓',
+                          ),
                           backgroundColor: colors.successColor,
                         ),
                       );
@@ -335,10 +339,12 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                         ),
                         items: _bodyParts
                             .where((e) => e != 'All')
-                            .map((e) => DropdownMenuItem(
-                                  value: e.toLowerCase(),
-                                  child: Text(e),
-                                ))
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e.toLowerCase(),
+                                child: Text(e),
+                              ),
+                            )
                             .toList(),
                         onChanged: (v) => setDialogState(() => bodyPart = v!),
                       ),
@@ -351,10 +357,12 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                         ),
                         items: _difficulties
                             .where((e) => e != 'All')
-                            .map((e) => DropdownMenuItem(
-                                  value: e.toLowerCase(),
-                                  child: Text(e),
-                                ))
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e.toLowerCase(),
+                                child: Text(e),
+                              ),
+                            )
                             .toList(),
                         onChanged: (v) => setDialogState(() => difficulty = v!),
                       ),
@@ -365,9 +373,12 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                             child: TextFormField(
                               initialValue: '3',
                               keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(labelText: 'Sets'),
-                              validator: (v) =>
-                                  int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                              decoration: const InputDecoration(
+                                labelText: 'Sets',
+                              ),
+                              validator: (v) => int.tryParse(v ?? '') == null
+                                  ? 'Invalid'
+                                  : null,
                               onSaved: (v) => sets = int.parse(v!),
                             ),
                           ),
@@ -376,9 +387,12 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                             child: TextFormField(
                               initialValue: '15',
                               keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(labelText: 'Reps'),
-                              validator: (v) =>
-                                  int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                              decoration: const InputDecoration(
+                                labelText: 'Reps',
+                              ),
+                              validator: (v) => int.tryParse(v ?? '') == null
+                                  ? 'Invalid'
+                                  : null,
                               onSaved: (v) => reps = int.parse(v!),
                             ),
                           ),
@@ -570,7 +584,9 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                   if (formKey.currentState!.validate()) {
                     if (selectedIds.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please select at least one exercise')),
+                        const SnackBar(
+                          content: Text('Please select at least one exercise'),
+                        ),
                       );
                       return;
                     }
@@ -589,7 +605,9 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                       _loadData();
                       messenger.showSnackBar(
                         SnackBar(
-                          content: Text('Workout routine "$name" created successfully! ✓'),
+                          content: Text(
+                            'Workout routine "$name" created successfully! ✓',
+                          ),
                           backgroundColor: colors.successColor,
                         ),
                       );
@@ -663,7 +681,9 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? Colors.white : context.appColors.textSecondary,
+              color: isSelected
+                  ? Colors.white
+                  : context.appColors.textSecondary,
               fontSize: 13,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
             ),
@@ -730,12 +750,19 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                     ),
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
-                        color: context.appColors.accentColor.withValues(alpha: 0.1),
+                        color: context.appColors.accentColor.withValues(
+                          alpha: 0.1,
+                        ),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: context.appColors.accentColor.withValues(alpha: 0.15),
+                          color: context.appColors.accentColor.withValues(
+                            alpha: 0.15,
+                          ),
                         ),
                       ),
                       child: Text(
@@ -750,7 +777,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                     ),
                   ],
                 ),
-                if (w['description'] != null && (w['description'] as String).isNotEmpty) ...[
+                if (w['description'] != null &&
+                    (w['description'] as String).isNotEmpty) ...[
                   const SizedBox(height: 10),
                   Text(
                     w['description'],
@@ -776,7 +804,11 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                           ),
                         ).then((value) => _loadData());
                       },
-                      icon: const Icon(Icons.play_arrow_rounded, size: 18, color: Colors.white),
+                      icon: const Icon(
+                        Icons.play_arrow_rounded,
+                        size: 18,
+                        color: Colors.white,
+                      ),
                       label: const Text(
                         'Start Routine',
                         style: TextStyle(
@@ -787,8 +819,13 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                       ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: context.appColors.accentColor,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                     ),
                   ],
@@ -836,10 +873,10 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                     ),
                   )
                 : _tabController.index == 0
-                    ? _buildExerciseGrid(_exercises)
-                    : _tabController.index == 1
-                        ? _buildExerciseGrid(_favorites, isFavorites: true)
-                        : _buildWorkoutsList(),
+                ? _buildExerciseGrid(_exercises)
+                : _tabController.index == 1
+                ? _buildExerciseGrid(_favorites, isFavorites: true)
+                : _buildWorkoutsList(),
           ),
         ],
       ),
@@ -850,12 +887,12 @@ class _ExercisesScreenState extends State<ExercisesScreen>
               child: const Icon(Icons.add_rounded),
             )
           : _tabController.index == 2
-              ? FloatingActionButton(
-                  onPressed: _showCreateWorkoutDialog,
-                  tooltip: 'Create Custom Workout',
-                  child: const Icon(Icons.playlist_add_rounded),
-                )
-              : null,
+          ? FloatingActionButton(
+              onPressed: _showCreateWorkoutDialog,
+              tooltip: 'Create Custom Workout',
+              child: const Icon(Icons.playlist_add_rounded),
+            )
+          : null,
     );
   }
 
@@ -883,8 +920,15 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           style: TextStyle(color: context.appColors.textPrimary),
           decoration: InputDecoration(
             hintText: 'Search exercises...',
-            hintStyle: TextStyle(color: context.appColors.textHint, fontSize: 14),
-            prefixIcon: Icon(Icons.search_rounded, color: context.appColors.accentColor, size: 20),
+            hintStyle: TextStyle(
+              color: context.appColors.textHint,
+              fontSize: 14,
+            ),
+            prefixIcon: Icon(
+              Icons.search_rounded,
+              color: context.appColors.accentColor,
+              size: 20,
+            ),
             filled: true,
             fillColor: Colors.transparent,
             enabledBorder: InputBorder.none,
@@ -906,7 +950,8 @@ class _ExercisesScreenState extends State<ExercisesScreen>
         separatorBuilder: (context, index) => const SizedBox(width: 8),
         itemBuilder: (context, i) {
           final part = _bodyParts[i];
-          final isSelected = (_selectedBodyPart == null && part == 'All') ||
+          final isSelected =
+              (_selectedBodyPart == null && part == 'All') ||
               _selectedBodyPart?.toLowerCase() == part.toLowerCase();
 
           IconData icon;
@@ -966,10 +1011,12 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: context.appColors.accentColor.withValues(alpha: 0.2),
+                          color: context.appColors.accentColor.withValues(
+                            alpha: 0.2,
+                          ),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
-                        )
+                        ),
                       ]
                     : [],
               ),
@@ -979,15 +1026,21 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                   Icon(
                     icon,
                     size: 14,
-                    color: isSelected ? Colors.white : context.appColors.accentColor,
+                    color: isSelected
+                        ? Colors.white
+                        : context.appColors.accentColor,
                   ),
                   const SizedBox(width: 6),
                   Text(
                     part,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : context.appColors.textSecondary,
+                      color: isSelected
+                          ? Colors.white
+                          : context.appColors.textSecondary,
                       fontSize: 12,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w500,
                     ),
                   ),
                 ],
@@ -1012,12 +1065,15 @@ class _ExercisesScreenState extends State<ExercisesScreen>
       ),
       child: Row(
         children: _difficulties.map((diff) {
-          final isSelected = (_selectedDifficulty == null && diff == 'All') ||
+          final isSelected =
+              (_selectedDifficulty == null && diff == 'All') ||
               _selectedDifficulty?.toLowerCase() == diff.toLowerCase();
           return Expanded(
             child: GestureDetector(
               onTap: () {
-                setState(() => _selectedDifficulty = diff == 'All' ? null : diff);
+                setState(
+                  () => _selectedDifficulty = diff == 'All' ? null : diff,
+                );
                 _loadData();
               },
               child: AnimatedContainer(
@@ -1035,14 +1091,16 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                             color: Colors.black.withValues(alpha: 0.03),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
-                          )
+                          ),
                         ]
                       : [],
                 ),
                 child: Text(
                   diff,
                   style: TextStyle(
-                    color: isSelected ? context.appColors.accentColor : context.appColors.textSecondary,
+                    color: isSelected
+                        ? context.appColors.accentColor
+                        : context.appColors.textSecondary,
                     fontSize: 11,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                   ),
@@ -1062,7 +1120,9 @@ class _ExercisesScreenState extends State<ExercisesScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              isFavorites ? Icons.favorite_border_rounded : Icons.fitness_center_rounded,
+              isFavorites
+                  ? Icons.favorite_border_rounded
+                  : Icons.fitness_center_rounded,
               size: 56,
               color: context.appColors.textHint.withValues(alpha: 0.4),
             ),
@@ -1207,7 +1267,9 @@ class _ExerciseCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: context.appColors.accentColor.withValues(alpha: 0.1),
+                          color: context.appColors.accentColor.withValues(
+                            alpha: 0.1,
+                          ),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -1217,18 +1279,27 @@ class _ExerciseCard extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: context.appColors.surfaceColor,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: context.appColors.accentColor.withValues(alpha: 0.15),
+                            color: context.appColors.accentColor.withValues(
+                              alpha: 0.15,
+                            ),
                           ),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.timer_outlined, size: 9, color: context.appColors.textHint),
+                            Icon(
+                              Icons.timer_outlined,
+                              size: 9,
+                              color: context.appColors.textHint,
+                            ),
                             const SizedBox(width: 3),
                             Text(
                               '${duration}m',
@@ -1320,7 +1391,9 @@ class _ExerciseCard extends StatelessWidget {
                         color: context.appColors.surfaceColor,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: context.appColors.accentColor.withValues(alpha: 0.1),
+                          color: context.appColors.accentColor.withValues(
+                            alpha: 0.1,
+                          ),
                         ),
                       ),
                       child: Icon(
@@ -1342,7 +1415,9 @@ class _ExerciseCard extends StatelessWidget {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: context.appColors.accentColor.withValues(alpha: 0.2),
+                            color: context.appColors.accentColor.withValues(
+                              alpha: 0.2,
+                            ),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),

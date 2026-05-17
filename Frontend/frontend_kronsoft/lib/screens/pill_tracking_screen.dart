@@ -109,9 +109,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: context.appColors.textSecondary.withValues(
-                    alpha: 0.4,
-                  ),
+                  color: context.appColors.textSecondary.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -171,11 +169,13 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                   });
 
                   final prefs = await SharedPreferences.getInstance();
-                  final pillRemindersEnabled = prefs.getBool('notif_pill_reminders') ?? true;
+                  final pillRemindersEnabled =
+                      prefs.getBool('notif_pill_reminders') ?? true;
                   final reminderMin = pillRemindersEnabled
                       ? (prefs.getInt('notif_pill_reminder_min') ?? 15)
                       : 0;
-                  final missedAlerts = prefs.getBool('notif_missed_pill_alerts') ?? true;
+                  final missedAlerts =
+                      prefs.getBool('notif_missed_pill_alerts') ?? true;
 
                   await LocalNotificationService.schedulePillNotifications(
                     pillId: pill['_id'].toString().hashCode.abs() % 100000,
