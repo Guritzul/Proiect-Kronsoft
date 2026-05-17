@@ -10,7 +10,7 @@ const getAllExercises = async (req, res) => {
       search: req.query.search,
     };
 
-    const exercises = await exerciseService.getAllExercises(filters);
+    const exercises = await exerciseService.getAllExercises(filters, req.userId);
 
     res.status(200).json({
       success: true,
@@ -30,7 +30,7 @@ const getExerciseById = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ success: false, message: "Invalid exercise ID" });
     }
-    const exercise = await exerciseService.getExerciseById(req.params.id);
+    const exercise = await exerciseService.getExerciseById(req.params.id, req.userId);
 
     res.status(200).json({
       success: true,
@@ -46,7 +46,8 @@ const getExerciseById = async (req, res) => {
 
 const createExercise = async (req, res) => {
   try {
-    const exercise = await exerciseService.createExercise(req.body);
+    const data = { ...req.body, createdBy: req.userId };
+    const exercise = await exerciseService.createExercise(data);
 
     res.status(201).json({
       success: true,
@@ -68,6 +69,7 @@ const updateExercise = async (req, res) => {
     const exercise = await exerciseService.updateExercise(
       req.params.id,
       req.body,
+      req.userId
     );
 
     res.status(200).json({
@@ -87,7 +89,7 @@ const deleteExercise = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ success: false, message: "Invalid exercise ID" });
     }
-    await exerciseService.deleteExercise(req.params.id);
+    await exerciseService.deleteExercise(req.params.id, req.userId);
 
     res.status(200).json({
       success: true,

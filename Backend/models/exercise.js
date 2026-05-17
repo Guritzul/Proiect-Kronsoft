@@ -73,6 +73,11 @@ const exerciseSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    createdBy: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,

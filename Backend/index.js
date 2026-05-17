@@ -18,6 +18,7 @@ const notificationRoutes = require("./routes/notifications");
 const allergensRoutes = require("./routes/allergens");
 const exerciseRoutes = require("./routes/exercises");
 const dashboardRoutes = require('./routes/dashboard');
+const workoutRoutes = require('./routes/workouts');
 
 app.use(express.json());
 
@@ -48,6 +49,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/allergens", allergensRoutes);
 app.use("/api/exercises", exerciseRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/workouts', workoutRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");
