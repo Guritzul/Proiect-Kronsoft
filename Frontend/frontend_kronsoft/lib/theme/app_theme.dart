@@ -144,86 +144,96 @@ class AppTheme {
     shimmer: const Color(0xFF1E293B),
   );
 
-  // --- 2. GLASSMORPHISM SKIN PALETTE (Orchid / Amethyst / Translucent) ---
-  static const Color glassAccent = Color(0xFFBA68C8); // Orchid Purple
-  static const Color glassSuccess = Color(0xFF4CAF50);
-  static const Color glassWarning = Color(0xFFFFB74D);
-  static const Color glassDanger = Color(0xFFE57373);
+  // --- 2. AERO GLASS SKIN PALETTE (Windows 7 Aero Sky Blue / Frosted Ice / Ambient Glow) ---
+  static const Color glassAccent = Color(0xFF008AD7); // Classic Aero Blue
+  static const Color glassSuccess = Color(
+    0xFF2E7D32,
+  ); // Deep premium success green
+  static const Color glassWarning = Color(0xFFF57C00); // Premium warm amber
+  static const Color glassDanger = Color(0xFFD32F2F); // Rich red
 
   static final glassLight = AppColorsExtension(
-    bgColor: const Color(0xFFF5F3F9), // Very soft lavender white
-    surfaceColor: const Color(0xFFEAE6F3), // Frosted light purple
+    bgColor: Colors
+        .transparent, // Fully transparent so the organic AeroBackground shows through
+    surfaceColor: const Color(
+      0xB3DDEAF0,
+    ), // Frosted light ice-blue glass (70% opacity)
     cardColor: const Color(
-      0xB3FFFFFF,
-    ), // Highly translucent glass card (70% opacity)
+      0x3DF1F5F9,
+    ), // Highly polished crystal card (24% opacity white/slate)
     accentColor: glassAccent,
-    accentGlow: glassAccent.withValues(alpha: 0.25),
-    accentSubtle: glassAccent.withValues(alpha: 0.12),
+    accentGlow: glassAccent.withValues(alpha: 0.20),
+    accentSubtle: glassAccent.withValues(alpha: 0.08),
     successColor: glassSuccess,
     warningColor: glassWarning,
     dangerColor: glassDanger,
-    textPrimary: const Color(0xFF2E1C4E), // Deep violet text
-    textSecondary: const Color(0xFF75629E),
-    textHint: const Color(0xFFAB9EC9),
-    divider: const Color(0x26BA68C8), // Violet translucent divider
-    shimmer: const Color(0x1FBA68C8),
+    textPrimary: const Color(0xFF1E293B), // Charcoal slate text
+    textSecondary: const Color(0xFF475569),
+    textHint: const Color(0xFF94A3B8),
+    divider: const Color(0x33008AD7), // Highly translucent blue divider
+    shimmer: const Color(0x1A008AD7),
   );
 
   static final glassDark = AppColorsExtension(
-    bgColor: const Color(0xFF0A0714), // Deep outer space violet
-    surfaceColor: const Color(0xCC130E26), // Frosted dark purple
-    cardColor: const Color(0x801F1836), // Frosted deep card (50% opacity)
-    accentColor: const Color(0xFFE040FB), // Neon electric orchid
-    accentGlow: const Color(0xFFE040FB).withValues(alpha: 0.30),
-    accentSubtle: const Color(0xFFE040FB).withValues(alpha: 0.15),
-    successColor: const Color(0xFF69F0AE),
-    warningColor: const Color(0xFFFFD740),
-    dangerColor: const Color(0xFFFF5252),
-    textPrimary: const Color(0xFFF3E8FF), // Lavender white
-    textSecondary: const Color(0xFFAC9ECB),
-    textHint: const Color(0xFF5D5084),
-    divider: const Color(0x33E040FB),
-    shimmer: const Color(0x1AE040FB),
+    bgColor: Colors
+        .transparent, // Fully transparent so the organic AeroBackground shows through
+    surfaceColor: const Color(
+      0xCC0F172A,
+    ), // Frosted deep slate glass (80% opacity)
+    cardColor: const Color(
+      0x261E293B,
+    ), // Premium dark steel-grey glass card (15% opacity)
+    accentColor: const Color(0xFF38BDF8), // Electric Aero cyan
+    accentGlow: const Color(0xFF38BDF8).withValues(alpha: 0.25),
+    accentSubtle: const Color(0xFF38BDF8).withValues(alpha: 0.12),
+    successColor: const Color(0xFF4ADE80),
+    warningColor: const Color(0xFFFBBF24),
+    dangerColor: const Color(0xFFF87171),
+    textPrimary: const Color(0xFFF8FAFC), // Ice-white primary text
+    textSecondary: const Color(0xFFCBD5E1),
+    textHint: const Color(0xFF64748B),
+    divider: const Color(0x3338BDF8),
+    shimmer: const Color(0x1A38BDF8),
   );
 
-  // --- 3. NEON CYBERPUNK SKIN PALETTE (Lime Green / Matrix Black / Cyber Sunset) ---
-  static const Color neonAccentLight = Color(0xFFFF6D00); // Solar Orange
+  // --- 3. NEON CYBERPUNK SKIN PALETTE (Synthwave Pink / Matrix Green / Obsidian Black) ---
+  static const Color neonAccentLight = Color(0xFFFF007F); // Hot Neon Pink
   static const Color neonAccentDark = Color(0xFF39FF14); // Electric Neon Green
-  static const Color neonSuccess = Color(0xFF00E676);
-  static const Color neonWarning = Color(0xFFFFEA00);
-  static const Color neonDanger = Color(0xFFFF1744);
+  static const Color neonSuccess = Color(0xFF00FF66); // Cyber Lime Green
+  static const Color neonWarning = Color(0xFFFFEA00); // Electric Neon Yellow
+  static const Color neonDanger = Color(0xFFFF0055); // Hot Pink-Red
 
   static final neonLight = AppColorsExtension(
-    bgColor: const Color(0xFFFFFDE7), // Energetic solar yellow-white
-    surfaceColor: const Color(0xFFFFF9C4),
+    bgColor: const Color(0xFFF8FAFC), // ice white-blue
+    surfaceColor: const Color(0xFFE2E8F0), // grey-blue
     cardColor: const Color(0xFFFFFFFF),
     accentColor: neonAccentLight,
-    accentGlow: neonAccentLight.withValues(alpha: 0.25),
-    accentSubtle: neonAccentLight.withValues(alpha: 0.12),
+    accentGlow: neonAccentLight.withValues(alpha: 0.20),
+    accentSubtle: neonAccentLight.withValues(alpha: 0.08),
     successColor: neonSuccess,
     warningColor: neonWarning,
     dangerColor: neonDanger,
-    textPrimary: const Color(0xFF3E2723), // Dark brown espresso
-    textSecondary: const Color(0xFF795548),
-    textHint: const Color(0xFFA1887F),
-    divider: const Color(0xFFE0F2F1),
-    shimmer: const Color(0xFFF5F5F5),
+    textPrimary: const Color(0xFF0F172A), // dark slate
+    textSecondary: const Color(0xFF475569),
+    textHint: const Color(0xFF94A3B8),
+    divider: const Color(0xFFE2E8F0),
+    shimmer: const Color(0xFFF1F5F9),
   );
 
   static final neonDark = AppColorsExtension(
-    bgColor: const Color(0xFF000000), // Matrix pitch black
-    surfaceColor: const Color(0xFF080D08), // Sleek tactical green-black
-    cardColor: const Color(0xFF0F150F), // Deep tech military card
+    bgColor: const Color(0xFF000000), // black
+    surfaceColor: const Color(0xFF070B07), // green-black
+    cardColor: const Color(0xFF0B0E0B), // cyber card
     accentColor: neonAccentDark,
-    accentGlow: neonAccentDark.withValues(alpha: 0.35),
-    accentSubtle: neonAccentDark.withValues(alpha: 0.18),
+    accentGlow: neonAccentDark.withValues(alpha: 0.30),
+    accentSubtle: neonAccentDark.withValues(alpha: 0.12),
     successColor: neonSuccess,
     warningColor: neonWarning,
     dangerColor: neonDanger,
-    textPrimary: const Color(0xFFE0FBE0), // Electric white-green
-    textSecondary: const Color(0xFF7CA87C),
-    textHint: const Color(0xFF3B563B),
-    divider: const Color(0x3339FF14),
+    textPrimary: const Color(0xFFE0FBE0), // white-green glow
+    textSecondary: const Color(0xFF88B388), // slate green
+    textHint: const Color(0xFF3A593A),
+    divider: const Color(0x3339FF14), // green divider
     shimmer: const Color(0x1F39FF14),
   );
 
@@ -394,8 +404,105 @@ class GlassCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isGlassSkin = skinNotifier.value == AppSkin.glassSkin;
+    final isNeonSkin = skinNotifier.value == AppSkin.neonSkin;
 
-    Widget cardContent = Container(
+    if (isGlassSkin) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          child: Stack(
+            children: [
+              // glass base
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: context.appColors.cardColor,
+                    borderRadius: BorderRadius.circular(borderRadius),
+                    border: Border.all(
+                      color:
+                          borderColor ??
+                          context.appColors.accentColor.withValues(alpha: 0.22),
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.12),
+                        blurRadius: 28,
+                        spreadRadius: 1,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              // glare wave
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: CustomPaint(
+                    painter: AeroGlassBorderPainter(
+                      borderRadius: borderRadius,
+                      isDark: Theme.of(context).brightness == Brightness.dark,
+                      accentColor: context.appColors.accentColor,
+                    ),
+                  ),
+                ),
+              ),
+              // content
+              Padding(padding: padding, child: child),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (isNeonSkin) {
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      return Stack(
+        children: [
+          // cyber box
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                color: context.appColors.cardColor,
+                borderRadius: BorderRadius.circular(borderRadius),
+                border: Border.all(
+                  color: context.appColors.accentColor.withValues(alpha: 0.35),
+                  width: 1.2,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: context.appColors.accentColor.withValues(
+                      alpha: 0.12,
+                    ),
+                    blurRadius: 16,
+                    spreadRadius: -1,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          // HUD lines
+          Positioned.fill(
+            child: IgnorePointer(
+              child: CustomPaint(
+                painter: CyberCardPainter(
+                  borderRadius: borderRadius,
+                  isDark: isDark,
+                  accentColor: context.appColors.accentColor,
+                  dangerColor: context.appColors.dangerColor,
+                ),
+              ),
+            ),
+          ),
+          // content
+          Padding(padding: padding, child: child),
+        ],
+      );
+    }
+
+    return Container(
       padding: padding,
       decoration: BoxDecoration(
         color: context.appColors.cardColor,
@@ -404,13 +511,11 @@ class GlassCard extends StatelessWidget {
           color:
               borderColor ??
               context.appColors.accentColor.withValues(alpha: 0.15),
-          width: isGlassSkin ? 1.2 : 1.0,
+          width: 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: context.appColors.accentGlow.withValues(
-              alpha: isGlassSkin ? 0.08 : 0.06,
-            ),
+            color: context.appColors.accentGlow.withValues(alpha: 0.06),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -418,18 +523,6 @@ class GlassCard extends StatelessWidget {
       ),
       child: child,
     );
-
-    if (isGlassSkin) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-          child: cardContent,
-        ),
-      );
-    }
-
-    return cardContent;
   }
 }
 
@@ -449,64 +542,99 @@ class AccentButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 52,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              context.appColors.accentColor,
-              context.appColors.accentColor.withValues(alpha: 0.8),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: context.appColors.accentColor.withValues(alpha: 0.35),
-              blurRadius: 12,
-              offset: const Offset(0, 4),
+    final isGlassSkin = skinNotifier.value == AppSkin.glassSkin;
+
+    Widget buttonContent = DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: isGlassSkin
+            ? LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  context.appColors.accentColor.withValues(alpha: 0.55),
+                  context.appColors.accentColor.withValues(alpha: 0.20),
+                ],
+              )
+            : LinearGradient(
+                colors: [
+                  context.appColors.accentColor,
+                  context.appColors.accentColor.withValues(alpha: 0.8),
+                ],
+              ),
+        borderRadius: BorderRadius.circular(12),
+        border: isGlassSkin
+            ? Border.all(
+                color: Colors.white.withValues(alpha: 0.35),
+                width: 1.2,
+              )
+            : null,
+        boxShadow: [
+          BoxShadow(
+            color: context.appColors.accentColor.withValues(
+              alpha: isGlassSkin ? 0.15 : 0.35,
             ),
-          ],
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        onPressed: isLoading ? null : onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-        child: ElevatedButton(
-          onPressed: isLoading ? null : onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          child: isLoading
-              ? const SizedBox(
-                  width: 22,
-                  height: 22,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.5,
-                    color: Colors.white,
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (icon != null) ...[
-                      Icon(icon, size: 20, color: context.appColors.bgColor),
-                      const SizedBox(width: 8),
-                    ],
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: context.appColors.bgColor,
-                      ),
-                    ),
-                  ],
+        child: isLoading
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  color: Colors.white,
                 ),
-        ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (icon != null) ...[
+                    Icon(
+                      icon,
+                      size: 20,
+                      color: isGlassSkin
+                          ? Colors.white
+                          : context.appColors.bgColor,
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: isGlassSkin
+                          ? Colors.white
+                          : context.appColors.bgColor,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
+
+    if (isGlassSkin) {
+      buttonContent = ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: buttonContent,
+        ),
+      );
+    }
+
+    return SizedBox(width: double.infinity, height: 52, child: buttonContent);
   }
 }
 
@@ -593,5 +721,254 @@ class SectionHeader extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+// Aero Glass Painter
+class AeroGlassBorderPainter extends CustomPainter {
+  final double borderRadius;
+  final bool isDark;
+  final Color accentColor;
+
+  AeroGlassBorderPainter({
+    required this.borderRadius,
+    required this.isDark,
+    required this.accentColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final rrect = RRect.fromRectAndRadius(rect, Radius.circular(borderRadius));
+
+    // highlight border
+    final paintInnerBorder = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..shader = LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white.withValues(alpha: isDark ? 0.22 : 0.55),
+          Colors.white.withValues(alpha: 0.01),
+          Colors.white.withValues(alpha: isDark ? 0.05 : 0.15),
+        ],
+        stops: const [0.0, 0.5, 1.0],
+      ).createShader(rect);
+
+    canvas.drawRRect(rrect, paintInnerBorder);
+
+    // curved glare sweep
+    final pathGlare = Path();
+    pathGlare.moveTo(0, 0);
+    pathGlare.lineTo(size.width, 0);
+    pathGlare.lineTo(size.width, size.height * 0.38);
+    pathGlare.quadraticBezierTo(
+      size.width * 0.5,
+      size.height * 0.18,
+      0,
+      size.height * 0.32,
+    );
+    pathGlare.close();
+
+    final paintGlare = Paint()
+      ..style = PaintingStyle.fill
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          Colors.white.withValues(alpha: isDark ? 0.10 : 0.22),
+          Colors.white.withValues(alpha: 0.0),
+        ],
+      ).createShader(rect);
+
+    canvas.save();
+    canvas.clipRRect(rrect);
+    canvas.drawPath(pathGlare, paintGlare);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant AeroGlassBorderPainter oldDelegate) {
+    return oldDelegate.borderRadius != borderRadius ||
+        oldDelegate.isDark != isDark ||
+        oldDelegate.accentColor != accentColor;
+  }
+}
+
+class AeroBackground extends StatelessWidget {
+  final Widget child;
+  const AeroBackground({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Stack(
+      children: [
+        // wallpaper gradient
+        Positioned.fill(
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isDark
+                    ? [
+                        const Color(0xFF060914),
+                        const Color(0xFF0C101F),
+                        const Color(0xFF161C2E),
+                      ]
+                    : [
+                        const Color(0xFFCBE0FC), // light blue
+                        const Color(0xFFE9F2FE), // ice white
+                        const Color(0xFFBFE3FC), // cyan
+                      ],
+              ),
+            ),
+          ),
+        ),
+        // cyan light
+        Positioned(
+          top: -120,
+          left: -60,
+          width: 320,
+          height: 320,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  isDark ? const Color(0x2B00E5FF) : const Color(0x6600E5FF),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+        // green light
+        Positioned(
+          bottom: 60,
+          right: -120,
+          width: 380,
+          height: 380,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  isDark ? const Color(0x1B69F0AE) : const Color(0x3F69F0AE),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+        // amber light
+        Positioned(
+          top: 180,
+          right: -60,
+          width: 260,
+          height: 260,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: RadialGradient(
+                colors: [
+                  isDark ? const Color(0x14FFD740) : const Color(0x2EFFD740),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+        ),
+        // content
+        Positioned.fill(child: child),
+      ],
+    );
+  }
+}
+
+class CyberCardPainter extends CustomPainter {
+  final double borderRadius;
+  final bool isDark;
+  final Color accentColor;
+  final Color dangerColor;
+
+  CyberCardPainter({
+    required this.borderRadius,
+    required this.isDark,
+    required this.accentColor,
+    required this.dangerColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // crt lines
+    final scanlinePaint = Paint()
+      ..color = accentColor.withValues(alpha: isDark ? 0.03 : 0.05)
+      ..strokeWidth = 1.0;
+
+    for (double y = 8; y < size.height; y += 8) {
+      canvas.drawLine(Offset(4, y), Offset(size.width - 4, y), scanlinePaint);
+    }
+
+    // HUD brackets
+    final bracketPaint = Paint()
+      ..color = accentColor.withValues(alpha: isDark ? 0.85 : 0.70)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.8;
+
+    const bLen = 14.0;
+
+    // brackets
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, bLen)
+        ..lineTo(0, 0)
+        ..lineTo(bLen, 0),
+      bracketPaint,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(size.width - bLen, 0)
+        ..lineTo(size.width, 0)
+        ..lineTo(size.width, bLen),
+      bracketPaint,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(0, size.height - bLen)
+        ..lineTo(0, size.height)
+        ..lineTo(bLen, size.height),
+      bracketPaint,
+    );
+    canvas.drawPath(
+      Path()
+        ..moveTo(size.width - bLen, size.height)
+        ..lineTo(size.width, size.height)
+        ..lineTo(size.width, size.height - bLen),
+      bracketPaint,
+    );
+
+    // red dots
+    final dotPaint = Paint()
+      ..color = dangerColor.withValues(alpha: isDark ? 0.8 : 0.6)
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(Offset(bLen + 4, 4), 1.5, dotPaint);
+    canvas.drawCircle(
+      Offset(size.width - bLen - 4, size.height - 4),
+      1.5,
+      dotPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CyberCardPainter oldDelegate) {
+    return oldDelegate.borderRadius != borderRadius ||
+        oldDelegate.isDark != isDark ||
+        oldDelegate.accentColor != accentColor ||
+        oldDelegate.dangerColor != dangerColor;
   }
 }

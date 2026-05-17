@@ -205,7 +205,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 24),
                   decoration: BoxDecoration(
-                    color: context.appColors.textSecondary.withValues(alpha: 0.2),
+                    color: context.appColors.textSecondary.withValues(
+                      alpha: 0.2,
+                    ),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -300,7 +302,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                       decoration: BoxDecoration(
                         color: color.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: color.withValues(alpha: 0.25)),
+                        border: Border.all(
+                          color: color.withValues(alpha: 0.25),
+                        ),
                       ),
                       child: Text(
                         a.toString(),
@@ -331,7 +335,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                     color: context.appColors.bgColor,
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                      color: context.appColors.accentColor.withValues(alpha: 0.08),
+                      color: context.appColors.accentColor.withValues(
+                        alpha: 0.08,
+                      ),
                     ),
                   ),
                   child: SingleChildScrollView(
@@ -386,7 +392,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: context.appColors.accentColor.withValues(alpha: 0.1),
+                        color: context.appColors.accentColor.withValues(
+                          alpha: 0.1,
+                        ),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -480,7 +488,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   ),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
-                      color: context.appColors.accentColor.withValues(alpha: 0.25),
+                      color: context.appColors.accentColor.withValues(
+                        alpha: 0.25,
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -510,7 +520,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   ),
                   style: OutlinedButton.styleFrom(
                     side: BorderSide(
-                      color: context.appColors.accentColor.withValues(alpha: 0.25),
+                      color: context.appColors.accentColor.withValues(
+                        alpha: 0.25,
+                      ),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
@@ -546,7 +558,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                   children: [
                     Icon(
                       Icons.manage_search_rounded,
-                      color: context.appColors.textSecondary.withValues(alpha: 0.4),
+                      color: context.appColors.textSecondary.withValues(
+                        alpha: 0.4,
+                      ),
                       size: 54,
                     ),
                     const SizedBox(height: 10),
@@ -581,9 +595,7 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                     decoration: BoxDecoration(
                       color: context.appColors.cardColor,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: color.withValues(alpha: 0.15),
-                      ),
+                      border: Border.all(color: color.withValues(alpha: 0.15)),
                       boxShadow: [
                         BoxShadow(
                           color: color.withValues(alpha: 0.02),
@@ -625,7 +637,8 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                                     const SizedBox(width: 12),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             shortText.isEmpty
@@ -634,7 +647,8 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                              color: context.appColors.textPrimary,
+                                              color:
+                                                  context.appColors.textPrimary,
                                               fontSize: 14,
                                               fontWeight: FontWeight.w800,
                                             ),
@@ -644,7 +658,9 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                                             Text(
                                               _formatDate(dateStr),
                                               style: TextStyle(
-                                                color: context.appColors.textSecondary,
+                                                color: context
+                                                    .appColors
+                                                    .textSecondary,
                                                 fontSize: 11,
                                                 fontWeight: FontWeight.w500,
                                               ),
@@ -689,10 +705,16 @@ class _AllergenDetectionScreenState extends State<AllergenDetectionScreen>
                                             vertical: 4,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: color.withValues(alpha: 0.08),
-                                            borderRadius: BorderRadius.circular(10),
+                                            color: color.withValues(
+                                              alpha: 0.08,
+                                            ),
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
                                             border: Border.all(
-                                              color: color.withValues(alpha: 0.15),
+                                              color: color.withValues(
+                                                alpha: 0.15,
+                                              ),
                                             ),
                                           ),
                                           child: Text(
@@ -865,7 +887,9 @@ class _StepRow extends StatelessWidget {
           decoration: BoxDecoration(
             color: context.appColors.accentColor.withValues(alpha: 0.1),
             shape: BoxShape.circle,
-            border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.15)),
+            border: Border.all(
+              color: context.appColors.accentColor.withValues(alpha: 0.15),
+            ),
           ),
           child: Center(
             child: Text(

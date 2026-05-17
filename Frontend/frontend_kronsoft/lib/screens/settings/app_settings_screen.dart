@@ -216,9 +216,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                           context,
                           skin: AppSkin.glassSkin,
                           activeSkin: activeSkin,
-                          name: 'Glassmorphic',
-                          bgColor: const Color(0xFF130E26),
-                          accentColor: const Color(0xFFE040FB),
+                          name: 'Aero Glass',
+                          bgColor: const Color(0xFFCBE0FC),
+                          accentColor: const Color(0xFF008AD7),
                           isGlass: true,
                         ),
                         _buildSkinOption(
@@ -226,8 +226,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                           skin: AppSkin.neonSkin,
                           activeSkin: activeSkin,
                           name: 'Cyber Neon',
-                          bgColor: const Color(0xFF000000),
-                          accentColor: const Color(0xFF39FF14),
+                          bgColor: const Color(0xFF020204),
+                          accentColor: const Color(0xFF00F3FF),
                           isGlass: false,
                         ),
                       ],
@@ -706,13 +706,17 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                 border: Border.all(
                   color: isSelected
                       ? context.appColors.accentColor
-                      : (isGlass ? Colors.white.withValues(alpha: 0.15) : context.appColors.divider),
+                      : (isGlass
+                            ? Colors.white.withValues(alpha: 0.15)
+                            : context.appColors.divider),
                   width: isSelected ? 2 : 1.2,
                 ),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
-                          color: context.appColors.accentColor.withValues(alpha: 0.3),
+                          color: context.appColors.accentColor.withValues(
+                            alpha: 0.3,
+                          ),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         ),
@@ -749,7 +753,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.12),
+                          ),
                         ),
                         child: Center(
                           child: Container(

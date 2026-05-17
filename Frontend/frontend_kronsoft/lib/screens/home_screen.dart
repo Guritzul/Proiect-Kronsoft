@@ -180,7 +180,9 @@ class _HomeScreenState extends State<HomeScreen>
                   if (_dashboard!['lastScan'] != null)
                     GlassCard(
                       padding: const EdgeInsets.all(16),
-                      borderColor: context.appColors.successColor.withValues(alpha: 0.15),
+                      borderColor: context.appColors.successColor.withValues(
+                        alpha: 0.15,
+                      ),
                       child: Row(
                         children: [
                           Container(
@@ -192,7 +194,8 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: context.appColors.successColor.withValues(alpha: 0.2),
+                                color: context.appColors.successColor
+                                    .withValues(alpha: 0.2),
                               ),
                             ),
                             child: Icon(
