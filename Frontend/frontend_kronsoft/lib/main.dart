@@ -7,6 +7,8 @@ import 'services/local_notification_service.dart';
 import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -15,6 +17,17 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load saved theme mode
+  ThemeMode initialTheme = ThemeMode.light;
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final isDark = prefs.getBool('app_theme_dark') ?? false;
+    initialTheme = isDark ? ThemeMode.dark : ThemeMode.light;
+  } catch (e) {
+    debugPrint('Error loading saved theme: $e');
+  }
+  themeNotifier.value = initialTheme;
 
   try {
     await Firebase.initializeApp(
@@ -43,7 +56,7 @@ void main() async {
   runApp(const MyApp());
 }
 
-final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.dark);
+final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
 void _showNotificationDialog(String payload) {
   final context = navigatorKey.currentContext;
