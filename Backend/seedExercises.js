@@ -12,6 +12,7 @@ const exercises = [
     repetitions: 15,
     sets: 3,
     category: "Strength",
+    mediaUrl: "https://www.youtube.com/watch?v=IODxDxX7oi4",
   },
   {
     name: "Squats",
@@ -22,6 +23,7 @@ const exercises = [
     repetitions: 20,
     sets: 3,
     category: "Strength",
+    mediaUrl: "https://www.youtube.com/watch?v=U3HlEF_E9fo",
   },
   {
     name: "Plank",
@@ -32,6 +34,7 @@ const exercises = [
     repetitions: 1,
     sets: 3,
     category: "Endurance",
+    mediaUrl: "https://www.youtube.com/watch?v=pvIjsGMCwLY",
   },
   {
     name: "Jumping Jacks",
@@ -42,6 +45,7 @@ const exercises = [
     repetitions: 30,
     sets: 3,
     category: "Cardio",
+    mediaUrl: "https://www.youtube.com/watch?v=c4DAnQ6DtF8",
   },
   {
     name: "Pull-ups",
@@ -52,6 +56,7 @@ const exercises = [
     repetitions: 8,
     sets: 3,
     category: "Strength",
+    mediaUrl: "https://www.youtube.com/watch?v=eGo4IYlbE5g",
   },
   {
     name: "Bicep Curls",
@@ -62,6 +67,7 @@ const exercises = [
     repetitions: 12,
     sets: 3,
     category: "Strength",
+    mediaUrl: "https://www.youtube.com/watch?v=ykJmrZ5v0Oo",
   },
   {
     name: "Tricep Dips",
@@ -72,6 +78,7 @@ const exercises = [
     repetitions: 12,
     sets: 3,
     category: "Strength",
+    mediaUrl: "https://www.youtube.com/watch?v=0326dy_-CzM",
   },
   {
     name: "Shoulder Press",
@@ -82,6 +89,7 @@ const exercises = [
     repetitions: 10,
     sets: 3,
     category: "Strength",
+    mediaUrl: "https://www.youtube.com/watch?v=B-aVuy9K2co",
   },
   {
     name: "Neck Stretch",
@@ -92,6 +100,7 @@ const exercises = [
     repetitions: 1,
     sets: 1,
     category: "Flexibility",
+    mediaUrl: "https://www.youtube.com/watch?v=J3-FzV6jepU",
   },
   {
     name: "Wrist Curls",
@@ -102,6 +111,7 @@ const exercises = [
     repetitions: 15,
     sets: 3,
     category: "Strength",
+    mediaUrl: "https://www.youtube.com/watch?v=33mS_bQf2K8",
   }
 ];
 

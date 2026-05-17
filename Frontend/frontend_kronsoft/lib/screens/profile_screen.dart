@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import '../main.dart';
 import '../theme/app_theme.dart';
 import '../services/auth_service.dart';
 import '../services/api_service.dart';
 import 'login_screen.dart';
+import 'settings/app_settings_screen.dart';
 import 'settings/account_settings_screen.dart';
-import 'settings/privacy_settings_screen.dart';
-import 'settings/notification_settings_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -105,101 +103,117 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         children: [
-          Center(
-            child: Column(
-              children: [
-                Container(
-                  width: 88,
-                  height: 88,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: [
-                        context.appColors.accentColor,
-                        const Color(0xFF26C6DA),
-                      ],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: context.appColors.accentColor.withValues(
-                          alpha: 0.3,
-                        ),
-                        blurRadius: 20,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      _initials,
-                      style: TextStyle(
-                        color: context.appColors.bgColor,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-                Text(
-                  displayName,
-                  style: TextStyle(
-                    color: context.appColors.textPrimary,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  email,
-                  style: TextStyle(
-                    color: context.appColors.textSecondary,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 32),
-
-          _MenuTile(
-            icon: Icons.settings_outlined,
-            label: 'Account Settings',
+          GestureDetector(
             onTap: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const AccountSettingsScreen()),
             ),
-          ),
-          _MenuTile(
-            icon: Icons.privacy_tip_outlined,
-            label: 'Privacy',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const PrivacySettingsScreen()),
-            ),
-          ),
-          _MenuTile(
-            icon: Icons.notifications_outlined,
-            label: 'Notifications',
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const NotificationSettingsScreen(),
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              decoration: BoxDecoration(
+                color: context.appColors.cardColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: context.appColors.accentColor.withValues(alpha: 0.15),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          context.appColors.accentColor,
+                          const Color(0xFF26C6DA),
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.appColors.accentColor.withValues(
+                            alpha: 0.25,
+                          ),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        _initials,
+                        style: TextStyle(
+                          color: context.appColors.bgColor,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          displayName,
+                          style: TextStyle(
+                            color: context.appColors.textPrimary,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          email,
+                          style: TextStyle(
+                            color: context.appColors.textSecondary,
+                            fontSize: 13,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.edit_rounded,
+                              size: 12,
+                              color: context.appColors.accentColor,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Edit Account',
+                              style: TextStyle(
+                                color: context.appColors.accentColor,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    color: context.appColors.textHint,
+                    size: 20,
+                  ),
+                ],
               ),
             ),
           ),
+          const SizedBox(height: 24),
           _MenuTile(
-            icon: Icons.dark_mode_outlined,
-            label: 'Toggle Theme',
-            onTap: () {
-              if (themeNotifier.value == ThemeMode.dark) {
-                themeNotifier.value = ThemeMode.light;
-              } else {
-                themeNotifier.value = ThemeMode.dark;
-              }
-            },
+            icon: Icons.settings_rounded,
+            label: 'App Settings',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AppSettingsScreen()),
+            ),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 20),
 
           const SectionHeader(title: 'My Allergens'),
           if (_loadingProfile)

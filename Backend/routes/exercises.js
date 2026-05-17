@@ -1,10 +1,19 @@
 const { Router } = require("express");
 const controller = require("../controllers/exerciseController");
+const logController = require("../controllers/exerciseLogController");
 
 const router = Router();
 
 // Static routes first
 router.get("/favorites", controller.getFavorites);
+router.get("/history", logController.getHistory);
+
+router
+  .route("/logs")
+  .get(logController.getLogs)
+  .post(logController.logExercise);
+
+router.delete("/logs/:id", logController.deleteLog);
 
 router
   .route("/")

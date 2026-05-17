@@ -5,8 +5,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 class BackendConfig {
-  static const String baseUrl =
-      'https://proiect-kronsoft-backend-production.up.railway.app/api';
+  // Your computer's local Wi-Fi IP (works for both physical phones and emulators on the same Wi-Fi!)
+  static const String baseUrl = 'http://192.168.100.18:3000/api';
+
+  // Local Android Emulator address:
+  // static const String baseUrl = 'http://10.0.2.2:3000/api';
+
+  // For Local Web, iOS, or real device on localhost:
+  // static const String baseUrl = 'http://localhost:3000/api';
+
+  // Production Railway URL:
+  // static const String baseUrl = 'https://proiect-kronsoft-backend-production.up.railway.app/api';
 }
 
 class ApiService {
@@ -204,6 +213,51 @@ class ApiService {
 
   Future<Map<String, dynamic>> getExerciseById(String id) async {
     return await _get('/exercises/$id');
+  }
+
+  Future<Map<String, dynamic>> createExercise(Map<String, dynamic> exercise) async {
+    return await _post('/exercises', exercise);
+  }
+
+  Future<Map<String, dynamic>> logExercise(Map<String, dynamic> log) async {
+    return await _post('/exercises/logs', log);
+  }
+
+  Future<List<dynamic>> getExerciseHistory() async {
+    final data = await _get('/exercises/history');
+    return data is List ? data : (data['data'] ?? []);
+  }
+
+  Future<Map<String, dynamic>> createWorkout(Map<String, dynamic> workout) async {
+    return await _post('/workouts', workout);
+  }
+
+  Future<List<dynamic>> getWorkouts() async {
+    final data = await _get('/workouts');
+    return data is List ? data : (data['data'] ?? []);
+  }
+
+  Future<Map<String, dynamic>> updateExercise(String id, Map<String, dynamic> exercise) async {
+    final data = await _put('/exercises/$id', exercise);
+    return data is Map<String, dynamic> ? (data['data'] ?? data) : data;
+  }
+
+  Future<void> deleteExercise(String id) async {
+    await _delete('/exercises/$id');
+  }
+
+  Future<Map<String, dynamic>> updateWorkout(String id, Map<String, dynamic> workout) async {
+    final data = await _put('/workouts/$id', workout);
+    return data is Map<String, dynamic> ? (data['data'] ?? data) : data;
+  }
+
+  Future<void> deleteWorkout(String id) async {
+    await _delete('/workouts/$id');
+  }
+
+  Future<Map<String, dynamic>> getWorkoutById(String id) async {
+    final data = await _get('/workouts/$id');
+    return data is Map<String, dynamic> ? (data['data'] ?? data) : data;
   }
 
   Future<void> sendNotification(Map<String, dynamic> payload) async {

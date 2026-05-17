@@ -16,7 +16,6 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
   List<dynamic> _pills = [];
   bool _loading = true;
   final Set<String> _takenIds = {};
-  final int _reminderMinutes = 15;
 
   @override
   void initState() {
@@ -86,7 +85,6 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
     final nameCtrl = TextEditingController();
     final dosageCtrl = TextEditingController();
     final timeCtrl = TextEditingController();
-    int selectedReminder = _reminderMinutes;
 
     showModalBottomSheet(
       context: context,
@@ -95,136 +93,103 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => Padding(
-          padding: EdgeInsets.fromLTRB(
-            24,
-            20,
-            24,
-            MediaQuery.of(ctx).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: context.appColors.textSecondary.withValues(
-                      alpha: 0.4,
-                    ),
-                    borderRadius: BorderRadius.circular(2),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          24,
+          20,
+          24,
+          MediaQuery.of(ctx).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: context.appColors.textSecondary.withValues(
+                    alpha: 0.4,
                   ),
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(height: 20),
-              Text(
-                'Add New Pill',
-                style: TextStyle(
-                  color: context.appColors.textPrimary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              'Add New Pill',
+              style: TextStyle(
+                color: context.appColors.textPrimary,
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
               ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: nameCtrl,
-                style: TextStyle(color: context.appColors.textPrimary),
-                decoration: const InputDecoration(
-                  labelText: 'Pill Name',
-                  prefixIcon: Icon(Icons.medication),
-                ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: nameCtrl,
+              style: TextStyle(color: context.appColors.textPrimary),
+              decoration: const InputDecoration(
+                labelText: 'Pill Name',
+                prefixIcon: Icon(Icons.medication),
               ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: dosageCtrl,
-                style: TextStyle(color: context.appColors.textPrimary),
-                decoration: const InputDecoration(
-                  labelText: 'Dosage (e.g. 500mg)',
-                  prefixIcon: Icon(Icons.scale),
-                ),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: dosageCtrl,
+              style: TextStyle(color: context.appColors.textPrimary),
+              decoration: const InputDecoration(
+                labelText: 'Dosage (e.g. 500mg)',
+                prefixIcon: Icon(Icons.scale),
               ),
-              const SizedBox(height: 14),
-              TextField(
-                controller: timeCtrl,
-                style: TextStyle(color: context.appColors.textPrimary),
-                decoration: const InputDecoration(
-                  labelText: 'Schedule (e.g. 08:00, 20:00)',
-                  prefixIcon: Icon(Icons.access_time),
-                ),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: timeCtrl,
+              style: TextStyle(color: context.appColors.textPrimary),
+              decoration: const InputDecoration(
+                labelText: 'Schedule (e.g. 08:00, 20:00)',
+                prefixIcon: Icon(Icons.access_time),
               ),
-              const SizedBox(height: 16),
-              Text(
-                'Remind me before:',
-                style: TextStyle(
-                  color: context.appColors.textSecondary,
-                  fontSize: 13,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [5, 10, 15, 30].map((min) {
-                  final selected = selectedReminder == min;
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: GestureDetector(
-                      onTap: () => setSheetState(() => selectedReminder = min),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: selected
-                              ? context.appColors.accentColor.withValues(
-                                  alpha: 0.2,
-                                )
-                              : context.appColors.surfaceColor,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: selected
-                                ? context.appColors.accentColor
-                                : context.appColors.cardColor,
-                          ),
-                        ),
-                        child: Text(
-                          '$min min',
-                          style: TextStyle(
-                            color: selected
-                                ? context.appColors.accentColor
-                                : context.appColors.textSecondary,
-                            fontSize: 13,
-                            fontWeight: selected
-                                ? FontWeight.w700
-                                : FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 24),
-              AccentButton(
-                label: 'Save Pill',
-                icon: Icons.save_rounded,
-                onPressed: () async {
-                  if (nameCtrl.text.trim().isEmpty) return;
-                  Navigator.pop(ctx);
-                  try {
-                    final pill = await _api.createPill({
-                      'name': nameCtrl.text.trim(),
-                      'dosage': dosageCtrl.text.trim(),
-                      'schedule': timeCtrl.text
-                          .trim()
-                          .split(',')
-                          .map((s) => s.trim())
-                          .toList(),
-                    });
+            ),
+            const SizedBox(height: 24),
+            AccentButton(
+              label: 'Save Pill',
+              icon: Icons.save_rounded,
+              onPressed: () async {
+                if (nameCtrl.text.trim().isEmpty) return;
+                Navigator.pop(ctx);
+                try {
+                  final pill = await _api.createPill({
+                    'name': nameCtrl.text.trim(),
+                    'dosage': dosageCtrl.text.trim(),
+                    'schedule': timeCtrl.text
+                        .trim()
+                        .split(',')
+                        .map((s) => s.trim())
+                        .toList(),
+                  });
 
+                  final prefs = await SharedPreferences.getInstance();
+                  final pillRemindersEnabled = prefs.getBool('notif_pill_reminders') ?? true;
+                  final reminderMin = pillRemindersEnabled
+                      ? (prefs.getInt('notif_pill_reminder_min') ?? 15)
+                      : 0;
+
+                  await LocalNotificationService.schedulePillNotifications(
+                    pillId: pill['_id'].toString().hashCode.abs() % 100000,
+                    pillMongoId: pill['_id'].toString(),
+                    pillName: nameCtrl.text.trim(),
+                    dosage: dosageCtrl.text.trim(),
+                    schedule: timeCtrl.text
+                        .trim()
+                        .split(',')
+                        .map((s) => s.trim())
+                        .toList(),
+                    reminderMinutes: reminderMin,
+                  );
+
+<<<<<<< HEAD
                     final prefs = await SharedPreferences.getInstance();
                     final missedAlerts =
                         prefs.getBool('notif_missed_pill_alerts') ?? true;
@@ -241,34 +206,35 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
                           .toList(),
                       reminderMinutes: selectedReminder,
                       missedPillAlerts: missedAlerts,
+=======
+                  _loadPills();
+
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          reminderMin > 0
+                              ? '✅ Pill saved! Reminder set $reminderMin min before.'
+                              : '✅ Pill saved!',
+                        ),
+                        backgroundColor: context.appColors.successColor,
+                      ),
+>>>>>>> d3d7538f9fdf8e9594e7a14b9627a9246c2b8206
                     );
-
-                    _loadPills();
-
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '✅ Pill saved! Reminder set $selectedReminder min before.',
-                          ),
-                          backgroundColor: context.appColors.successColor,
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Failed: $e'),
-                          backgroundColor: context.appColors.dangerColor,
-                        ),
-                      );
-                    }
                   }
-                },
-              ),
-            ],
-          ),
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Failed: $e'),
+                        backgroundColor: context.appColors.dangerColor,
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
+          ],
         ),
       ),
     );

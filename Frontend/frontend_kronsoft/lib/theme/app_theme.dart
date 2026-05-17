@@ -124,20 +124,20 @@ class AppTheme {
   );
 
   static final darkColors = AppColorsExtension(
-    bgColor: const Color(0xFF0B0F19),
-    surfaceColor: const Color(0xFF111827),
-    cardColor: const Color(0xFF1F2937),
+    bgColor: const Color(0xFF05070C),
+    surfaceColor: const Color(0xFF0D1017),
+    cardColor: const Color(0xFF141824),
     accentColor: accentColor,
     accentGlow: accentGlow,
     accentSubtle: accentSubtle,
     successColor: successColor,
     warningColor: warningColor,
     dangerColor: dangerColor,
-    textPrimary: const Color(0xFFF9FAFB),
-    textSecondary: const Color(0xFF9CA3AF),
-    textHint: const Color(0xFF6B7280),
-    divider: const Color(0xFF374151),
-    shimmer: const Color(0xFF4B5563),
+    textPrimary: const Color(0xFFF1F5F9),
+    textSecondary: const Color(0xFF94A3B8),
+    textHint: const Color(0xFF475569),
+    divider: const Color(0xFF202638),
+    shimmer: const Color(0xFF1E293B),
   );
 
   static ThemeData get lightTheme {

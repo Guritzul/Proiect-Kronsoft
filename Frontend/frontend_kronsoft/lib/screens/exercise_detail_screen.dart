@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../services/api_service.dart';
 import '../services/workout_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ExerciseDetailScreen extends StatefulWidget {
   final Map<String, dynamic> exercise;
@@ -17,6 +19,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   final _api = ApiService();
   final _workoutService = WorkoutService();
 
+  late Map<String, dynamic> _exerciseData;
+
   int _seconds = 0;
   bool _timerRunning = false;
   Timer? _timer;
@@ -29,6 +33,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _exerciseData = Map<String, dynamic>.from(widget.exercise);
     _checkFavorite();
   }
 
@@ -37,7 +42,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       final favs = await _api.getFavoriteExercises();
       if (mounted) {
         setState(() {
-          _isFavorite = favs.any((f) => f['_id'] == widget.exercise['_id']);
+          _isFavorite = favs.any((f) => f['_id'] == _exerciseData['_id']);
         });
       }
     } catch (_) {}
@@ -65,7 +70,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   Future<void> _toggleFavorite() async {
     setState(() => _isFavorite = !_isFavorite);
     try {
-      await _api.toggleFavoriteExercise(widget.exercise['_id']);
+      await _api.toggleFavoriteExercise(_exerciseData['_id']);
     } catch (_) {
       if (mounted) setState(() => _isFavorite = !_isFavorite);
     }
@@ -81,16 +86,29 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
 
     setState(() => _saving = true);
     try {
-      await _workoutService.saveSession(
-        WorkoutSession(
-          exerciseId: widget.exercise['_id'],
-          exerciseName: widget.exercise['name'],
-          reps: _reps,
-          sets: _sets,
-          durationSeconds: _seconds,
-          date: DateTime.now(),
-        ),
-      );
+      // Save locally (offline fallback)
+      try {
+        await _workoutService.saveSession(
+          WorkoutSession(
+            exerciseId: _exerciseData['_id'],
+            exerciseName: _exerciseData['name'],
+            reps: _reps,
+            sets: _sets,
+            durationSeconds: _seconds,
+            date: DateTime.now(),
+          ),
+        );
+      } catch (_) {}
+
+      // Save to backend database
+      await _api.logExercise({
+        'exerciseId': _exerciseData['_id'],
+        'sets': _sets > 0 ? _sets : _exerciseData['sets'] ?? 3,
+        'repetitions': _reps > 0 ? _reps : _exerciseData['repetitions'] ?? 15,
+        'durationMinutes': _seconds > 0 ? (_seconds / 60).ceil() : _exerciseData['durationMinutes'] ?? 5,
+        'notes': 'Logged via timer session',
+      });
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Workout saved successfully! ✓')),
@@ -114,6 +132,251 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
     return '$m:$s';
   }
 
+  void _showEditExerciseDialog() {
+    final formKey = GlobalKey<FormState>();
+    String name = _exerciseData['name'] ?? '';
+    String description = _exerciseData['description'] ?? '';
+    String bodyPart = _exerciseData['bodyPart'] ?? 'chest';
+    String difficulty = _exerciseData['difficulty'] ?? 'medium';
+    int sets = _exerciseData['sets'] ?? 3;
+    int reps = _exerciseData['repetitions'] ?? 15;
+    int duration = _exerciseData['durationMinutes'] ?? 5;
+    String category = _exerciseData['category'] ?? 'Strength';
+    String mediaUrl = _exerciseData['mediaUrl'] ?? '';
+
+    final List<String> bodyParts = [
+      'Forearm',
+      'Biceps',
+      'Triceps',
+      'Back',
+      'Legs',
+      'Shoulders',
+      'Chest',
+      'Core',
+      'Neck',
+      'Cardio',
+    ];
+    final List<String> difficulties = ['Easy', 'Medium', 'Hard'];
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (stateContext, setDialogState) {
+          return AlertDialog(
+            title: const Text('Edit Custom Exercise'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextFormField(
+                        initialValue: name,
+                        decoration: const InputDecoration(
+                          labelText: 'Exercise Name*',
+                          prefixIcon: Icon(Icons.edit_note_rounded),
+                        ),
+                        validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                        onSaved: (v) => name = v!.trim(),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        initialValue: description,
+                        decoration: const InputDecoration(
+                          labelText: 'Description*',
+                          prefixIcon: Icon(Icons.description_outlined),
+                        ),
+                        maxLines: 2,
+                        validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                        onSaved: (v) => description = v!.trim(),
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: bodyPart.toLowerCase(),
+                        decoration: const InputDecoration(
+                          labelText: 'Body Part',
+                          prefixIcon: Icon(Icons.accessibility_new_rounded),
+                        ),
+                        items: bodyParts.map((e) => DropdownMenuItem(
+                          value: e.toLowerCase(),
+                          child: Text(e),
+                        )).toList(),
+                        onChanged: (v) => setDialogState(() => bodyPart = v!),
+                      ),
+                      const SizedBox(height: 12),
+                      DropdownButtonFormField<String>(
+                        value: difficulty.toLowerCase(),
+                        decoration: const InputDecoration(
+                          labelText: 'Difficulty',
+                          prefixIcon: Icon(Icons.speed_rounded),
+                        ),
+                        items: difficulties.map((e) => DropdownMenuItem(
+                          value: e.toLowerCase(),
+                          child: Text(e),
+                        )).toList(),
+                        onChanged: (v) => setDialogState(() => difficulty = v!),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: '$sets',
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(labelText: 'Sets'),
+                              validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                              onSaved: (v) => sets = int.parse(v!),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: TextFormField(
+                              initialValue: '$reps',
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(labelText: 'Reps'),
+                              validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                              onSaved: (v) => reps = int.parse(v!),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        initialValue: '$duration',
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: 'Duration (Minutes)',
+                          prefixIcon: Icon(Icons.timer_outlined),
+                        ),
+                        validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                        onSaved: (v) => duration = int.parse(v!),
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        initialValue: category,
+                        decoration: const InputDecoration(
+                          labelText: 'Category',
+                          prefixIcon: Icon(Icons.category_outlined),
+                        ),
+                        onSaved: (v) => category = v?.trim() ?? 'Strength',
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        initialValue: mediaUrl,
+                        decoration: const InputDecoration(
+                          labelText: 'Video Explanation Link',
+                          prefixIcon: Icon(Icons.video_library_outlined),
+                          hintText: 'https://youtube.com/...',
+                        ),
+                        onSaved: (v) => mediaUrl = v?.trim() ?? '',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (formKey.currentState!.validate()) {
+                    formKey.currentState!.save();
+                    final navigator = Navigator.of(context);
+                    final messenger = ScaffoldMessenger.of(context);
+                    final colors = context.appColors;
+
+                    try {
+                      final updated = await _api.updateExercise(_exerciseData['_id'], {
+                        'name': name,
+                        'description': description,
+                        'bodyPart': bodyPart,
+                        'difficulty': difficulty,
+                        'sets': sets,
+                        'repetitions': reps,
+                        'durationMinutes': duration,
+                        'category': category,
+                        'mediaUrl': mediaUrl,
+                      });
+                      navigator.pop();
+                      setState(() {
+                        _exerciseData = updated;
+                      });
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text('Exercise "$name" updated successfully! ✓'),
+                          backgroundColor: colors.successColor,
+                        ),
+                      );
+                    } catch (e) {
+                      messenger.showSnackBar(
+                        SnackBar(
+                          content: Text('Failed to update exercise: $e'),
+                          backgroundColor: colors.dangerColor,
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          );
+        }
+      ),
+    );
+  }
+
+  Future<void> _deleteExercise() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Exercise?'),
+        content: const Text('Are you sure you want to delete this custom exercise? It will be removed from your catalog.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: context.appColors.dangerColor,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final navigator = Navigator.of(context);
+      final messenger = ScaffoldMessenger.of(context);
+      final colors = context.appColors;
+      try {
+        await _api.deleteExercise(_exerciseData['_id']);
+        navigator.pop();
+        messenger.showSnackBar(
+          SnackBar(
+            content: const Text('Custom exercise deleted successfully'),
+            backgroundColor: colors.successColor,
+          ),
+        );
+      } catch (e) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete exercise: $e'),
+            backgroundColor: colors.dangerColor,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   void dispose() {
     _timer?.cancel();
@@ -122,7 +385,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final e = widget.exercise;
+    final e = _exerciseData;
     final name = e['name'] ?? 'Exercise';
     final bodyPart = e['bodyPart'] ?? '';
     final difficulty = e['difficulty'] ?? 'medium';
@@ -139,6 +402,18 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
             color: _isFavorite ? context.appColors.dangerColor : null,
             onPressed: _toggleFavorite,
           ),
+          if (_exerciseData['createdBy'] != null) ...[
+            IconButton(
+              icon: const Icon(Icons.edit_rounded),
+              tooltip: 'Edit Custom Exercise',
+              onPressed: _showEditExerciseDialog,
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline_rounded),
+              tooltip: 'Delete Custom Exercise',
+              onPressed: _deleteExercise,
+            ),
+          ],
         ],
       ),
       body: ListView(
@@ -176,34 +451,84 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   }
 
   Widget _buildHeroSection() {
-    return Container(
-      width: double.infinity,
-      height: 200,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            context.appColors.accentColor.withValues(alpha: 0.2),
-            context.appColors.surfaceColor,
-          ],
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+    final mediaUrl = _exerciseData['mediaUrl'] as String?;
+    final hasVideo = mediaUrl != null && mediaUrl.isNotEmpty;
+
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          height: 200,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                context.appColors.accentColor.withValues(alpha: 0.2),
+                context.appColors.surfaceColor,
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Center(
-        child: Icon(
-          Icons.fitness_center,
-          size: 72,
-          color: context.appColors.accentColor.withValues(alpha: 0.5),
+          child: Center(
+            child: Icon(
+              Icons.fitness_center,
+              size: 72,
+              color: context.appColors.accentColor.withValues(alpha: 0.5),
+            ),
+          ),
         ),
-      ),
+        if (hasVideo)
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: Material(
+              color: Colors.redAccent.withValues(alpha: 0.9),
+              borderRadius: BorderRadius.circular(20),
+              elevation: 4,
+              child: InkWell(
+                onTap: () async {
+                  final uri = Uri.parse(mediaUrl);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  } else {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Could not open video link')),
+                      );
+                    }
+                  }
+                },
+                borderRadius: BorderRadius.circular(20),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 20),
+                      SizedBox(width: 8),
+                      Text(
+                        'Watch Video Guide',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
