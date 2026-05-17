@@ -10,7 +10,8 @@ class WorkoutHistoryScreen extends StatefulWidget {
   State<WorkoutHistoryScreen> createState() => _WorkoutHistoryScreenState();
 }
 
-class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with SingleTickerProviderStateMixin {
+class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen>
+    with SingleTickerProviderStateMixin {
   final _api = ApiService();
   List<dynamic> _workoutHistory = [];
   List<dynamic> _singleExerciseHistory = [];
@@ -62,21 +63,19 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
       final logs = group['logs'] as List<dynamic>? ?? [];
 
       // Filter logs that belong to workouts
-      final workoutLogs = logs.where((log) => log['workoutName'] != null).toList();
+      final workoutLogs = logs
+          .where((log) => log['workoutName'] != null)
+          .toList();
       if (workoutLogs.isNotEmpty) {
-        workoutsTemp.add({
-          'date': date,
-          'logs': workoutLogs,
-        });
+        workoutsTemp.add({'date': date, 'logs': workoutLogs});
       }
 
       // Filter logs that do NOT belong to workouts
-      final singleLogs = logs.where((log) => log['workoutName'] == null).toList();
+      final singleLogs = logs
+          .where((log) => log['workoutName'] == null)
+          .toList();
       if (singleLogs.isNotEmpty) {
-        singlesTemp.add({
-          'date': date,
-          'logs': singleLogs,
-        });
+        singlesTemp.add({'date': date, 'logs': singleLogs});
       }
     }
 
@@ -91,10 +90,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
       appBar: AppBar(
         title: const Text('Workout History'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadHistory,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _loadHistory),
         ],
         bottom: TabBar(
           controller: _tabController,
@@ -123,10 +119,16 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
               controller: _tabController,
               children: [
                 _workoutHistory.isEmpty
-                    ? _buildEmptyState('No routine history yet', 'Complete a workout routine to see it here!')
+                    ? _buildEmptyState(
+                        'No routine history yet',
+                        'Complete a workout routine to see it here!',
+                      )
                     : _buildWorkoutRoutineList(),
                 _singleExerciseHistory.isEmpty
-                    ? _buildEmptyState('No single exercise history yet', 'Log an individual exercise to see it here!')
+                    ? _buildEmptyState(
+                        'No single exercise history yet',
+                        'Log an individual exercise to see it here!',
+                      )
                     : _buildSingleExerciseList(),
               ],
             ),
@@ -206,9 +208,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
               String completedTime = '';
               try {
                 if (sessionLogs.first['createdAt'] != null) {
-                  completedTime = DateFormat('HH:mm').format(
-                    DateTime.parse(sessionLogs.first['createdAt']),
-                  );
+                  completedTime = DateFormat(
+                    'HH:mm',
+                  ).format(DateTime.parse(sessionLogs.first['createdAt']));
                 }
               } catch (_) {}
 
@@ -234,9 +236,14 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
                           ),
                           if (completedTime.isNotEmpty)
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
                               decoration: BoxDecoration(
-                                color: context.appColors.accentColor.withValues(alpha: 0.1),
+                                color: context.appColors.accentColor.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -302,35 +309,58 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
                                 padding: const EdgeInsets.only(left: 24),
                                 child: Row(
                                   children: [
-                                    _StatIconTile(label: 'Sets', value: '$sets', icon: Icons.layers_outlined),
+                                    _StatIconTile(
+                                      label: 'Sets',
+                                      value: '$sets',
+                                      icon: Icons.layers_outlined,
+                                    ),
                                     const SizedBox(width: 18),
-                                    _StatIconTile(label: 'Reps', value: '$reps', icon: Icons.repeat),
+                                    _StatIconTile(
+                                      label: 'Reps',
+                                      value: '$reps',
+                                      icon: Icons.repeat,
+                                    ),
                                     if (duration > 0) ...[
                                       const SizedBox(width: 18),
-                                      _StatIconTile(label: 'Time', value: '${duration}m', icon: Icons.timer_outlined),
+                                      _StatIconTile(
+                                        label: 'Time',
+                                        value: '${duration}m',
+                                        icon: Icons.timer_outlined,
+                                      ),
                                     ],
                                   ],
                                 ),
                               ),
-                              if (notes.isNotEmpty && !notes.startsWith('Completed via')) ...[
+                              if (notes.isNotEmpty &&
+                                  !notes.startsWith('Completed via')) ...[
                                 const SizedBox(height: 8),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 24),
                                   child: Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
                                     decoration: BoxDecoration(
                                       color: context.appColors.surfaceColor,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.notes_rounded, size: 12, color: context.appColors.textSecondary),
+                                        Icon(
+                                          Icons.notes_rounded,
+                                          size: 12,
+                                          color:
+                                              context.appColors.textSecondary,
+                                        ),
                                         const SizedBox(width: 6),
                                         Expanded(
                                           child: Text(
                                             notes,
                                             style: TextStyle(
-                                              color: context.appColors.textSecondary,
+                                              color: context
+                                                  .appColors
+                                                  .textSecondary,
                                               fontSize: 11,
                                               fontStyle: FontStyle.italic,
                                             ),
@@ -394,7 +424,9 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
                 String logTime = '';
                 try {
                   if (log['createdAt'] != null) {
-                    logTime = DateFormat('HH:mm').format(DateTime.parse(log['createdAt']));
+                    logTime = DateFormat(
+                      'HH:mm',
+                    ).format(DateTime.parse(log['createdAt']));
                   }
                 } catch (_) {}
 
@@ -429,26 +461,45 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> with Single
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          _StatTile(label: 'Sets', value: '$sets', icon: Icons.layers_outlined),
+                          _StatTile(
+                            label: 'Sets',
+                            value: '$sets',
+                            icon: Icons.layers_outlined,
+                          ),
                           const SizedBox(width: 24),
-                          _StatTile(label: 'Reps', value: '$reps', icon: Icons.repeat),
+                          _StatTile(
+                            label: 'Reps',
+                            value: '$reps',
+                            icon: Icons.repeat,
+                          ),
                           if (duration > 0) ...[
                             const SizedBox(width: 24),
-                            _StatTile(label: 'Time', value: '${duration}m', icon: Icons.timer_outlined),
+                            _StatTile(
+                              label: 'Time',
+                              value: '${duration}m',
+                              icon: Icons.timer_outlined,
+                            ),
                           ],
                         ],
                       ),
                       if (notes.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: context.appColors.surfaceColor,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.note_alt_outlined, size: 14, color: context.appColors.textSecondary),
+                              Icon(
+                                Icons.note_alt_outlined,
+                                size: 14,
+                                color: context.appColors.textSecondary,
+                              ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
@@ -558,11 +609,7 @@ class _StatIconTile extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 12,
-          color: context.appColors.textHint,
-        ),
+        Icon(icon, size: 12, color: context.appColors.textHint),
         const SizedBox(width: 4),
         Text(
           '$value $label',

@@ -38,7 +38,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
       setState(() {
         _pillReminders = _prefs?.getBool('notif_pill_reminders') ?? true;
         _missedPillAlerts = _prefs?.getBool('notif_missed_pill_alerts') ?? true;
-        _exerciseReminders = _prefs?.getBool('notif_exercise_reminders') ?? true;
+        _exerciseReminders =
+            _prefs?.getBool('notif_exercise_reminders') ?? true;
         _pillReminderMinutes = _prefs?.getInt('notif_pill_reminder_min') ?? 15;
         _loading = false;
       });
@@ -112,7 +113,9 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
         backgroundColor: context.appColors.bgColor,
         appBar: AppBar(title: const Text('App Settings')),
         body: Center(
-          child: CircularProgressIndicator(color: context.appColors.accentColor),
+          child: CircularProgressIndicator(
+            color: context.appColors.accentColor,
+          ),
         ),
       );
     }
@@ -161,14 +164,14 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     Switch(
                       value: isDark,
                       activeThumbColor: context.appColors.accentColor,
-                      activeTrackColor: context.appColors.accentColor.withValues(
-                        alpha: 0.3,
-                      ),
+                      activeTrackColor: context.appColors.accentColor
+                          .withValues(alpha: 0.3),
                       inactiveThumbColor: context.appColors.textSecondary,
                       inactiveTrackColor: context.appColors.surfaceColor,
                       onChanged: (val) {
-                        themeNotifier.value =
-                            val ? ThemeMode.dark : ThemeMode.light;
+                        themeNotifier.value = val
+                            ? ThemeMode.dark
+                            : ThemeMode.light;
                         _saveBool('app_theme_dark', val);
                       },
                     ),
@@ -229,9 +232,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     Switch(
                       value: _pillReminders,
                       activeThumbColor: context.appColors.accentColor,
-                      activeTrackColor: context.appColors.accentColor.withValues(
-                        alpha: 0.3,
-                      ),
+                      activeTrackColor: context.appColors.accentColor
+                          .withValues(alpha: 0.3),
                       inactiveThumbColor: context.appColors.textSecondary,
                       inactiveTrackColor: context.appColors.surfaceColor,
                       onChanged: (val) {
@@ -287,10 +289,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                       Switch(
                         value: _missedPillAlerts,
                         activeThumbColor: context.appColors.accentColor,
-                        activeTrackColor:
-                            context.appColors.accentColor.withValues(
-                          alpha: 0.3,
-                        ),
+                        activeTrackColor: context.appColors.accentColor
+                            .withValues(alpha: 0.3),
                         inactiveThumbColor: context.appColors.textSecondary,
                         inactiveTrackColor: context.appColors.surfaceColor,
                         onChanged: (val) {
@@ -400,9 +400,8 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
                     Switch(
                       value: _exerciseReminders,
                       activeThumbColor: context.appColors.accentColor,
-                      activeTrackColor: context.appColors.accentColor.withValues(
-                        alpha: 0.3,
-                      ),
+                      activeTrackColor: context.appColors.accentColor
+                          .withValues(alpha: 0.3),
                       inactiveThumbColor: context.appColors.textSecondary,
                       inactiveTrackColor: context.appColors.surfaceColor,
                       onChanged: (val) {

@@ -104,7 +104,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         'exerciseId': _exerciseData['_id'],
         'sets': _sets > 0 ? _sets : _exerciseData['sets'] ?? 3,
         'repetitions': _reps > 0 ? _reps : _exerciseData['repetitions'] ?? 15,
-        'durationMinutes': _seconds > 0 ? (_seconds / 60).ceil() : _exerciseData['durationMinutes'] ?? 5,
+        'durationMinutes': _seconds > 0
+            ? (_seconds / 60).ceil()
+            : _exerciseData['durationMinutes'] ?? 5,
         'notes': 'Logged via timer session',
       });
 
@@ -177,7 +179,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                           labelText: 'Exercise Name*',
                           prefixIcon: Icon(Icons.edit_note_rounded),
                         ),
-                        validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                        validator: (v) =>
+                            v == null || v.trim().isEmpty ? 'Required' : null,
                         onSaved: (v) => name = v!.trim(),
                       ),
                       const SizedBox(height: 12),
@@ -188,7 +191,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                           prefixIcon: Icon(Icons.description_outlined),
                         ),
                         maxLines: 2,
-                        validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                        validator: (v) =>
+                            v == null || v.trim().isEmpty ? 'Required' : null,
                         onSaved: (v) => description = v!.trim(),
                       ),
                       const SizedBox(height: 12),
@@ -198,10 +202,14 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                           labelText: 'Body Part',
                           prefixIcon: Icon(Icons.accessibility_new_rounded),
                         ),
-                        items: bodyParts.map((e) => DropdownMenuItem(
-                          value: e.toLowerCase(),
-                          child: Text(e),
-                        )).toList(),
+                        items: bodyParts
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e.toLowerCase(),
+                                child: Text(e),
+                              ),
+                            )
+                            .toList(),
                         onChanged: (v) => setDialogState(() => bodyPart = v!),
                       ),
                       const SizedBox(height: 12),
@@ -211,10 +219,14 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                           labelText: 'Difficulty',
                           prefixIcon: Icon(Icons.speed_rounded),
                         ),
-                        items: difficulties.map((e) => DropdownMenuItem(
-                          value: e.toLowerCase(),
-                          child: Text(e),
-                        )).toList(),
+                        items: difficulties
+                            .map(
+                              (e) => DropdownMenuItem(
+                                value: e.toLowerCase(),
+                                child: Text(e),
+                              ),
+                            )
+                            .toList(),
                         onChanged: (v) => setDialogState(() => difficulty = v!),
                       ),
                       const SizedBox(height: 12),
@@ -224,8 +236,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                             child: TextFormField(
                               initialValue: '$sets',
                               keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(labelText: 'Sets'),
-                              validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                              decoration: const InputDecoration(
+                                labelText: 'Sets',
+                              ),
+                              validator: (v) => int.tryParse(v ?? '') == null
+                                  ? 'Invalid'
+                                  : null,
                               onSaved: (v) => sets = int.parse(v!),
                             ),
                           ),
@@ -234,8 +250,12 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                             child: TextFormField(
                               initialValue: '$reps',
                               keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(labelText: 'Reps'),
-                              validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                              decoration: const InputDecoration(
+                                labelText: 'Reps',
+                              ),
+                              validator: (v) => int.tryParse(v ?? '') == null
+                                  ? 'Invalid'
+                                  : null,
                               onSaved: (v) => reps = int.parse(v!),
                             ),
                           ),
@@ -249,7 +269,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                           labelText: 'Duration (Minutes)',
                           prefixIcon: Icon(Icons.timer_outlined),
                         ),
-                        validator: (v) => int.tryParse(v ?? '') == null ? 'Invalid' : null,
+                        validator: (v) =>
+                            int.tryParse(v ?? '') == null ? 'Invalid' : null,
                         onSaved: (v) => duration = int.parse(v!),
                       ),
                       const SizedBox(height: 12),
@@ -290,17 +311,18 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                     final colors = context.appColors;
 
                     try {
-                      final updated = await _api.updateExercise(_exerciseData['_id'], {
-                        'name': name,
-                        'description': description,
-                        'bodyPart': bodyPart,
-                        'difficulty': difficulty,
-                        'sets': sets,
-                        'repetitions': reps,
-                        'durationMinutes': duration,
-                        'category': category,
-                        'mediaUrl': mediaUrl,
-                      });
+                      final updated = await _api
+                          .updateExercise(_exerciseData['_id'], {
+                            'name': name,
+                            'description': description,
+                            'bodyPart': bodyPart,
+                            'difficulty': difficulty,
+                            'sets': sets,
+                            'repetitions': reps,
+                            'durationMinutes': duration,
+                            'category': category,
+                            'mediaUrl': mediaUrl,
+                          });
                       if (!mounted) return;
                       navigator.pop();
                       setState(() {
@@ -308,7 +330,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                       });
                       messenger.showSnackBar(
                         SnackBar(
-                          content: Text('Exercise "$name" updated successfully! ✓'),
+                          content: Text(
+                            'Exercise "$name" updated successfully! ✓',
+                          ),
                           backgroundColor: colors.successColor,
                         ),
                       );
@@ -326,7 +350,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
               ),
             ],
           );
-        }
+        },
       ),
     );
   }
@@ -336,7 +360,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Exercise?'),
-        content: const Text('Are you sure you want to delete this custom exercise? It will be removed from your catalog.'),
+        content: const Text(
+          'Are you sure you want to delete this custom exercise? It will be removed from your catalog.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -382,7 +408,9 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
-  }  @override
+  }
+
+  @override
   Widget build(BuildContext context) {
     final e = _exerciseData;
     final name = e['name'] ?? 'Exercise';
@@ -547,21 +575,33 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                     onTap: () async {
                       final uri = Uri.parse(mediaUrl);
                       if (await canLaunchUrl(uri)) {
-                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                        await launchUrl(
+                          uri,
+                          mode: LaunchMode.externalApplication,
+                        );
                       } else {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Could not open video link')),
+                            const SnackBar(
+                              content: Text('Could not open video link'),
+                            ),
                           );
                         }
                       }
                     },
                     child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 18),
+                          Icon(
+                            Icons.play_circle_fill_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
                           SizedBox(width: 6),
                           Text(
                             'Video Guide',
@@ -589,10 +629,22 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       runSpacing: 8,
       children: [
         if (bodyPart.isNotEmpty)
-          _MetaChip(icon: Icons.accessibility_new_rounded, label: bodyPart, type: 'bodyPart'),
-        _MetaChip(icon: Icons.speed_rounded, label: difficulty, type: 'difficulty'),
+          _MetaChip(
+            icon: Icons.accessibility_new_rounded,
+            label: bodyPart,
+            type: 'bodyPart',
+          ),
+        _MetaChip(
+          icon: Icons.speed_rounded,
+          label: difficulty,
+          type: 'difficulty',
+        ),
         if (category.isNotEmpty)
-          _MetaChip(icon: Icons.category_rounded, label: category, type: 'category'),
+          _MetaChip(
+            icon: Icons.category_rounded,
+            label: category,
+            type: 'category',
+          ),
       ],
     );
   }
@@ -604,12 +656,17 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         const SectionHeader(title: 'Workout Timer'),
         GlassCard(
           padding: const EdgeInsets.all(20),
-          borderColor: context.appColors.accentColor.withValues(alpha: _timerRunning ? 0.25 : 0.1),
+          borderColor: context.appColors.accentColor.withValues(
+            alpha: _timerRunning ? 0.25 : 0.1,
+          ),
           child: Column(
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
                 decoration: BoxDecoration(
                   color: context.appColors.surfaceColor.withValues(alpha: 0.6),
                   borderRadius: BorderRadius.circular(20),
@@ -652,13 +709,17 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(
-                                    _timerRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                                    _timerRunning
+                                        ? Icons.pause_rounded
+                                        : Icons.play_arrow_rounded,
                                     color: Colors.white,
                                     size: 20,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    _timerRunning ? 'Pause Timer' : 'Start Timer',
+                                    _timerRunning
+                                        ? 'Pause Timer'
+                                        : 'Start Timer',
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -770,9 +831,7 @@ class _MetaChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.appColors.cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: activeColor.withValues(alpha: 0.15),
-        ),
+        border: Border.all(color: activeColor.withValues(alpha: 0.15)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -848,7 +907,11 @@ class _CounterCard extends StatelessWidget {
             children: [
               _RoundButton(icon: Icons.remove_rounded, onTap: onDecrement),
               const SizedBox(width: 16),
-              _RoundButton(icon: Icons.add_rounded, onTap: onIncrement, filled: true),
+              _RoundButton(
+                icon: Icons.add_rounded,
+                onTap: onIncrement,
+                filled: true,
+              ),
             ],
           ),
         ],
@@ -882,7 +945,9 @@ class _RoundButton extends StatelessWidget {
               : context.appColors.surfaceColor,
           shape: BoxShape.circle,
           border: Border.all(
-            color: context.appColors.accentColor.withValues(alpha: filled ? 0.0 : 0.1),
+            color: context.appColors.accentColor.withValues(
+              alpha: filled ? 0.0 : 0.1,
+            ),
           ),
           boxShadow: filled
               ? [

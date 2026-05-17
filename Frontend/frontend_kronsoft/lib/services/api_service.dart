@@ -215,7 +215,9 @@ class ApiService {
     return await _get('/exercises/$id');
   }
 
-  Future<Map<String, dynamic>> createExercise(Map<String, dynamic> exercise) async {
+  Future<Map<String, dynamic>> createExercise(
+    Map<String, dynamic> exercise,
+  ) async {
     return await _post('/exercises', exercise);
   }
 
@@ -228,7 +230,9 @@ class ApiService {
     return data is List ? data : (data['data'] ?? []);
   }
 
-  Future<Map<String, dynamic>> createWorkout(Map<String, dynamic> workout) async {
+  Future<Map<String, dynamic>> createWorkout(
+    Map<String, dynamic> workout,
+  ) async {
     return await _post('/workouts', workout);
   }
 
@@ -237,7 +241,10 @@ class ApiService {
     return data is List ? data : (data['data'] ?? []);
   }
 
-  Future<Map<String, dynamic>> updateExercise(String id, Map<String, dynamic> exercise) async {
+  Future<Map<String, dynamic>> updateExercise(
+    String id,
+    Map<String, dynamic> exercise,
+  ) async {
     final data = await _put('/exercises/$id', exercise);
     return data is Map<String, dynamic> ? (data['data'] ?? data) : data;
   }
@@ -246,7 +253,10 @@ class ApiService {
     await _delete('/exercises/$id');
   }
 
-  Future<Map<String, dynamic>> updateWorkout(String id, Map<String, dynamic> workout) async {
+  Future<Map<String, dynamic>> updateWorkout(
+    String id,
+    Map<String, dynamic> workout,
+  ) async {
     final data = await _put('/workouts/$id', workout);
     return data is Map<String, dynamic> ? (data['data'] ?? data) : data;
   }

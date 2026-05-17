@@ -64,7 +64,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
           'exerciseId': ex['_id'],
           'sets': ex['sets'] ?? 3,
           'repetitions': ex['repetitions'] ?? 15,
-          'notes': 'Completed via "${_workoutDetails?['name'] ?? 'Workout'}" routine',
+          'notes':
+              'Completed via "${_workoutDetails?['name'] ?? 'Workout'}" routine',
           'workoutName': _workoutDetails?['name'] ?? 'Workout',
         });
       }).toList();
@@ -74,7 +75,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Workout logged successfully! all ${exercises.length} exercises registered ✓'),
+            content: Text(
+              'Workout logged successfully! all ${exercises.length} exercises registered ✓',
+            ),
             backgroundColor: colors.successColor,
           ),
         );
@@ -110,9 +113,16 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
           return Container(
             decoration: BoxDecoration(
               color: context.appColors.surfaceColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
             ),
-            padding: EdgeInsets.fromLTRB(24, 20, 24, MediaQuery.of(modalContext).viewInsets.bottom + 32),
+            padding: EdgeInsets.fromLTRB(
+              24,
+              20,
+              24,
+              MediaQuery.of(modalContext).viewInsets.bottom + 32,
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -150,7 +160,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         'Sets',
                         sets,
                         () => setModalState(() => sets++),
-                        () => setModalState(() { if (sets > 1) sets--; }),
+                        () => setModalState(() {
+                          if (sets > 1) sets--;
+                        }),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -159,7 +171,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         'Reps',
                         reps,
                         () => setModalState(() => reps++),
-                        () => setModalState(() { if (reps > 1) reps--; }),
+                        () => setModalState(() {
+                          if (reps > 1) reps--;
+                        }),
                       ),
                     ),
                   ],
@@ -193,7 +207,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                       navigator.pop();
                       messenger.showSnackBar(
                         SnackBar(
-                          content: Text('${exercise['name']} logged successfully! ✓'),
+                          content: Text(
+                            '${exercise['name']} logged successfully! ✓',
+                          ),
                           backgroundColor: colors.successColor,
                         ),
                       );
@@ -210,24 +226,45 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               ],
             ),
           );
-        }
+        },
       ),
     );
   }
 
-  Widget _buildModalCounter(String label, int value, VoidCallback onInc, VoidCallback onDec) {
+  Widget _buildModalCounter(
+    String label,
+    int value,
+    VoidCallback onInc,
+    VoidCallback onDec,
+  ) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: context.appColors.cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: context.appColors.accentColor.withValues(alpha: 0.15)),
+        border: Border.all(
+          color: context.appColors.accentColor.withValues(alpha: 0.15),
+        ),
       ),
       child: Column(
         children: [
-          Text(label, style: TextStyle(color: context.appColors.textSecondary, fontSize: 13, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: TextStyle(
+              color: context.appColors.textSecondary,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: 8),
-          Text('$value', style: TextStyle(color: context.appColors.accentColor, fontSize: 28, fontWeight: FontWeight.bold)),
+          Text(
+            '$value',
+            style: TextStyle(
+              color: context.appColors.accentColor,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -235,16 +272,22 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               IconButton.filledTonal(
                 onPressed: onDec,
                 icon: const Icon(Icons.remove, size: 16),
-                style: IconButton.styleFrom(minimumSize: const Size(36, 36), padding: EdgeInsets.zero),
+                style: IconButton.styleFrom(
+                  minimumSize: const Size(36, 36),
+                  padding: EdgeInsets.zero,
+                ),
               ),
               const SizedBox(width: 12),
               IconButton.filledTonal(
                 onPressed: onInc,
                 icon: const Icon(Icons.add, size: 16),
-                style: IconButton.styleFrom(minimumSize: const Size(36, 36), padding: EdgeInsets.zero),
+                style: IconButton.styleFrom(
+                  minimumSize: const Size(36, 36),
+                  padding: EdgeInsets.zero,
+                ),
               ),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -254,7 +297,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     final formKey = GlobalKey<FormState>();
     String name = _workoutDetails?['name'] ?? '';
     String description = _workoutDetails?['description'] ?? '';
-    List<String> selectedIds = (_workoutDetails?['exercises'] as List?)
+    List<String> selectedIds =
+        (_workoutDetails?['exercises'] as List?)
             ?.map((e) => e['_id'].toString())
             .toList() ??
         [];
@@ -278,7 +322,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         labelText: 'Workout Name*',
                         prefixIcon: Icon(Icons.fitness_center_rounded),
                       ),
-                      validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                      validator: (v) =>
+                          v == null || v.trim().isEmpty ? 'Required' : null,
                       onSaved: (v) => name = v!.trim(),
                     ),
                     const SizedBox(height: 12),
@@ -315,8 +360,14 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                             final id = ex['_id'] as String;
                             final isSelected = selectedIds.contains(id);
                             return CheckboxListTile(
-                              title: Text(ex['name'] ?? '', style: const TextStyle(fontSize: 14)),
-                              subtitle: Text(ex['bodyPart'] ?? '', style: const TextStyle(fontSize: 11)),
+                              title: Text(
+                                ex['name'] ?? '',
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                              subtitle: Text(
+                                ex['bodyPart'] ?? '',
+                                style: const TextStyle(fontSize: 11),
+                              ),
                               value: isSelected,
                               activeColor: context.appColors.accentColor,
                               onChanged: (bool? val) {
@@ -347,7 +398,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                   if (formKey.currentState!.validate()) {
                     if (selectedIds.isEmpty) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Please select at least one exercise')),
+                        const SnackBar(
+                          content: Text('Please select at least one exercise'),
+                        ),
                       );
                       return;
                     }
@@ -385,7 +438,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
               ),
             ],
           );
-        }
+        },
       ),
     );
   }
@@ -395,7 +448,9 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Workout?'),
-        content: const Text('Are you sure you want to delete this workout routine? This action cannot be undone.'),
+        content: const Text(
+          'Are you sure you want to delete this workout routine? This action cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -439,8 +494,12 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final name = _workoutDetails?['name'] ?? widget.workout['name'] ?? 'Workout';
-    final description = _workoutDetails?['description'] ?? widget.workout['description'] ?? 'No description available.';
+    final name =
+        _workoutDetails?['name'] ?? widget.workout['name'] ?? 'Workout';
+    final description =
+        _workoutDetails?['description'] ??
+        widget.workout['description'] ??
+        'No description available.';
 
     return Scaffold(
       backgroundColor: context.appColors.bgColor,
@@ -483,7 +542,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                   const SizedBox(height: 24),
                 ],
                 SectionHeader(
-                  title: 'Exercises (${_workoutDetails?['exercises']?.length ?? 0})',
+                  title:
+                      'Exercises (${_workoutDetails?['exercises']?.length ?? 0})',
                 ),
                 if (_workoutDetails == null ||
                     _workoutDetails!['exercises'] == null ||
@@ -496,12 +556,16 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                           Icon(
                             Icons.fitness_center_rounded,
                             size: 48,
-                            color: context.appColors.textHint.withValues(alpha: 0.3),
+                            color: context.appColors.textHint.withValues(
+                              alpha: 0.3,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           Text(
                             'No exercises in this workout',
-                            style: TextStyle(color: context.appColors.textSecondary),
+                            style: TextStyle(
+                              color: context.appColors.textSecondary,
+                            ),
                           ),
                         ],
                       ),
@@ -512,7 +576,8 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: (_workoutDetails!['exercises'] as List).length,
-                    separatorBuilder: (sepContext, sepIndex) => const SizedBox(height: 12),
+                    separatorBuilder: (sepContext, sepIndex) =>
+                        const SizedBox(height: 12),
                     itemBuilder: (itemContext, i) {
                       final ex = _workoutDetails!['exercises'][i];
                       return _buildExerciseListItem(ex);
@@ -600,11 +665,16 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
             DifficultyBadge(difficulty: difficulty),
             const SizedBox(width: 8),
             IconButton(
-              icon: Icon(Icons.add_task_rounded, color: context.appColors.accentColor),
+              icon: Icon(
+                Icons.add_task_rounded,
+                color: context.appColors.accentColor,
+              ),
               onPressed: () => _showQuickLogBottomSheet(ex),
               tooltip: 'Quick Log Exercise',
               style: IconButton.styleFrom(
-                backgroundColor: context.appColors.accentColor.withValues(alpha: 0.1),
+                backgroundColor: context.appColors.accentColor.withValues(
+                  alpha: 0.1,
+                ),
                 padding: const EdgeInsets.all(8),
               ),
             ),
