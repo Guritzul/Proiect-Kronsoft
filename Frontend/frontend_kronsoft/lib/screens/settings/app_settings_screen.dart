@@ -56,6 +56,11 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
     await _prefs?.setInt(key, value);
   }
 
+  Future<void> _saveString(String key, String value) async {
+    _prefs ??= await SharedPreferences.getInstance();
+    await _prefs?.setString(key, value);
+  }
+
   Future<void> _clearScanHistory() async {
     setState(() => _clearingScan = true);
     try {
@@ -129,55 +134,107 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
           // Theme Section
           const SectionHeader(title: 'Appearance'),
           GlassCard(
-            child: ValueListenableBuilder<ThemeMode>(
-              valueListenable: themeNotifier,
-              builder: (context, ThemeMode currentMode, child) {
-                final isDark = currentMode == ThemeMode.dark;
-                return Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: context.appColors.accentColor.withValues(
-                          alpha: 0.1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ValueListenableBuilder<ThemeMode>(
+                  valueListenable: themeNotifier,
+                  builder: (context, ThemeMode currentMode, child) {
+                    final isDark = currentMode == ThemeMode.dark;
+                    return Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: context.appColors.accentColor.withValues(
+                              alpha: 0.1,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            isDark ? Icons.dark_mode : Icons.light_mode,
+                            color: context.appColors.accentColor,
+                            size: 20,
+                          ),
                         ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        isDark ? Icons.dark_mode : Icons.light_mode,
-                        color: context.appColors.accentColor,
-                        size: 20,
-                      ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Text(
-                        isDark ? 'Dark Mode' : 'White Mode',
-                        style: TextStyle(
-                          color: context.appColors.textPrimary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Text(
+                            isDark ? 'Dark Mode' : 'White Mode',
+                            style: TextStyle(
+                              color: context.appColors.textPrimary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    Switch(
-                      value: isDark,
-                      activeThumbColor: context.appColors.accentColor,
-                      activeTrackColor: context.appColors.accentColor
-                          .withValues(alpha: 0.3),
-                      inactiveThumbColor: context.appColors.textSecondary,
-                      inactiveTrackColor: context.appColors.surfaceColor,
-                      onChanged: (val) {
-                        themeNotifier.value = val
-                            ? ThemeMode.dark
-                            : ThemeMode.light;
-                        _saveBool('app_theme_dark', val);
-                      },
-                    ),
-                  ],
-                );
-              },
+                        Switch(
+                          value: isDark,
+                          activeThumbColor: context.appColors.accentColor,
+                          activeTrackColor: context.appColors.accentColor
+                              .withValues(alpha: 0.3),
+                          inactiveThumbColor: context.appColors.textSecondary,
+                          inactiveTrackColor: context.appColors.surfaceColor,
+                          onChanged: (val) {
+                            themeNotifier.value = val
+                                ? ThemeMode.dark
+                                : ThemeMode.light;
+                            _saveBool('app_theme_dark', val);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Divider(color: context.appColors.divider, height: 24),
+                Text(
+                  'Select Theme Skin',
+                  style: TextStyle(
+                    color: context.appColors.textSecondary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ValueListenableBuilder<AppSkin>(
+                  valueListenable: skinNotifier,
+                  builder: (context, AppSkin activeSkin, child) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildSkinOption(
+                          context,
+                          skin: AppSkin.defaultSkin,
+                          activeSkin: activeSkin,
+                          name: 'Default',
+                          bgColor: const Color(0xFF0F172A),
+                          accentColor: const Color(0xFF4DD0E1),
+                          isGlass: false,
+                        ),
+                        _buildSkinOption(
+                          context,
+                          skin: AppSkin.glassSkin,
+                          activeSkin: activeSkin,
+                          name: 'Glassmorphic',
+                          bgColor: const Color(0xFF130E26),
+                          accentColor: const Color(0xFFE040FB),
+                          isGlass: true,
+                        ),
+                        _buildSkinOption(
+                          context,
+                          skin: AppSkin.neonSkin,
+                          activeSkin: activeSkin,
+                          name: 'Cyber Neon',
+                          bgColor: const Color(0xFF000000),
+                          accentColor: const Color(0xFF39FF14),
+                          isGlass: false,
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 24),
@@ -616,6 +673,129 @@ class _AppSettingsScreenState extends State<AppSettingsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSkinOption(
+    BuildContext context, {
+    required AppSkin skin,
+    required AppSkin activeSkin,
+    required String name,
+    required Color bgColor,
+    required Color accentColor,
+    required bool isGlass,
+  }) {
+    final isSelected = activeSkin == skin;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          skinNotifier.value = skin;
+          _saveString('app_skin', skin.toString().split('.').last);
+        },
+        child: Column(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              padding: const EdgeInsets.all(8),
+              height: 64,
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isSelected
+                      ? context.appColors.accentColor
+                      : (isGlass ? Colors.white.withValues(alpha: 0.15) : context.appColors.divider),
+                  width: isSelected ? 2 : 1.2,
+                ),
+                boxShadow: isSelected
+                    ? [
+                        BoxShadow(
+                          color: context.appColors.accentColor.withValues(alpha: 0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ]
+                    : [],
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned(
+                    top: 6,
+                    right: 6,
+                    child: Container(
+                      width: 12,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: accentColor,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: accentColor.withValues(alpha: 0.4),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (isGlass)
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        width: 36,
+                        height: 18,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 4,
+                            height: 4,
+                            decoration: const BoxDecoration(
+                              color: Colors.white30,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (isSelected)
+                    Positioned(
+                      bottom: 4,
+                      left: 6,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: context.appColors.accentColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.check_rounded,
+                          size: 9,
+                          color: context.appColors.bgColor,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              name,
+              style: TextStyle(
+                color: isSelected
+                    ? context.appColors.accentColor
+                    : context.appColors.textSecondary,
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

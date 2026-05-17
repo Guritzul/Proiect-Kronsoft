@@ -45,9 +45,15 @@ class _HomeScreenState extends State<HomeScreen>
 
   String get _greeting {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Good Morning';
-    if (hour < 18) return 'Good Afternoon';
-    return 'Good Evening';
+    if (hour >= 5 && hour < 12) {
+      return 'Good Morning';
+    } else if (hour >= 12 && hour < 17) {
+      return 'Good Afternoon';
+    } else if (hour >= 17 && hour < 22) {
+      return 'Good Evening';
+    } else {
+      return 'Good Night';
+    }
   }
 
   String get _userName {
@@ -56,6 +62,81 @@ class _HomeScreenState extends State<HomeScreen>
       return user.displayName!;
     }
     return user?.email?.split('@').first ?? 'User';
+  }
+
+  Widget _buildHeader() {
+    final initials = _userName.isNotEmpty ? _userName[0].toUpperCase() : 'U';
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _greeting.toUpperCase(),
+                style: TextStyle(
+                  color: context.appColors.accentColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.5,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                _userName,
+                style: TextStyle(
+                  color: context.appColors.textPrimary,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  height: 1.15,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                'Stay healthy, stay strong 💪',
+                style: TextStyle(
+                  color: context.appColors.textSecondary,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 16),
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: context.appColors.accentColor.withValues(alpha: 0.2),
+              width: 2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: context.appColors.accentColor.withValues(alpha: 0.15),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: CircleAvatar(
+            backgroundColor: context.appColors.cardColor,
+            child: Text(
+              initials,
+              style: TextStyle(
+                color: context.appColors.accentColor,
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   @override
@@ -72,37 +153,14 @@ class _HomeScreenState extends State<HomeScreen>
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
               children: [
-                Text(
-                  _greeting,
-                  style: TextStyle(
-                    color: context.appColors.textSecondary,
-                    fontSize: 14,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _userName,
-                  style: TextStyle(
-                    color: context.appColors.textPrimary,
-                    fontSize: 28,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Stay healthy, stay strong 💪',
-                  style: TextStyle(
-                    color: context.appColors.accentColor.withValues(alpha: 0.8),
-                    fontSize: 14,
-                  ),
-                ),
+                _buildHeader(),
                 const SizedBox(height: 28),
 
                 if (_dashboard != null) ...[
                   Row(
                     children: [
                       _SummaryTile(
-                        icon: Icons.medication,
+                        icon: Icons.medication_rounded,
                         label: 'Active Pills',
                         value:
                             '${(_dashboard!['pills'] as List?)?.length ?? 0}',
@@ -122,6 +180,7 @@ class _HomeScreenState extends State<HomeScreen>
                   if (_dashboard!['lastScan'] != null)
                     GlassCard(
                       padding: const EdgeInsets.all(16),
+                      borderColor: context.appColors.successColor.withValues(alpha: 0.15),
                       child: Row(
                         children: [
                           Container(
@@ -129,14 +188,17 @@ class _HomeScreenState extends State<HomeScreen>
                             height: 44,
                             decoration: BoxDecoration(
                               color: context.appColors.successColor.withValues(
-                                alpha: 0.15,
+                                alpha: 0.12,
                               ),
                               borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: context.appColors.successColor.withValues(alpha: 0.2),
+                              ),
                             ),
                             child: Icon(
-                              Icons.qr_code_scanner,
+                              Icons.qr_code_scanner_rounded,
                               color: context.appColors.successColor,
-                              size: 22,
+                              size: 20,
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -145,19 +207,20 @@ class _HomeScreenState extends State<HomeScreen>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Last Scan',
+                                  'Last Scan Status',
                                   style: TextStyle(
                                     color: context.appColors.textSecondary,
-                                    fontSize: 12,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
-                                const SizedBox(height: 2),
+                                const SizedBox(height: 3),
                                 Text(
                                   _dashboard!['lastScan']['status'] ?? 'SAFE',
                                   style: TextStyle(
-                                    color: context.appColors.textPrimary,
+                                    color: context.appColors.successColor,
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w700,
+                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
                               ],
@@ -170,16 +233,17 @@ class _HomeScreenState extends State<HomeScreen>
                 ],
 
                 const SectionHeader(title: 'Quick Access'),
+                const SizedBox(height: 12),
                 GridView.count(
                   crossAxisCount: 2,
                   mainAxisSpacing: 14,
                   crossAxisSpacing: 14,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  childAspectRatio: 1.1,
+                  childAspectRatio: 1.05,
                   children: [
                     _QuickNavCard(
-                      icon: Icons.document_scanner,
+                      icon: Icons.document_scanner_rounded,
                       title: 'Allergen\nDetection',
                       gradient: [
                         const Color(0xFF4DD0E1),
@@ -250,37 +314,47 @@ class _SummaryTile extends StatelessWidget {
     return Expanded(
       child: GlassCard(
         padding: const EdgeInsets.all(16),
+        borderColor: color.withValues(alpha: 0.15),
         child: Row(
           children: [
             Container(
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
+                color: color.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(color: color.withValues(alpha: 0.15)),
               ),
-              child: Icon(icon, color: color, size: 22),
+              child: Icon(icon, color: color, size: 20),
             ),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  value,
-                  style: TextStyle(
-                    color: color,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    value,
+                    style: TextStyle(
+                      color: color,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w800,
+                      height: 1.1,
+                    ),
                   ),
-                ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    color: context.appColors.textSecondary,
-                    fontSize: 12,
+                  const SizedBox(height: 2),
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: context.appColors.textSecondary,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
@@ -307,39 +381,77 @@ class _QuickNavCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              gradient[0].withValues(alpha: 0.18),
-              gradient[1].withValues(alpha: 0.06),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: gradient[0].withValues(alpha: 0.25)),
-        ),
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: gradient[0].withValues(alpha: 0.22),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(icon, color: gradient[0], size: 24),
+          color: context.appColors.cardColor,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: gradient[0].withValues(alpha: 0.12)),
+          boxShadow: [
+            BoxShadow(
+              color: gradient[0].withValues(alpha: 0.04),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
             ),
-            Text(
-              title,
-              style: TextStyle(
-                color: gradient[0],
-                fontSize: 15,
-                fontWeight: FontWeight.w700,
-                height: 1.3,
+          ],
+        ),
+        child: Stack(
+          children: [
+            Positioned(
+              bottom: -15,
+              right: -15,
+              child: Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  color: gradient[0].withValues(alpha: 0.03),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: gradient[0].withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(icon, color: gradient[0], size: 20),
+                  ),
+                  const Spacer(),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: context.appColors.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      height: 1.25,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'TAP TO OPEN',
+                        style: TextStyle(
+                          color: gradient[0],
+                          fontSize: 8,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: gradient[0],
+                        size: 14,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],

@@ -1,4 +1,9 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+
+enum AppSkin { defaultSkin, glassSkin, neonSkin }
+
+final ValueNotifier<AppSkin> skinNotifier = ValueNotifier(AppSkin.defaultSkin);
 
 class AppColorsExtension extends ThemeExtension<AppColorsExtension> {
   final Color bgColor;
@@ -99,23 +104,22 @@ extension AppColorsGetter on BuildContext {
 }
 
 class AppTheme {
-  static const Color accentColor = Color(0xFF4DD0E1);
-  static const Color successColor = Color(0xFF66BB6A);
-  static const Color warningColor = Color(0xFFFFA726);
-  static const Color dangerColor = Color(0xFFEF5350);
-  static Color accentGlow = const Color(0xFF4DD0E1).withValues(alpha: 0.20);
-  static Color accentSubtle = const Color(0xFF4DD0E1).withValues(alpha: 0.10);
+  // --- 1. DEFAULT SKIN PALETTE (Teal / Slate) ---
+  static const Color defAccent = Color(0xFF4DD0E1);
+  static const Color defSuccess = Color(0xFF66BB6A);
+  static const Color defWarning = Color(0xFFFFA726);
+  static const Color defDanger = Color(0xFFEF5350);
 
-  static final lightColors = AppColorsExtension(
+  static final defaultLight = AppColorsExtension(
     bgColor: const Color(0xFFFFFFFF),
     surfaceColor: const Color(0xFFF8F9FA),
     cardColor: const Color(0xFFFFFFFF),
-    accentColor: accentColor,
-    accentGlow: accentGlow,
-    accentSubtle: accentSubtle,
-    successColor: successColor,
-    warningColor: warningColor,
-    dangerColor: dangerColor,
+    accentColor: defAccent,
+    accentGlow: defAccent.withValues(alpha: 0.20),
+    accentSubtle: defAccent.withValues(alpha: 0.10),
+    successColor: defSuccess,
+    warningColor: defWarning,
+    dangerColor: defDanger,
     textPrimary: const Color(0xFF111827),
     textSecondary: const Color(0xFF6B7280),
     textHint: const Color(0xFF9CA3AF),
@@ -123,16 +127,16 @@ class AppTheme {
     shimmer: const Color(0xFFF3F4F6),
   );
 
-  static final darkColors = AppColorsExtension(
+  static final defaultDark = AppColorsExtension(
     bgColor: const Color(0xFF05070C),
     surfaceColor: const Color(0xFF0D1017),
     cardColor: const Color(0xFF141824),
-    accentColor: accentColor,
-    accentGlow: accentGlow,
-    accentSubtle: accentSubtle,
-    successColor: successColor,
-    warningColor: warningColor,
-    dangerColor: dangerColor,
+    accentColor: defAccent,
+    accentGlow: defAccent.withValues(alpha: 0.20),
+    accentSubtle: defAccent.withValues(alpha: 0.10),
+    successColor: defSuccess,
+    warningColor: defWarning,
+    dangerColor: defDanger,
     textPrimary: const Color(0xFFF1F5F9),
     textSecondary: const Color(0xFF94A3B8),
     textHint: const Color(0xFF475569),
@@ -140,34 +144,139 @@ class AppTheme {
     shimmer: const Color(0xFF1E293B),
   );
 
-  static ThemeData get lightTheme {
+  // --- 2. GLASSMORPHISM SKIN PALETTE (Orchid / Amethyst / Translucent) ---
+  static const Color glassAccent = Color(0xFFBA68C8); // Orchid Purple
+  static const Color glassSuccess = Color(0xFF4CAF50);
+  static const Color glassWarning = Color(0xFFFFB74D);
+  static const Color glassDanger = Color(0xFFE57373);
+
+  static final glassLight = AppColorsExtension(
+    bgColor: const Color(0xFFF5F3F9), // Very soft lavender white
+    surfaceColor: const Color(0xFFEAE6F3), // Frosted light purple
+    cardColor: const Color(
+      0xB3FFFFFF,
+    ), // Highly translucent glass card (70% opacity)
+    accentColor: glassAccent,
+    accentGlow: glassAccent.withValues(alpha: 0.25),
+    accentSubtle: glassAccent.withValues(alpha: 0.12),
+    successColor: glassSuccess,
+    warningColor: glassWarning,
+    dangerColor: glassDanger,
+    textPrimary: const Color(0xFF2E1C4E), // Deep violet text
+    textSecondary: const Color(0xFF75629E),
+    textHint: const Color(0xFFAB9EC9),
+    divider: const Color(0x26BA68C8), // Violet translucent divider
+    shimmer: const Color(0x1FBA68C8),
+  );
+
+  static final glassDark = AppColorsExtension(
+    bgColor: const Color(0xFF0A0714), // Deep outer space violet
+    surfaceColor: const Color(0xCC130E26), // Frosted dark purple
+    cardColor: const Color(0x801F1836), // Frosted deep card (50% opacity)
+    accentColor: const Color(0xFFE040FB), // Neon electric orchid
+    accentGlow: const Color(0xFFE040FB).withValues(alpha: 0.30),
+    accentSubtle: const Color(0xFFE040FB).withValues(alpha: 0.15),
+    successColor: const Color(0xFF69F0AE),
+    warningColor: const Color(0xFFFFD740),
+    dangerColor: const Color(0xFFFF5252),
+    textPrimary: const Color(0xFFF3E8FF), // Lavender white
+    textSecondary: const Color(0xFFAC9ECB),
+    textHint: const Color(0xFF5D5084),
+    divider: const Color(0x33E040FB),
+    shimmer: const Color(0x1AE040FB),
+  );
+
+  // --- 3. NEON CYBERPUNK SKIN PALETTE (Lime Green / Matrix Black / Cyber Sunset) ---
+  static const Color neonAccentLight = Color(0xFFFF6D00); // Solar Orange
+  static const Color neonAccentDark = Color(0xFF39FF14); // Electric Neon Green
+  static const Color neonSuccess = Color(0xFF00E676);
+  static const Color neonWarning = Color(0xFFFFEA00);
+  static const Color neonDanger = Color(0xFFFF1744);
+
+  static final neonLight = AppColorsExtension(
+    bgColor: const Color(0xFFFFFDE7), // Energetic solar yellow-white
+    surfaceColor: const Color(0xFFFFF9C4),
+    cardColor: const Color(0xFFFFFFFF),
+    accentColor: neonAccentLight,
+    accentGlow: neonAccentLight.withValues(alpha: 0.25),
+    accentSubtle: neonAccentLight.withValues(alpha: 0.12),
+    successColor: neonSuccess,
+    warningColor: neonWarning,
+    dangerColor: neonDanger,
+    textPrimary: const Color(0xFF3E2723), // Dark brown espresso
+    textSecondary: const Color(0xFF795548),
+    textHint: const Color(0xFFA1887F),
+    divider: const Color(0xFFE0F2F1),
+    shimmer: const Color(0xFFF5F5F5),
+  );
+
+  static final neonDark = AppColorsExtension(
+    bgColor: const Color(0xFF000000), // Matrix pitch black
+    surfaceColor: const Color(0xFF080D08), // Sleek tactical green-black
+    cardColor: const Color(0xFF0F150F), // Deep tech military card
+    accentColor: neonAccentDark,
+    accentGlow: neonAccentDark.withValues(alpha: 0.35),
+    accentSubtle: neonAccentDark.withValues(alpha: 0.18),
+    successColor: neonSuccess,
+    warningColor: neonWarning,
+    dangerColor: neonDanger,
+    textPrimary: const Color(0xFFE0FBE0), // Electric white-green
+    textSecondary: const Color(0xFF7CA87C),
+    textHint: const Color(0xFF3B563B),
+    divider: const Color(0x3339FF14),
+    shimmer: const Color(0x1F39FF14),
+  );
+
+  static AppColorsExtension getColorsFor(AppSkin skin, Brightness brightness) {
+    final isDark = brightness == Brightness.dark;
+    switch (skin) {
+      case AppSkin.defaultSkin:
+        return isDark ? defaultDark : defaultLight;
+      case AppSkin.glassSkin:
+        return isDark ? glassDark : glassLight;
+      case AppSkin.neonSkin:
+        return isDark ? neonDark : neonLight;
+    }
+  }
+
+  static ThemeData getThemeFor(AppSkin skin, Brightness brightness) {
+    final colors = getColorsFor(skin, brightness);
+    final isDark = brightness == Brightness.dark;
+
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.light,
-      scaffoldBackgroundColor: lightColors.bgColor,
-      extensions: [lightColors],
-      colorScheme: ColorScheme.light(
-        surface: lightColors.surfaceColor,
-        primary: lightColors.accentColor,
-        secondary: lightColors.accentColor,
-        error: lightColors.dangerColor,
-      ),
+      brightness: brightness,
+      scaffoldBackgroundColor: colors.bgColor,
+      extensions: [colors],
+      colorScheme: isDark
+          ? ColorScheme.dark(
+              surface: colors.surfaceColor,
+              primary: colors.accentColor,
+              secondary: colors.accentColor,
+              error: colors.dangerColor,
+            )
+          : ColorScheme.light(
+              surface: colors.surfaceColor,
+              primary: colors.accentColor,
+              secondary: colors.accentColor,
+              error: colors.dangerColor,
+            ),
       appBarTheme: AppBarTheme(
-        backgroundColor: lightColors.bgColor,
+        backgroundColor: colors.bgColor,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: TextStyle(
-          color: lightColors.textPrimary,
+          color: colors.textPrimary,
           fontSize: 20,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.5,
         ),
-        iconTheme: IconThemeData(color: lightColors.accentColor),
+        iconTheme: IconThemeData(color: colors.accentColor),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: lightColors.surfaceColor,
-        selectedItemColor: lightColors.accentColor,
-        unselectedItemColor: lightColors.textSecondary,
+        backgroundColor: colors.surfaceColor,
+        selectedItemColor: colors.accentColor,
+        unselectedItemColor: colors.textSecondary,
         type: BottomNavigationBarType.fixed,
         elevation: 0,
         selectedLabelStyle: const TextStyle(
@@ -177,34 +286,34 @@ class AppTheme {
         unselectedLabelStyle: const TextStyle(fontSize: 11),
       ),
       cardTheme: CardThemeData(
-        color: lightColors.cardColor,
+        color: colors.cardColor,
         elevation: 0,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: lightColors.surfaceColor,
-        labelStyle: TextStyle(color: lightColors.textSecondary),
-        hintStyle: TextStyle(color: lightColors.textHint),
-        prefixIconColor: lightColors.accentColor,
-        suffixIconColor: lightColors.accentColor,
+        fillColor: colors.surfaceColor,
+        labelStyle: TextStyle(color: colors.textSecondary),
+        hintStyle: TextStyle(color: colors.textHint),
+        prefixIconColor: colors.accentColor,
+        suffixIconColor: colors.accentColor,
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(
-            color: lightColors.accentColor.withValues(alpha: 0.3),
+            color: colors.accentColor.withValues(alpha: 0.3),
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: lightColors.accentColor, width: 2),
+          borderSide: BorderSide(color: colors.accentColor, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: lightColors.dangerColor),
+          borderSide: BorderSide(color: colors.dangerColor),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: lightColors.dangerColor, width: 2),
+          borderSide: BorderSide(color: colors.dangerColor, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -213,8 +322,8 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: lightColors.accentColor,
-          foregroundColor: lightColors.bgColor,
+          backgroundColor: colors.accentColor,
+          foregroundColor: colors.bgColor,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -225,162 +334,47 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: lightColors.accentColor,
+          foregroundColor: colors.accentColor,
           textStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: lightColors.accentColor,
-        foregroundColor: lightColors.bgColor,
+        backgroundColor: colors.accentColor,
+        foregroundColor: colors.bgColor,
         elevation: 4,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: lightColors.cardColor,
-        contentTextStyle: TextStyle(color: lightColors.textPrimary),
+        backgroundColor: colors.cardColor,
+        contentTextStyle: TextStyle(color: colors.textPrimary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,
       ),
       dialogTheme: DialogThemeData(
-        backgroundColor: lightColors.surfaceColor,
+        backgroundColor: colors.surfaceColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         titleTextStyle: TextStyle(
-          color: lightColors.textPrimary,
+          color: colors.textPrimary,
           fontSize: 20,
           fontWeight: FontWeight.w700,
         ),
       ),
-      dividerTheme: DividerThemeData(color: lightColors.divider, thickness: 1),
+      dividerTheme: DividerThemeData(color: colors.divider, thickness: 1),
       chipTheme: ChipThemeData(
-        backgroundColor: lightColors.cardColor,
-        selectedColor: lightColors.accentColor.withValues(alpha: 0.25),
-        labelStyle: TextStyle(color: lightColors.textPrimary, fontSize: 13),
-        secondaryLabelStyle: TextStyle(color: lightColors.accentColor),
+        backgroundColor: colors.cardColor,
+        selectedColor: colors.accentColor.withValues(alpha: 0.25),
+        labelStyle: TextStyle(color: colors.textPrimary, fontSize: 13),
+        secondaryLabelStyle: TextStyle(color: colors.accentColor),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        side: BorderSide(color: lightColors.accentColor.withValues(alpha: 0.3)),
+        side: BorderSide(color: colors.accentColor.withValues(alpha: 0.3)),
       ),
     );
   }
 
-  static ThemeData get darkTheme {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: darkColors.bgColor,
-      extensions: [darkColors],
-      colorScheme: ColorScheme.dark(
-        surface: darkColors.surfaceColor,
-        primary: darkColors.accentColor,
-        secondary: darkColors.accentColor,
-        error: darkColors.dangerColor,
-      ),
-      appBarTheme: AppBarTheme(
-        backgroundColor: darkColors.bgColor,
-        elevation: 0,
-        centerTitle: true,
-        titleTextStyle: TextStyle(
-          color: darkColors.textPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.5,
-        ),
-        iconTheme: IconThemeData(color: darkColors.accentColor),
-      ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: darkColors.surfaceColor,
-        selectedItemColor: darkColors.accentColor,
-        unselectedItemColor: darkColors.textSecondary,
-        type: BottomNavigationBarType.fixed,
-        elevation: 0,
-        selectedLabelStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-        unselectedLabelStyle: const TextStyle(fontSize: 11),
-      ),
-      cardTheme: CardThemeData(
-        color: darkColors.cardColor,
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: darkColors.surfaceColor,
-        labelStyle: TextStyle(color: darkColors.textSecondary),
-        hintStyle: TextStyle(color: darkColors.textHint),
-        prefixIconColor: darkColors.accentColor,
-        suffixIconColor: darkColors.accentColor,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(
-            color: darkColors.accentColor.withValues(alpha: 0.3),
-          ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkColors.accentColor, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkColors.dangerColor),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: darkColors.dangerColor, width: 2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: darkColors.accentColor,
-          foregroundColor: darkColors.bgColor,
-          elevation: 0,
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-        ),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          foregroundColor: darkColors.accentColor,
-          textStyle: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-      ),
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: darkColors.accentColor,
-        foregroundColor: darkColors.bgColor,
-        elevation: 4,
-      ),
-      snackBarTheme: SnackBarThemeData(
-        backgroundColor: darkColors.cardColor,
-        contentTextStyle: TextStyle(color: darkColors.textPrimary),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        behavior: SnackBarBehavior.floating,
-      ),
-      dialogTheme: DialogThemeData(
-        backgroundColor: darkColors.surfaceColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        titleTextStyle: TextStyle(
-          color: darkColors.textPrimary,
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      dividerTheme: DividerThemeData(color: darkColors.divider, thickness: 1),
-      chipTheme: ChipThemeData(
-        backgroundColor: darkColors.cardColor,
-        selectedColor: darkColors.accentColor.withValues(alpha: 0.25),
-        labelStyle: TextStyle(color: darkColors.textPrimary, fontSize: 13),
-        secondaryLabelStyle: TextStyle(color: darkColors.accentColor),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        side: BorderSide(color: darkColors.accentColor.withValues(alpha: 0.3)),
-      ),
-    );
-  }
+  // Backwards compatibility wrappers
+  static ThemeData get lightTheme =>
+      getThemeFor(AppSkin.defaultSkin, Brightness.light);
+  static ThemeData get darkTheme =>
+      getThemeFor(AppSkin.defaultSkin, Brightness.dark);
 }
 
 class GlassCard extends StatelessWidget {
@@ -399,7 +393,9 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final isGlassSkin = skinNotifier.value == AppSkin.glassSkin;
+
+    Widget cardContent = Container(
       padding: padding,
       decoration: BoxDecoration(
         color: context.appColors.cardColor,
@@ -408,10 +404,13 @@ class GlassCard extends StatelessWidget {
           color:
               borderColor ??
               context.appColors.accentColor.withValues(alpha: 0.15),
+          width: isGlassSkin ? 1.2 : 1.0,
         ),
         boxShadow: [
           BoxShadow(
-            color: context.appColors.accentGlow.withValues(alpha: 0.06),
+            color: context.appColors.accentGlow.withValues(
+              alpha: isGlassSkin ? 0.08 : 0.06,
+            ),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -419,6 +418,18 @@ class GlassCard extends StatelessWidget {
       ),
       child: child,
     );
+
+    if (isGlassSkin) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(borderRadius),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: cardContent,
+        ),
+      );
+    }
+
+    return cardContent;
   }
 }
 
@@ -444,7 +455,10 @@ class AccentButton extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [context.appColors.accentColor, const Color(0xFF26C6DA)],
+            colors: [
+              context.appColors.accentColor,
+              context.appColors.accentColor.withValues(alpha: 0.8),
+            ],
           ),
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
