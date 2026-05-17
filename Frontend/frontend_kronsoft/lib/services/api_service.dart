@@ -6,7 +6,8 @@ import 'package:http/http.dart' as http;
 
 class BackendConfig {
   // Production Railway URL:
-  static const String baseUrl = 'https://proiect-kronsoft-backend-production.up.railway.app/api';
+  static const String baseUrl =
+      'https://proiect-kronsoft-backend-production.up.railway.app/api';
 
   // Your computer's local Wi-Fi IP (works for both physical phones and emulators on the same Wi-Fi!)
   // static const String baseUrl = 'http://192.168.0.235:3000/api';
