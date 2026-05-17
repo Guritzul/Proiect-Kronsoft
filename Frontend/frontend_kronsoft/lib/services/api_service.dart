@@ -5,17 +5,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 class BackendConfig {
+  // Production Railway URL:
+  static const String baseUrl = 'https://proiect-kronsoft-backend-production.up.railway.app/api';
+
   // Your computer's local Wi-Fi IP (works for both physical phones and emulators on the same Wi-Fi!)
-  static const String baseUrl = 'http://192.168.0.235:3000/api';
+  // static const String baseUrl = 'http://192.168.0.235:3000/api';
 
   // Local Android Emulator address:
   // static const String baseUrl = 'http://10.0.2.2:3000/api';
 
   // For Local Web, iOS, or real device on localhost:
   // static const String baseUrl = 'http://localhost:3000/api';
-
-  // Production Railway URL:
-  // static const String baseUrl = 'https://proiect-kronsoft-backend-production.up.railway.app/api';
 }
 
 class ApiService {
