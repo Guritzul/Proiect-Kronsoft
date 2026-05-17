@@ -382,9 +382,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   void dispose() {
     _timer?.cancel();
     super.dispose();
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     final e = _exerciseData;
     final name = e['name'] ?? 'Exercise';
@@ -418,7 +416,7 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
         children: [
           _buildHeroSection(),
           const SizedBox(height: 24),
@@ -426,6 +424,8 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           const SizedBox(height: 24),
           const SectionHeader(title: 'Overview'),
           GlassCard(
+            padding: const EdgeInsets.all(20),
+            borderColor: context.appColors.accentColor.withValues(alpha: 0.1),
             child: Text(
               description,
               style: TextStyle(
@@ -454,35 +454,82 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
   Widget _buildHeroSection() {
     final mediaUrl = _exerciseData['mediaUrl'] as String?;
     final hasVideo = mediaUrl != null && mediaUrl.isNotEmpty;
+    final partName = (_exerciseData['bodyPart'] ?? '').toString().toLowerCase();
+
+    IconData partIcon;
+    switch (partName) {
+      case 'forearm':
+      case 'biceps':
+      case 'triceps':
+        partIcon = Icons.fitness_center_rounded;
+        break;
+      case 'legs':
+        partIcon = Icons.directions_run_rounded;
+        break;
+      case 'back':
+        partIcon = Icons.accessibility_new_rounded;
+        break;
+      case 'chest':
+        partIcon = Icons.shield_rounded;
+        break;
+      case 'shoulders':
+        partIcon = Icons.sports_gymnastics_rounded;
+        break;
+      case 'core':
+        partIcon = Icons.circle_outlined;
+        break;
+      case 'neck':
+        partIcon = Icons.face_retouching_natural_rounded;
+        break;
+      case 'cardio':
+        partIcon = Icons.favorite_rounded;
+        break;
+      default:
+        partIcon = Icons.fitness_center_rounded;
+    }
 
     return Stack(
       children: [
         Container(
           width: double.infinity,
-          height: 200,
+          height: 190,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                context.appColors.accentColor.withValues(alpha: 0.2),
-                context.appColors.surfaceColor,
+                context.appColors.accentColor.withValues(alpha: 0.15),
+                context.appColors.cardColor,
               ],
+            ),
+            border: Border.all(
+              color: context.appColors.accentColor.withValues(alpha: 0.15),
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
+                color: context.appColors.accentGlow.withValues(alpha: 0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
               ),
             ],
           ),
           child: Center(
-            child: Icon(
-              Icons.fitness_center,
-              size: 72,
-              color: context.appColors.accentColor.withValues(alpha: 0.5),
+            child: Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: context.appColors.accentColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: context.appColors.accentColor.withValues(alpha: 0.2),
+                  width: 2,
+                ),
+              ),
+              child: Icon(
+                partIcon,
+                size: 56,
+                color: context.appColors.accentColor,
+              ),
             ),
           ),
         ),
@@ -490,40 +537,43 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
           Positioned(
             bottom: 16,
             right: 16,
-            child: Material(
-              color: Colors.redAccent.withValues(alpha: 0.9),
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              elevation: 4,
-              child: InkWell(
-                onTap: () async {
-                  final uri = Uri.parse(mediaUrl);
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                  } else {
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Could not open video link')),
-                      );
-                    }
-                  }
-                },
-                borderRadius: BorderRadius.circular(20),
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 20),
-                      SizedBox(width: 8),
-                      Text(
-                        'Watch Video Guide',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
+              child: Container(
+                color: Colors.redAccent.withValues(alpha: 0.9),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () async {
+                      final uri = Uri.parse(mediaUrl);
+                      if (await canLaunchUrl(uri)) {
+                        await launchUrl(uri, mode: LaunchMode.externalApplication);
+                      } else {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Could not open video link')),
+                          );
+                        }
+                      }
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.play_circle_fill_rounded, color: Colors.white, size: 18),
+                          SizedBox(width: 6),
+                          Text(
+                            'Video Guide',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -539,10 +589,10 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       runSpacing: 8,
       children: [
         if (bodyPart.isNotEmpty)
-          _MetaChip(icon: Icons.accessibility_new, label: bodyPart),
-        _MetaChip(icon: Icons.speed, label: difficulty),
+          _MetaChip(icon: Icons.accessibility_new_rounded, label: bodyPart, type: 'bodyPart'),
+        _MetaChip(icon: Icons.speed_rounded, label: difficulty, type: 'difficulty'),
         if (category.isNotEmpty)
-          _MetaChip(icon: Icons.category, label: category),
+          _MetaChip(icon: Icons.category_rounded, label: category, type: 'category'),
       ],
     );
   }
@@ -553,48 +603,94 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       children: [
         const SectionHeader(title: 'Workout Timer'),
         GlassCard(
+          padding: const EdgeInsets.all(20),
+          borderColor: context.appColors.accentColor.withValues(alpha: _timerRunning ? 0.25 : 0.1),
           child: Column(
             children: [
-              Text(
-                _formattedTime,
-                style: TextStyle(
-                  color: _timerRunning
-                      ? context.appColors.accentColor
-                      : context.appColors.textPrimary,
-                  fontSize: 56,
-                  fontWeight: FontWeight.w200,
-                  letterSpacing: 4,
-                  fontFeatures: const [FontFeature.tabularFigures()],
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                decoration: BoxDecoration(
+                  color: context.appColors.surfaceColor.withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: _timerRunning
+                        ? context.appColors.accentColor.withValues(alpha: 0.3)
+                        : context.appColors.accentColor.withValues(alpha: 0.08),
+                  ),
+                ),
+                child: Text(
+                  _formattedTime,
+                  style: TextStyle(
+                    color: _timerRunning
+                        ? context.appColors.accentColor
+                        : context.appColors.textPrimary,
+                    fontSize: 54,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 2,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _toggleTimer,
-                      icon: Icon(
-                        _timerRunning ? Icons.pause : Icons.play_arrow,
-                      ),
-                      label: Text(_timerRunning ? 'Pause' : 'Start Timer'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _timerRunning
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Container(
+                        color: _timerRunning
                             ? context.appColors.warningColor
                             : context.appColors.accentColor,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            onTap: _toggleTimer,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    _timerRunning ? Icons.pause_rounded : Icons.play_arrow_rounded,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _timerRunning ? 'Pause Timer' : 'Start Timer',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
-                  IconButton.filledTonal(
-                    onPressed: _resetTimer,
-                    icon: const Icon(Icons.replay),
-                    style: IconButton.styleFrom(
-                      padding: const EdgeInsets.all(14),
+                  ClipOval(
+                    child: Container(
+                      color: context.appColors.surfaceColor,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: _resetTimer,
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Icon(
+                              Icons.replay_rounded,
+                              color: context.appColors.textPrimary,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -644,24 +740,56 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
 class _MetaChip extends StatelessWidget {
   final IconData icon;
   final String label;
-  const _MetaChip({required this.icon, required this.label});
+  final String type;
+
+  const _MetaChip({
+    required this.icon,
+    required this.label,
+    required this.type,
+  });
+
+  Color _getChipColor(BuildContext context) {
+    if (type == 'difficulty') {
+      switch (label.toLowerCase()) {
+        case 'easy':
+          return context.appColors.successColor;
+        case 'medium':
+          return context.appColors.warningColor;
+        case 'hard':
+          return context.appColors.dangerColor;
+      }
+    }
+    return context.appColors.accentColor;
+  }
 
   @override
   Widget build(BuildContext context) {
+    final activeColor = _getChipColor(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: context.appColors.cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: context.appColors.accentColor.withValues(alpha: 0.15),
+          color: activeColor.withValues(alpha: 0.15),
         ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: context.appColors.accentColor),
-          const SizedBox(width: 8),
+          if (type == 'difficulty')
+            Container(
+              width: 6,
+              height: 6,
+              margin: const EdgeInsets.only(right: 6),
+              decoration: BoxDecoration(
+                color: activeColor,
+                shape: BoxShape.circle,
+              ),
+            )
+          else
+            Icon(icon, size: 14, color: activeColor),
+          if (type != 'difficulty') const SizedBox(width: 6),
           Text(
             label.toUpperCase(),
             style: TextStyle(
@@ -694,6 +822,7 @@ class _CounterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassCard(
       padding: const EdgeInsets.all(16),
+      borderColor: context.appColors.accentColor.withValues(alpha: 0.1),
       child: Column(
         children: [
           Text(
@@ -717,9 +846,9 @@ class _CounterCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _RoundButton(icon: Icons.remove, onTap: onDecrement),
+              _RoundButton(icon: Icons.remove_rounded, onTap: onDecrement),
               const SizedBox(width: 16),
-              _RoundButton(icon: Icons.add, onTap: onIncrement, filled: true),
+              _RoundButton(icon: Icons.add_rounded, onTap: onIncrement, filled: true),
             ],
           ),
         ],
@@ -743,7 +872,8 @@ class _RoundButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
         width: 42,
         height: 42,
         decoration: BoxDecoration(
@@ -751,6 +881,9 @@ class _RoundButton extends StatelessWidget {
               ? context.appColors.accentColor
               : context.appColors.surfaceColor,
           shape: BoxShape.circle,
+          border: Border.all(
+            color: context.appColors.accentColor.withValues(alpha: filled ? 0.0 : 0.1),
+          ),
           boxShadow: filled
               ? [
                   BoxShadow(
@@ -759,7 +892,7 @@ class _RoundButton extends StatelessWidget {
                     offset: const Offset(0, 4),
                   ),
                 ]
-              : null,
+              : [],
         ),
         child: Icon(
           icon,

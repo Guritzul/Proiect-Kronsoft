@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class BackendConfig {
   // Your computer's local Wi-Fi IP (works for both physical phones and emulators on the same Wi-Fi!)
-  static const String baseUrl = 'http://192.168.100.18:3000/api';
+  static const String baseUrl = 'http://192.168.0.235:3000/api';
 
   // Local Android Emulator address:
   // static const String baseUrl = 'http://10.0.2.2:3000/api';
