@@ -290,7 +290,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: bodyPart,
+                        initialValue: bodyPart,
                         decoration: const InputDecoration(
                           labelText: 'Body Part',
                           prefixIcon: Icon(Icons.accessibility_new_rounded),
@@ -303,7 +303,7 @@ class _ExercisesScreenState extends State<ExercisesScreen>
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: difficulty,
+                        initialValue: difficulty,
                         decoration: const InputDecoration(
                           labelText: 'Difficulty',
                           prefixIcon: Icon(Icons.speed_rounded),

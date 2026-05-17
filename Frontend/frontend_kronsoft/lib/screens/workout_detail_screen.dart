@@ -362,6 +362,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
                         'description': description,
                         'exercises': selectedIds,
                       });
+                      if (!mounted) return;
                       navigator.pop();
                       _loadWorkoutDetails();
                       messenger.showSnackBar(
@@ -412,6 +413,7 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     );
 
     if (confirm == true) {
+      if (!mounted) return;
       final navigator = Navigator.of(context);
       final messenger = ScaffoldMessenger.of(context);
       final colors = context.appColors;
