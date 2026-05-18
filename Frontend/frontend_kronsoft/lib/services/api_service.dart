@@ -97,6 +97,30 @@ class ApiService {
     await _delete('/auth/delete-account');
   }
 
+  Future<Map<String, dynamic>> uploadAvatar(File imageFile) async {
+    final token = await _auth.currentUser?.getIdToken();
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/auth/upload-avatar'),
+    );
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    request.files.add(
+      await http.MultipartFile.fromPath('avatar', imageFile.path),
+    );
+
+    final res = await request.send().timeout(const Duration(seconds: 30));
+    final responseData = await http.Response.fromStream(res);
+
+    if (responseData.statusCode >= 200 && responseData.statusCode < 300) {
+      return responseData.body.isNotEmpty
+          ? jsonDecode(responseData.body)
+          : null;
+    }
+    throw ApiException(responseData.statusCode, responseData.body);
+  }
+
   Future<List<dynamic>> getPills() async {
     final data = await _get('/pills');
     return data is List ? data : (data['pills'] ?? []);
