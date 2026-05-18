@@ -226,7 +226,7 @@ class MyApp extends StatelessWidget {
         final currentMode = themeNotifier.value;
         final currentSkin = skinNotifier.value;
         return MaterialApp(
-          title: 'Health App',
+          title: 'KoreHealth',
           debugShowCheckedModeBanner: false,
           navigatorKey: navigatorKey,
           theme: AppTheme.getThemeFor(currentSkin, Brightness.light),
