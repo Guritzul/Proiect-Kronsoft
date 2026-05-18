@@ -65,7 +65,10 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildHeader() {
+    final user = AuthService().currentUser;
     final initials = _userName.isNotEmpty ? _userName[0].toUpperCase() : 'U';
+    final photoUrl = user?.photoURL;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -125,14 +128,19 @@ class _HomeScreenState extends State<HomeScreen>
           ),
           child: CircleAvatar(
             backgroundColor: context.appColors.cardColor,
-            child: Text(
-              initials,
-              style: TextStyle(
-                color: context.appColors.accentColor,
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
+            backgroundImage: photoUrl != null && photoUrl.isNotEmpty
+                ? NetworkImage(photoUrl)
+                : null,
+            child: photoUrl == null || photoUrl.isEmpty
+                ? Text(
+                    initials,
+                    style: TextStyle(
+                      color: context.appColors.accentColor,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  )
+                : null,
           ),
         ),
       ],

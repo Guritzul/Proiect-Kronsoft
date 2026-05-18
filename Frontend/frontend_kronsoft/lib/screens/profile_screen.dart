@@ -96,6 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final displayName =
         user?.displayName ?? user?.email?.split('@').first ?? 'User';
     final email = user?.email ?? '';
+    final photoUrl = user?.photoURL;
 
     return Scaffold(
       backgroundColor: context.appColors.bgColor,
@@ -124,12 +125,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     height: 64,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: [
-                          context.appColors.accentColor,
-                          const Color(0xFF26C6DA),
-                        ],
-                      ),
+                      gradient: photoUrl == null || photoUrl.isEmpty
+                          ? LinearGradient(
+                              colors: [
+                                context.appColors.accentColor,
+                                const Color(0xFF26C6DA),
+                              ],
+                            )
+                          : null,
+                      image: photoUrl != null && photoUrl.isNotEmpty
+                          ? DecorationImage(
+                              image: NetworkImage(photoUrl),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
                       boxShadow: [
                         BoxShadow(
                           color: context.appColors.accentColor.withValues(
@@ -140,16 +149,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ],
                     ),
-                    child: Center(
-                      child: Text(
-                        _initials,
-                        style: TextStyle(
-                          color: context.appColors.bgColor,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
+                    child: photoUrl == null || photoUrl.isEmpty
+                        ? Center(
+                            child: Text(
+                              _initials,
+                              style: TextStyle(
+                                color: context.appColors.bgColor,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                          )
+                        : null,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
