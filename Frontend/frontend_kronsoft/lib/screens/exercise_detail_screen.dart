@@ -520,42 +520,50 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       children: [
         Container(
           width: double.infinity,
-          height: 190,
+          height: 220,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(32),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                context.appColors.accentColor.withValues(alpha: 0.15),
+                context.appColors.accentColor.withValues(alpha: 0.2),
                 context.appColors.cardColor,
               ],
             ),
             border: Border.all(
-              color: context.appColors.accentColor.withValues(alpha: 0.15),
+              color: context.appColors.accentColor.withValues(alpha: 0.18),
+              width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: context.appColors.accentGlow.withValues(alpha: 0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                color: context.appColors.accentGlow.withValues(alpha: 0.08),
+                blurRadius: 24,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
           child: Center(
             child: Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: context.appColors.accentColor.withValues(alpha: 0.1),
+                color: context.appColors.accentColor.withValues(alpha: 0.08),
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: context.appColors.accentColor.withValues(alpha: 0.2),
+                  color: context.appColors.accentColor.withValues(alpha: 0.25),
                   width: 2,
                 ),
+                boxShadow: [
+                  BoxShadow(
+                    color: context.appColors.accentColor.withValues(alpha: 0.1),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
               ),
               child: Icon(
                 partIcon,
-                size: 56,
+                size: 64,
                 color: context.appColors.accentColor,
               ),
             ),
@@ -690,41 +698,100 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
       children: [
         const SectionHeader(title: 'Workout Timer'),
         GlassCard(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
           borderColor: context.appColors.accentColor.withValues(
             alpha: _timerRunning ? 0.25 : 0.1,
           ),
           child: Column(
             children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 32,
-                  vertical: 16,
-                ),
-                decoration: BoxDecoration(
-                  color: context.appColors.surfaceColor.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: _timerRunning
-                        ? context.appColors.accentColor.withValues(alpha: 0.3)
-                        : context.appColors.accentColor.withValues(alpha: 0.08),
-                  ),
-                ),
-                child: Text(
-                  _formattedTime,
-                  style: TextStyle(
-                    color: _timerRunning
-                        ? context.appColors.accentColor
-                        : context.appColors.textPrimary,
-                    fontSize: 54,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 2,
-                    fontFeatures: const [FontFeature.tabularFigures()],
+              Center(
+                child: SizedBox(
+                  width: 180,
+                  height: 180,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 180,
+                        height: 180,
+                        child: CircularProgressIndicator(
+                          value: 1.0,
+                          strokeWidth: 8,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            context.appColors.accentColor.withValues(
+                              alpha: 0.08,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (_timerRunning)
+                        TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: 0.0, end: 1.0),
+                          duration: const Duration(seconds: 1),
+                          builder: (context, value, child) {
+                            return SizedBox(
+                              width: 180,
+                              height: 180,
+                              child: CircularProgressIndicator(
+                                value: (_seconds % 60) / 60.0,
+                                strokeWidth: 8,
+                                strokeCap: StrokeCap.round,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  context.appColors.accentColor,
+                                ),
+                              ),
+                            );
+                          },
+                        )
+                      else
+                        SizedBox(
+                          width: 180,
+                          height: 180,
+                          child: CircularProgressIndicator(
+                            value: (_seconds % 60) / 60.0,
+                            strokeWidth: 8,
+                            strokeCap: StrokeCap.round,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              context.appColors.accentColor,
+                            ),
+                          ),
+                        ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _formattedTime,
+                            style: TextStyle(
+                              color: _timerRunning
+                                  ? context.appColors.accentColor
+                                  : context.appColors.textPrimary,
+                              fontSize: 38,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.0,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _timerRunning ? 'ACTIVE' : 'PAUSED',
+                            style: TextStyle(
+                              color: _timerRunning
+                                  ? context.appColors.accentColor
+                                  : context.appColors.textHint,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 28),
               Row(
                 children: [
                   Expanded(
@@ -915,16 +982,18 @@ class _CounterCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlassCard(
-      padding: const EdgeInsets.all(16),
-      borderColor: context.appColors.accentColor.withValues(alpha: 0.1),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      borderRadius: 24,
+      borderColor: context.appColors.accentColor.withValues(alpha: 0.12),
       child: Column(
         children: [
           Text(
-            label,
+            label.toUpperCase(),
             style: TextStyle(
               color: context.appColors.textSecondary,
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.0,
             ),
           ),
           const SizedBox(height: 12),
@@ -932,8 +1001,9 @@ class _CounterCard extends StatelessWidget {
             '$value',
             style: TextStyle(
               color: context.appColors.accentColor,
-              fontSize: 42,
+              fontSize: 46,
               fontWeight: FontWeight.w800,
+              fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
           const SizedBox(height: 16),
@@ -941,7 +1011,7 @@ class _CounterCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _RoundButton(icon: Icons.remove_rounded, onTap: onDecrement),
-              const SizedBox(width: 16),
+              const SizedBox(width: 18),
               _RoundButton(
                 icon: Icons.add_rounded,
                 onTap: onIncrement,

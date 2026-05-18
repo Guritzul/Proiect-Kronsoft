@@ -26,6 +26,9 @@ class ApiService {
   static final StreamController<void> allergenHistoryChanged =
       StreamController<void>.broadcast();
 
+  static final StreamController<void> pillHistoryChanged =
+      StreamController<void>.broadcast();
+
   Future<Map<String, String>> _headers() async {
     final token = await _auth.currentUser?.getIdToken();
     return {
@@ -94,32 +97,63 @@ class ApiService {
     await _delete('/auth/delete-account');
   }
 
+  Future<Map<String, dynamic>> uploadAvatar(File imageFile) async {
+    final token = await _auth.currentUser?.getIdToken();
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/auth/upload-avatar'),
+    );
+    if (token != null) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    request.files.add(
+      await http.MultipartFile.fromPath('avatar', imageFile.path),
+    );
+
+    final res = await request.send().timeout(const Duration(seconds: 30));
+    final responseData = await http.Response.fromStream(res);
+
+    if (responseData.statusCode >= 200 && responseData.statusCode < 300) {
+      return responseData.body.isNotEmpty
+          ? jsonDecode(responseData.body)
+          : null;
+    }
+    throw ApiException(responseData.statusCode, responseData.body);
+  }
+
   Future<List<dynamic>> getPills() async {
     final data = await _get('/pills');
     return data is List ? data : (data['pills'] ?? []);
   }
 
   Future<Map<String, dynamic>> createPill(Map<String, dynamic> pill) async {
-    return await _post('/pills', pill);
+    final res = await _post('/pills', pill);
+    pillHistoryChanged.add(null);
+    return res;
   }
 
   Future<Map<String, dynamic>> updatePill(
     String id,
     Map<String, dynamic> pill,
   ) async {
-    return await _put('/pills/$id', pill);
+    final res = await _put('/pills/$id', pill);
+    pillHistoryChanged.add(null);
+    return res;
   }
 
   Future<void> deletePill(String id) async {
     await _delete('/pills/$id');
+    pillHistoryChanged.add(null);
   }
 
   Future<void> markPillTaken(String id) async {
     await _post('/pills/$id/taken');
+    pillHistoryChanged.add(null);
   }
 
   Future<void> markPillMissed(String id) async {
     await _post('/pills/$id/missed');
+    pillHistoryChanged.add(null);
   }
 
   Future<List<dynamic>> getPillHistory(String id) async {
@@ -128,7 +162,9 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> clearPillHistory() async {
-    return await _delete('/pills/history');
+    final res = await _delete('/pills/history');
+    pillHistoryChanged.add(null);
+    return res;
   }
 
   Future<Map<String, dynamic>> saveAllergenProfile(

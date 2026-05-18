@@ -5,6 +5,7 @@ const admin = require("firebase-admin");
 const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
   ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
   : require("./serviceAccountKey.json");
+const path = require("path");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -21,6 +22,7 @@ const dashboardRoutes = require('./routes/dashboard');
 const workoutRoutes = require('./routes/workouts');
 
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', authRoutes);
 

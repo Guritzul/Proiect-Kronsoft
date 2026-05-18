@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../../theme/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../services/api_service.dart';
@@ -15,6 +17,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   final _auth = AuthService();
   final _nameController = TextEditingController();
   bool _saving = false;
+  bool _uploadingPhoto = false;
 
   @override
   void initState() {
@@ -26,6 +29,111 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
   void dispose() {
     _nameController.dispose();
     super.dispose();
+  }
+
+  String get _initials {
+    final user = _auth.currentUser;
+    final name = user?.displayName ?? user?.email ?? '?';
+    final parts = name.split(RegExp(r'[\s@]+'));
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return name.isNotEmpty ? name[0].toUpperCase() : '?';
+  }
+
+  Future<void> _pickAndUploadImage(ImageSource source) async {
+    final picker = ImagePicker();
+    try {
+      final XFile? pickedFile = await picker.pickImage(
+        source: source,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 85,
+      );
+
+      if (pickedFile == null) return;
+
+      setState(() => _uploadingPhoto = true);
+
+      final api = ApiService();
+      await api.uploadAvatar(File(pickedFile.path));
+
+      await _auth.currentUser?.reload();
+
+      if (mounted) {
+        setState(() {}); // trigger rebuild to update local UI
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Profile picture updated successfully! ✓'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Upload failed: $e'),
+            backgroundColor: context.appColors.dangerColor,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _uploadingPhoto = false);
+      }
+    }
+  }
+
+  void _showImagePickerSourceSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: context.appColors.surfaceColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Change Profile Photo',
+                style: TextStyle(
+                  color: context.appColors.textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _SourceOption(
+                    icon: Icons.camera_alt_rounded,
+                    label: 'Camera',
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _pickAndUploadImage(ImageSource.camera);
+                    },
+                  ),
+                  _SourceOption(
+                    icon: Icons.photo_library_rounded,
+                    label: 'Gallery',
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _pickAndUploadImage(ImageSource.gallery);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> _updateDisplayName() async {
@@ -302,8 +410,114 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
       backgroundColor: context.appColors.bgColor,
       appBar: AppBar(title: const Text('Account Settings')),
       body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
         children: [
+          // Profile Photo Selector
+          Center(
+            child: Stack(
+              children: [
+                Container(
+                  width: 110,
+                  height: 110,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: context.appColors.accentColor.withValues(
+                        alpha: 0.3,
+                      ),
+                      width: 3,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: context.appColors.accentColor.withValues(
+                          alpha: 0.15,
+                        ),
+                        blurRadius: 16,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: ClipOval(
+                    child: _uploadingPhoto
+                        ? Center(
+                            child: CircularProgressIndicator(
+                              color: context.appColors.accentColor,
+                            ),
+                          )
+                        : (user?.photoURL != null && user!.photoURL!.isNotEmpty
+                              ? Image.network(
+                                  user.photoURL!,
+                                  fit: BoxFit.cover,
+                                  width: 110,
+                                  height: 110,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Center(
+                                      child: Text(
+                                        _initials,
+                                        style: TextStyle(
+                                          color: context.appColors.accentColor,
+                                          fontSize: 32,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        context.appColors.accentColor,
+                                        const Color(0xFF26C6DA),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      _initials,
+                                      style: TextStyle(
+                                        color: context.appColors.bgColor,
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ),
+                                )),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: _uploadingPhoto ? null : _showImagePickerSourceSheet,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: context.appColors.accentColor,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.camera_alt_rounded,
+                        color: context.appColors.bgColor,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 28),
+
           const SectionHeader(title: 'Display Name'),
           GlassCard(
             child: Column(
@@ -598,6 +812,51 @@ class _InfoRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _SourceOption extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _SourceOption({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        width: 110,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: context.appColors.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: context.appColors.accentColor.withValues(alpha: 0.1),
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: context.appColors.accentColor, size: 32),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: context.appColors.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
