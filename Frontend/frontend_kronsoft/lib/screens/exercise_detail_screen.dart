@@ -573,17 +573,36 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () async {
-                      final uri = Uri.parse(mediaUrl);
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(
+                      String normalizedUrl = mediaUrl.trim();
+                      if (!normalizedUrl.startsWith('http://') &&
+                          !normalizedUrl.startsWith('https://')) {
+                        normalizedUrl = 'https://$normalizedUrl';
+                      }
+                      final uri = Uri.parse(normalizedUrl);
+                      try {
+                        final launched = await launchUrl(
                           uri,
                           mode: LaunchMode.externalApplication,
                         );
-                      } else {
+                        if (!launched) {
+                          // Try platformDefault if externalApplication failed
+                          final launchedFallback = await launchUrl(
+                            uri,
+                            mode: LaunchMode.platformDefault,
+                          );
+                          if (!launchedFallback && mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Could not open video link'),
+                              ),
+                            );
+                          }
+                        }
+                      } catch (e) {
                         if (mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not open video link'),
+                            SnackBar(
+                              content: Text('Could not open video link: $e'),
                             ),
                           );
                         }
