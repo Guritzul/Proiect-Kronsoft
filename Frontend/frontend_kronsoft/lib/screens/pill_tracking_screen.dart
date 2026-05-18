@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_theme.dart';
 import '../services/api_service.dart';
 import '../services/local_notification_service.dart';
+import 'pill_history_screen.dart';
 
 class PillTrackingScreen extends StatefulWidget {
   const PillTrackingScreen({super.key});
@@ -16,19 +18,50 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
   List<dynamic> _pills = [];
   bool _loading = true;
   final Set<String> _takenIds = {};
+  StreamSubscription? _subscription;
 
   @override
   void initState() {
     super.initState();
     _loadPills();
+    _subscription = ApiService.pillHistoryChanged.stream.listen((_) {
+      _loadPills();
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadPills() async {
     try {
       final data = await _api.getPills();
       if (mounted) {
+        final Set<String> takenToday = {};
+        final now = DateTime.now();
+        for (final pill in data) {
+          final id = pill['_id'] ?? pill['id'] ?? '';
+          final takenDates = pill['takenDates'];
+          if (takenDates is List) {
+            for (final d in takenDates) {
+              try {
+                final date = DateTime.parse(d.toString()).toLocal();
+                if (date.year == now.year &&
+                    date.month == now.month &&
+                    date.day == now.day) {
+                  takenToday.add(id);
+                  break;
+                }
+              } catch (_) {}
+            }
+          }
+        }
         setState(() {
           _pills = data;
+          _takenIds.clear();
+          _takenIds.addAll(takenToday);
           _loading = false;
         });
       }
@@ -231,7 +264,23 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.appColors.bgColor,
-      appBar: AppBar(title: const Text('Pill Tracking')),
+      appBar: AppBar(
+        title: const Text('Pill Tracking'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history_rounded),
+            tooltip: 'Pill History',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PillHistoryScreen(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 80),
         child: FloatingActionButton.extended(

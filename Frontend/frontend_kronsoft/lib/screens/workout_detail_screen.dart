@@ -303,140 +303,205 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
             .toList() ??
         [];
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (stateContext, setDialogState) {
-          return AlertDialog(
-            title: const Text('Edit Workout Routine'),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: Form(
-                key: formKey,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (stateContext, setSheetState) {
+          final colors = context.appColors;
+          return Container(
+            decoration: BoxDecoration(
+              color: colors.bgColor,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 20,
+                  offset: const Offset(0, -5),
+                ),
+              ],
+            ),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+              top: 10,
+              left: 24,
+              right: 24,
+            ),
+            child: Form(
+              key: formKey,
+              child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Center(
+                      child: Container(
+                        width: 48,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: colors.textHint.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                    Text(
+                      'Edit Workout Routine',
+                      style: TextStyle(
+                        color: colors.textPrimary,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Modify the name, description, and selected exercises.',
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     TextFormField(
                       initialValue: name,
                       decoration: const InputDecoration(
                         labelText: 'Workout Name*',
                         prefixIcon: Icon(Icons.fitness_center_rounded),
                       ),
+                      style: TextStyle(color: colors.textPrimary),
                       validator: (v) =>
                           v == null || v.trim().isEmpty ? 'Required' : null,
                       onSaved: (v) => name = v!.trim(),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     TextFormField(
                       initialValue: description,
                       decoration: const InputDecoration(
                         labelText: 'Description (optional)',
                         prefixIcon: Icon(Icons.description_outlined),
                       ),
+                      style: TextStyle(color: colors.textPrimary),
                       maxLines: 2,
                       onSaved: (v) => description = v?.trim() ?? '',
                     ),
-                    const SizedBox(height: 16),
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Select Exercises*',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                    const SizedBox(height: 20),
+                    Text(
+                      'SELECT EXERCISES*',
+                      style: TextStyle(
+                        color: colors.accentColor,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.5,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: context.appColors.cardColor,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: context.appColors.divider),
-                        ),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: _allExercises.length,
-                          itemBuilder: (itemContext, i) {
-                            final ex = _allExercises[i];
-                            final id = ex['_id'] as String;
-                            final isSelected = selectedIds.contains(id);
-                            return CheckboxListTile(
-                              title: Text(
-                                ex['name'] ?? '',
-                                style: const TextStyle(fontSize: 14),
-                              ),
-                              subtitle: Text(
-                                ex['bodyPart'] ?? '',
-                                style: const TextStyle(fontSize: 11),
-                              ),
-                              value: isSelected,
-                              activeColor: context.appColors.accentColor,
-                              onChanged: (bool? val) {
-                                setDialogState(() {
-                                  if (val == true) {
-                                    selectedIds.add(id);
-                                  } else {
-                                    selectedIds.remove(id);
-                                  }
-                                });
-                              },
-                            );
-                          },
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: colors.cardColor,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: colors.accentColor.withValues(alpha: 0.1),
                         ),
                       ),
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        itemCount: _allExercises.length,
+                        separatorBuilder: (ctx, idx) =>
+                            const Divider(height: 1),
+                        itemBuilder: (itemContext, i) {
+                          final ex = _allExercises[i];
+                          final id = ex['_id'] as String;
+                          final isSelected = selectedIds.contains(id);
+                          return CheckboxListTile(
+                            title: Text(
+                              ex['name'] ?? '',
+                              style: TextStyle(
+                                color: colors.textPrimary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            subtitle: Text(
+                              (ex['bodyPart'] ?? '').toString().toUpperCase(),
+                              style: TextStyle(
+                                color: colors.accentColor,
+                                fontSize: 10,
+                                fontWeight: FontWeight.w800,
+                              ),
+                            ),
+                            value: isSelected,
+                            activeColor: colors.accentColor,
+                            checkColor: Colors.white,
+                            onChanged: (bool? val) {
+                              setSheetState(() {
+                                if (val == true) {
+                                  selectedIds.add(id);
+                                } else {
+                                  selectedIds.remove(id);
+                                }
+                              });
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    AccentButton(
+                      label: 'Save Workout Changes',
+                      icon: Icons.check_circle_outline_rounded,
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          if (selectedIds.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Please select at least one exercise',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          formKey.currentState!.save();
+                          final navigator = Navigator.of(context);
+                          final messenger = ScaffoldMessenger.of(context);
+                          final colorsLocal = context.appColors;
+
+                          try {
+                            await _api.updateWorkout(widget.workout['_id'], {
+                              'name': name,
+                              'description': description,
+                              'exercises': selectedIds,
+                            });
+                            if (!mounted) return;
+                            navigator.pop();
+                            _loadWorkoutDetails();
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Workout updated successfully! ✓',
+                                ),
+                                backgroundColor: colorsLocal.successColor,
+                              ),
+                            );
+                          } catch (e) {
+                            messenger.showSnackBar(
+                              SnackBar(
+                                content: Text('Failed to update workout: $e'),
+                                backgroundColor: colorsLocal.dangerColor,
+                              ),
+                            );
+                          }
+                        }
+                      },
                     ),
                   ],
                 ),
               ),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(dialogContext),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  if (formKey.currentState!.validate()) {
-                    if (selectedIds.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Please select at least one exercise'),
-                        ),
-                      );
-                      return;
-                    }
-                    formKey.currentState!.save();
-                    final navigator = Navigator.of(context);
-                    final messenger = ScaffoldMessenger.of(context);
-                    final colors = context.appColors;
-
-                    try {
-                      await _api.updateWorkout(widget.workout['_id'], {
-                        'name': name,
-                        'description': description,
-                        'exercises': selectedIds,
-                      });
-                      if (!mounted) return;
-                      navigator.pop();
-                      _loadWorkoutDetails();
-                      messenger.showSnackBar(
-                        SnackBar(
-                          content: Text('Workout updated successfully! ✓'),
-                          backgroundColor: colors.successColor,
-                        ),
-                      );
-                    } catch (e) {
-                      messenger.showSnackBar(
-                        SnackBar(
-                          content: Text('Failed to update workout: $e'),
-                          backgroundColor: colors.dangerColor,
-                        ),
-                      );
-                    }
-                  }
-                },
-                child: const Text('Save'),
-              ),
-            ],
           );
         },
       ),
@@ -603,83 +668,11 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
     final sets = ex['sets'] ?? 3;
     final reps = ex['repetitions'] ?? 15;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: context.appColors.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: context.appColors.accentColor.withValues(alpha: 0.1),
-        ),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: context.appColors.accentColor.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.fitness_center_rounded,
-            color: context.appColors.accentColor,
-            size: 22,
-          ),
-        ),
-        title: Text(
-          name,
-          style: TextStyle(
-            color: context.appColors.textPrimary,
-            fontWeight: FontWeight.w700,
-            fontSize: 15,
-          ),
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Row(
-            children: [
-              if (bodyPart.isNotEmpty) ...[
-                Text(
-                  bodyPart.toUpperCase(),
-                  style: TextStyle(
-                    color: context.appColors.textSecondary,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(width: 8),
-              ],
-              Text(
-                '•  $sets Sets x $reps Reps',
-                style: TextStyle(
-                  color: context.appColors.textHint,
-                  fontSize: 11,
-                ),
-              ),
-            ],
-          ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            DifficultyBadge(difficulty: difficulty),
-            const SizedBox(width: 8),
-            IconButton(
-              icon: Icon(
-                Icons.add_task_rounded,
-                color: context.appColors.accentColor,
-              ),
-              onPressed: () => _showQuickLogBottomSheet(ex),
-              tooltip: 'Quick Log Exercise',
-              style: IconButton.styleFrom(
-                backgroundColor: context.appColors.accentColor.withValues(
-                  alpha: 0.1,
-                ),
-                padding: const EdgeInsets.all(8),
-              ),
-            ),
-          ],
-        ),
+    return GlassCard(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      borderRadius: 20,
+      borderColor: context.appColors.accentColor.withValues(alpha: 0.1),
+      child: InkWell(
         onTap: () {
           Navigator.push(
             context,
@@ -688,6 +681,109 @@ class _WorkoutDetailScreenState extends State<WorkoutDetailScreen> {
             ),
           ).then((value) => _loadWorkoutDetails());
         },
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: context.appColors.accentColor.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: context.appColors.accentColor.withValues(alpha: 0.15),
+                ),
+              ),
+              child: Icon(
+                Icons.fitness_center_rounded,
+                color: context.appColors.accentColor,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      color: context.appColors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      if (bodyPart.isNotEmpty) ...[
+                        Text(
+                          bodyPart.toUpperCase(),
+                          style: TextStyle(
+                            color: context.appColors.accentColor,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 3,
+                          height: 3,
+                          decoration: BoxDecoration(
+                            color: context.appColors.textHint,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                      Text(
+                        '$sets sets x $reps reps',
+                        style: TextStyle(
+                          color: context.appColors.textSecondary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                DifficultyBadge(difficulty: difficulty),
+                const SizedBox(width: 10),
+                GestureDetector(
+                  onTap: () => _showQuickLogBottomSheet(ex),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: context.appColors.accentColor,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: context.appColors.accentColor.withValues(
+                            alpha: 0.25,
+                          ),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.add_task_rounded,
+                      size: 14,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
