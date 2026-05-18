@@ -33,12 +33,13 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   remove_alpha_ios: true
-  image_path: "assets/images/app_icon.png"
+  image_path: "assets/images/launcher_icon.png"
   web:
     generate: true
-    image_path: "assets/images/app_icon.png"
+    image_path: "assets/images/launcher_icon.png"
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/app_icon.png
+    - assets/images/launcher_icon.png
