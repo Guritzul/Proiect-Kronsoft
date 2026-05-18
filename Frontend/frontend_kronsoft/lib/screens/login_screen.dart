@@ -260,8 +260,6 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AeroBackground(
@@ -275,38 +273,15 @@ class _LoginScreenState extends State<LoginScreen>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
+                    Image.asset(
+                      'assets/images/app_icon.png',
                       width: 90,
                       height: 90,
-                      decoration: BoxDecoration(
-                        color: context.appColors.cardColor,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: context.appColors.accentColor.withValues(
-                            alpha: 0.6,
-                          ),
-                          width: 2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: context.appColors.accentColor.withValues(
-                              alpha: isDark ? 0.35 : 0.20,
-                            ),
-                            blurRadius: 20,
-                            spreadRadius: 2,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.health_and_safety_rounded,
-                        size: 48,
-                        color: context.appColors.accentColor,
-                      ),
+                      fit: BoxFit.contain,
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'KRONHEALTH',
+                      'KOREHEALTH',
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.w900,
