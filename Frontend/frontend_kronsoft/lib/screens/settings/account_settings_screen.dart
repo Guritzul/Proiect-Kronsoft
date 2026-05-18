@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../theme/app_theme.dart';
 import '../../services/auth_service.dart';
+import '../../services/api_service.dart';
 import '../login_screen.dart';
 
 class AccountSettingsScreen extends StatefulWidget {
@@ -251,6 +252,11 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   password: pwCtrl.text,
                 );
                 await _auth.currentUser!.reauthenticateWithCredential(cred);
+                
+                // First call backend to delete all user data linked to this account
+                await ApiService().deleteAccount();
+
+                // Then delete user from Firebase auth
                 await _auth.currentUser!.delete();
                 if (ctx.mounted) Navigator.pop(ctx);
                 if (mounted) {
