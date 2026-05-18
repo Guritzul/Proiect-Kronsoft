@@ -90,6 +90,10 @@ class ApiService {
     return await _get('/auth/profile');
   }
 
+  Future<void> deleteAccount() async {
+    await _delete('/auth/delete-account');
+  }
+
   Future<List<dynamic>> getPills() async {
     final data = await _get('/pills');
     return data is List ? data : (data['pills'] ?? []);

@@ -573,20 +573,55 @@ class _ExerciseDetailScreenState extends State<ExerciseDetailScreen> {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () async {
-                      final uri = Uri.parse(mediaUrl);
-                      if (await canLaunchUrl(uri)) {
-                        await launchUrl(
+                      String normalizedUrl = mediaUrl.trim();
+                      if (!normalizedUrl.startsWith('http://') &&
+                          !normalizedUrl.startsWith('https://')) {
+                        normalizedUrl = 'https://$normalizedUrl';
+                      }
+                      final uri = Uri.parse(normalizedUrl);
+                      bool launched = false;
+
+                      // 1. Try launching externally (e.g. native YouTube app)
+                      try {
+                        launched = await launchUrl(
                           uri,
                           mode: LaunchMode.externalApplication,
                         );
-                      } else {
-                        if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Could not open video link'),
-                            ),
+                      } catch (e) {
+                        debugPrint('External application launch failed: $e');
+                      }
+
+                      // 2. Fallback to platform default (delegated OS choice)
+                      if (!launched) {
+                        try {
+                          launched = await launchUrl(
+                            uri,
+                            mode: LaunchMode.platformDefault,
                           );
+                        } catch (e) {
+                          debugPrint('Platform default launch failed: $e');
                         }
+                      }
+
+                      // 3. Fallback to in-app browser view
+                      if (!launched) {
+                        try {
+                          launched = await launchUrl(
+                            uri,
+                            mode: LaunchMode.inAppBrowserView,
+                          );
+                        } catch (e) {
+                          debugPrint('In-app browser view launch failed: $e');
+                        }
+                      }
+
+                      // 4. Show snackbar if all modes failed
+                      if (!launched && mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Could not open video guide link'),
+                          ),
+                        );
                       }
                     },
                     child: const Padding(
