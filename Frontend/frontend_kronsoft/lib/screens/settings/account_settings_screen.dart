@@ -252,7 +252,7 @@ class _AccountSettingsScreenState extends State<AccountSettingsScreen> {
                   password: pwCtrl.text,
                 );
                 await _auth.currentUser!.reauthenticateWithCredential(cred);
-                
+
                 // First call backend to delete all user data linked to this account
                 await ApiService().deleteAccount();
 
