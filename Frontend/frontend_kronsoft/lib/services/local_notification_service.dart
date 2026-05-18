@@ -58,6 +58,7 @@ class LocalNotificationService {
     required String dosage,
     required List<String> schedule,
     required int reminderMinutes,
+    bool missedPillAlerts = false,
   }) async {
     await cancelPillNotifications(pillId);
 
@@ -70,8 +71,9 @@ class LocalNotificationService {
       final timeStr =
           '${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
 
+      // 1. Actual dose notification
       await _scheduleNotification(
-        id: pillId * 100 + i * 2,
+        id: pillId * 100 + i * 3,
         title: '💊 Time to take your pill!',
         body:
             'It\'s time to take $pillName${dosage.isNotEmpty ? ' ($dosage)' : ''}',
@@ -80,6 +82,7 @@ class LocalNotificationService {
         payload: 'pill|$pillMongoId|$pillName|$dosage|$timeStr',
       );
 
+      // 2. Pre-dose reminder
       if (reminderMinutes > 0) {
         int reminderMinute = minute - reminderMinutes;
         int reminderHour = hour;
@@ -91,13 +94,35 @@ class LocalNotificationService {
         }
 
         await _scheduleNotification(
-          id: pillId * 100 + i * 2 + 1,
+          id: pillId * 100 + i * 3 + 1,
           title: '⏰ Pill reminder',
           body:
               '$pillName in $reminderMinutes minutes${dosage.isNotEmpty ? ' ($dosage)' : ''}',
           hour: reminderHour,
           minute: reminderMinute,
           payload: 'pill_reminder|$pillMongoId|$pillName|$dosage|$timeStr',
+        );
+      }
+
+      // 3. Missed pill alert (30 minutes after)
+      if (missedPillAlerts) {
+        int missedMinute = minute + 30;
+        int missedHour = hour;
+
+        if (missedMinute >= 60) {
+          missedMinute -= 60;
+          missedHour += 1;
+          if (missedHour >= 24) missedHour = 0;
+        }
+
+        await _scheduleNotification(
+          id: pillId * 100 + i * 3 + 2,
+          title: '⚠️ Missed Pill Alert',
+          body:
+              'You missed your dose of $pillName. Please take it as soon as possible!',
+          hour: missedHour,
+          minute: missedMinute,
+          payload: 'missed_pill|$pillMongoId|$pillName|$dosage|$timeStr',
         );
       }
     }
@@ -151,8 +176,9 @@ class LocalNotificationService {
 
   static Future<void> cancelPillNotifications(int pillId) async {
     for (int i = 0; i < 10; i++) {
-      await _plugin.cancel(pillId * 100 + i * 2);
-      await _plugin.cancel(pillId * 100 + i * 2 + 1);
+      await _plugin.cancel(pillId * 100 + i * 3);
+      await _plugin.cancel(pillId * 100 + i * 3 + 1);
+      await _plugin.cancel(pillId * 100 + i * 3 + 2);
     }
   }
 

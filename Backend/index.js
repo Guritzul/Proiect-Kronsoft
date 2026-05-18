@@ -2,7 +2,9 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
+  ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+  : require("./serviceAccountKey.json");
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -14,8 +16,9 @@ const authRoutes = require('./routes/auth');
 const pillRoutes = require("./routes/pills");
 const notificationRoutes = require("./routes/notifications");
 const allergensRoutes = require("./routes/allergens");
-const exerciseRoutes = require("./routes/exercises"); 
+const exerciseRoutes = require("./routes/exercises");
 const dashboardRoutes = require('./routes/dashboard');
+const workoutRoutes = require('./routes/workouts');
 
 app.use(express.json());
 
@@ -46,6 +49,7 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/allergens", allergensRoutes);
 app.use("/api/exercises", exerciseRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/workouts', workoutRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

@@ -90,15 +90,34 @@ jobs:
         working-directory: ./Frontend/frontend_kronsoft
         run: flutter test
 
+      - name: Setup Keystore
+        working-directory: ./Frontend/frontend_kronsoft/android
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > app/release-keystore.jks
+
+      - name: Create key.properties
+        working-directory: ./Frontend/frontend_kronsoft/android
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "storePassword=$ANDROID_KEYSTORE_PASSWORD" > key.properties
+          echo "keyPassword=$ANDROID_KEY_PASSWORD" >> key.properties
+          echo "keyAlias=$ANDROID_KEY_ALIAS" >> key.properties
+          echo "storeFile=release-keystore.jks" >> key.properties
+
       - name: Build Android APK
         working-directory: ./Frontend/frontend_kronsoft
-        run: flutter build apk --debug
+        run: flutter build apk --release
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-debug
-          path: Frontend/frontend_kronsoft/build/app/outputs/flutter-apk/app-debug.apk
+          name: app-release
+          path: Frontend/frontend_kronsoft/build/app/outputs/flutter-apk/app-release.apk
 
   versioning:
     name: Automatic Versioning
@@ -124,7 +143,7 @@ jobs:
       - name: Download APK Artifact
         uses: actions/download-artifact@v4
         with:
-          name: app-debug
+          name: app-release
           path: release-artifacts
           
       - name: Create a GitHub Release

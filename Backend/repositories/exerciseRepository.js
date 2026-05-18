@@ -13,6 +13,18 @@ const findByName = async (name) => {
   return await Exercise.findOne({ name });
 };
 
+const findByNameAndUser = async (name, userId) => {
+  return await Exercise.findOne({
+    name: { $regex: new RegExp(`^${name}$`, 'i') },
+    isActive: true,
+    $or: [
+      { createdBy: { $exists: false } },
+      { createdBy: null },
+      ...(userId ? [{ createdBy: userId }] : [])
+    ]
+  });
+};
+
 const create = async (data) => {
   const exercise = new Exercise(data);
   return await exercise.save();
@@ -37,6 +49,7 @@ module.exports = {
   findAll,
   findById,
   findByName,
+  findByNameAndUser,
   create,
   update,
   softDelete,
