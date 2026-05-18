@@ -26,6 +26,9 @@ class ApiService {
   static final StreamController<void> allergenHistoryChanged =
       StreamController<void>.broadcast();
 
+  static final StreamController<void> pillHistoryChanged =
+      StreamController<void>.broadcast();
+
   Future<Map<String, String>> _headers() async {
     final token = await _auth.currentUser?.getIdToken();
     return {
@@ -100,26 +103,33 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> createPill(Map<String, dynamic> pill) async {
-    return await _post('/pills', pill);
+    final res = await _post('/pills', pill);
+    pillHistoryChanged.add(null);
+    return res;
   }
 
   Future<Map<String, dynamic>> updatePill(
     String id,
     Map<String, dynamic> pill,
   ) async {
-    return await _put('/pills/$id', pill);
+    final res = await _put('/pills/$id', pill);
+    pillHistoryChanged.add(null);
+    return res;
   }
 
   Future<void> deletePill(String id) async {
     await _delete('/pills/$id');
+    pillHistoryChanged.add(null);
   }
 
   Future<void> markPillTaken(String id) async {
     await _post('/pills/$id/taken');
+    pillHistoryChanged.add(null);
   }
 
   Future<void> markPillMissed(String id) async {
     await _post('/pills/$id/missed');
+    pillHistoryChanged.add(null);
   }
 
   Future<List<dynamic>> getPillHistory(String id) async {
@@ -128,7 +138,9 @@ class ApiService {
   }
 
   Future<Map<String, dynamic>> clearPillHistory() async {
-    return await _delete('/pills/history');
+    final res = await _delete('/pills/history');
+    pillHistoryChanged.add(null);
+    return res;
   }
 
   Future<Map<String, dynamic>> saveAllergenProfile(
