@@ -21,15 +21,15 @@ const getAllExercises = async (filters = {}, userId) => {
     query.name = { $regex: filters.search, $options: "i" };
   }
 
-  if (filters.bodyPart) {
-    query.bodyPart = filters.bodyPart;
+  if (filters.bodyPart && filters.bodyPart.toLowerCase() !== "all") {
+    query.bodyPart = filters.bodyPart.toLowerCase();
   }
 
-  if (filters.difficulty) {
-    query.difficulty = filters.difficulty;
+  if (filters.difficulty && filters.difficulty.toLowerCase() !== "all") {
+    query.difficulty = filters.difficulty.toLowerCase();
   }
 
-  if (filters.category) {
+  if (filters.category && filters.category.toLowerCase() !== "all") {
     query.category = filters.category;
   }
 
@@ -112,7 +112,7 @@ const toggleFavorite = async (firebaseUid, exerciseId) => {
   const user = await User.findOne({ firebaseUid });
   if (!user) throw new Error("User not found");
 
-  const index = user.favoriteExercises.indexOf(exerciseId);
+  const index = user.favoriteExercises.findIndex(id => id.toString() === exerciseId.toString());
   if (index === -1) {
     user.favoriteExercises.push(exerciseId);
   } else {

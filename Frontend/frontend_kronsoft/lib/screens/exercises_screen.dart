@@ -62,10 +62,12 @@ class _ExercisesScreenState extends State<ExercisesScreen>
   Future<void> _loadData() async {
     setState(() => _loading = true);
     try {
+      final bodyPart = _selectedBodyPart?.toLowerCase();
+      final difficulty = _selectedDifficulty?.toLowerCase();
       final results = await Future.wait([
         _api.getExercises(
-          bodyPart: _selectedBodyPart?.toLowerCase(),
-          difficulty: _selectedDifficulty?.toLowerCase(),
+          bodyPart: bodyPart == 'all' ? null : bodyPart,
+          difficulty: difficulty == 'all' ? null : difficulty,
           search: _searchController.text.trim(),
         ),
         _api.getFavoriteExercises(),

@@ -354,7 +354,7 @@ class _PillTrackingScreenState extends State<PillTrackingScreen> {
 
   Widget _buildPillCard(Map<String, dynamic> pill) {
     final id = pill['_id'] ?? pill['id'] ?? '';
-    final pillId = id.hashCode;
+    final pillId = id.hashCode.abs() % 100000;
     final name = pill['name'] ?? 'Unknown';
     final dosage = pill['dosage'] ?? '';
     final schedule = pill['schedule'];
