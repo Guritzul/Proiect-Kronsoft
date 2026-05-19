@@ -9,14 +9,7 @@ class BackendConfig {
   static const String baseUrl =
       'https://proiect-kronsoft-backend-production.up.railway.app/api';
 
-  // Your computer's local Wi-Fi IP (works for both physical phones and emulators on the same Wi-Fi!)
-  // static const String baseUrl = 'http://192.168.0.235:3000/api';
-
-  // Local Android Emulator address:
-  // static const String baseUrl = 'http://10.0.2.2:3000/api';
-
-  // For Local Web, iOS, or real device on localhost:
-  // static const String baseUrl = 'http://localhost:3000/api';
+  
 }
 
 class ApiService {
@@ -40,7 +33,7 @@ class ApiService {
   Future<dynamic> _get(String path) async {
     final res = await http
         .get(Uri.parse('$baseUrl$path'), headers: await _headers())
-        .timeout(const Duration(seconds: 10));
+        .timeout(const Duration(seconds: 30));
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return jsonDecode(res.body);
     }
@@ -54,7 +47,7 @@ class ApiService {
           headers: await _headers(),
           body: body != null ? jsonEncode(body) : null,
         )
-        .timeout(const Duration(seconds: 10));
+        .timeout(const Duration(seconds: 30));
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return res.body.isNotEmpty ? jsonDecode(res.body) : null;
     }
@@ -68,7 +61,7 @@ class ApiService {
           headers: await _headers(),
           body: jsonEncode(body),
         )
-        .timeout(const Duration(seconds: 10));
+        .timeout(const Duration(seconds: 30));
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return res.body.isNotEmpty ? jsonDecode(res.body) : null;
     }
@@ -78,7 +71,7 @@ class ApiService {
   Future<dynamic> _delete(String path) async {
     final res = await http
         .delete(Uri.parse('$baseUrl$path'), headers: await _headers())
-        .timeout(const Duration(seconds: 10));
+        .timeout(const Duration(seconds: 30));
     if (res.statusCode >= 200 && res.statusCode < 300) {
       return res.body.isNotEmpty ? jsonDecode(res.body) : null;
     }
