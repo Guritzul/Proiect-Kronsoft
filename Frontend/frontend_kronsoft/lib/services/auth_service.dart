@@ -15,7 +15,7 @@ class AuthService {
       email: email,
       password: password,
     );
-    _syncWithBackend();
+    syncWithBackend();
     return credential;
   }
 
@@ -24,7 +24,7 @@ class AuthService {
       email: email,
       password: password,
     );
-    _syncWithBackend();
+    syncWithBackend();
     return credential;
   }
 
@@ -42,7 +42,7 @@ class AuthService {
       );
 
       final userCredential = await _auth.signInWithCredential(credential);
-      _syncWithBackend();
+      syncWithBackend();
       return userCredential;
     } catch (e) {
       debugPrint('Google Sign-In error: $e');
@@ -55,7 +55,7 @@ class AuthService {
     await _auth.signOut();
   }
 
-  Future<void> _syncWithBackend() async {
+  Future<void> syncWithBackend() async {
     try {
       final token = await _auth.currentUser?.getIdToken();
       if (token == null) return;

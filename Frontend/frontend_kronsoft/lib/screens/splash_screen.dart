@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_theme.dart';
 import 'main_shell.dart';
 import 'login_screen.dart';
+import '../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,6 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (mounted) {
       if (rememberMe && currentUser != null) {
+        AuthService().syncWithBackend();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const MainShell()),
