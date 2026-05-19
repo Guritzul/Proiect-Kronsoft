@@ -8,8 +8,6 @@ class BackendConfig {
   // Production Railway URL:
   static const String baseUrl =
       'https://proiect-kronsoft-backend-production.up.railway.app/api';
-
-  
 }
 
 class ApiService {
